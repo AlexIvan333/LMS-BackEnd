@@ -23,7 +23,7 @@ jobs:
         ports:
           - 27018:27017
         env:
-          MONGO_INITDB_DATABASE: lms_db
+          MONGO_INITDB_DATABASE: lms_db2
           MONGO_INITDB_ROOT_USERNAME: admin
           MONGO_INITDB_ROOT_PASSWORD: password
 
@@ -47,6 +47,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle
+
+      # Make Gradlew executable
+      - name: Make Gradlew executable
+        run: chmod +x ./gradlew
 
       # Build the backend
       - name: Build Backend
