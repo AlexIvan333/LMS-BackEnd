@@ -1,0 +1,34 @@
+package com.lms.backend.entities.relational;
+
+import com.lms.backend.domain.enums.Grade;
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.Date;
+
+@Data
+@Entity
+@Table(name = "assignment_submissions")
+public class AssignmentSubmissionEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false)
+    private StudentEntity student;
+
+    @ManyToOne
+    @JoinColumn(name = "assignment_id", nullable = false)
+    private AssignmentEntity assignment;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date submissionTime;
+
+    @Column(nullable = false)
+    private String fileUrl;
+
+    @Enumerated(EnumType.STRING)
+    private Grade grade;
+}
