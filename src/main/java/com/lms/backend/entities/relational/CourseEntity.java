@@ -1,11 +1,17 @@
 package com.lms.backend.entities.relational;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@AllArgsConstructor
+@Builder
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "courses")
 public class CourseEntity {

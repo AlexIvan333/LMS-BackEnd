@@ -1,4 +1,4 @@
-package com.lms.backend.configurations;
+package com.lms.backend.configurations.databases;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;

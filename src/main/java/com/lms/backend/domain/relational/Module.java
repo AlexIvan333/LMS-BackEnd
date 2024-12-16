@@ -2,7 +2,6 @@ package com.lms.backend.domain.relational;
 
 import com.lms.backend.domain.nosql.Resource;
 import lombok.Data;
-import org.hibernate.sql.ast.tree.update.Assignment;
 
 import java.util.List;
 

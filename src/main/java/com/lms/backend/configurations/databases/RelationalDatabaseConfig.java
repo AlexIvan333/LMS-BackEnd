@@ -1,4 +1,4 @@
-package com.lms.backend.configurations;
+package com.lms.backend.configurations.databases;
 
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;

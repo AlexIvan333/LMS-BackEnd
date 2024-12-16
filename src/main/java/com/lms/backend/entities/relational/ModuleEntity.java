@@ -2,11 +2,17 @@ package com.lms.backend.entities.relational;
 
 import com.lms.backend.entities.nosql.ResourceEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@AllArgsConstructor
+@Builder
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "modules")
 public class ModuleEntity {
