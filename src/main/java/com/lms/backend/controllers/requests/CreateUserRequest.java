@@ -14,6 +14,7 @@ public class CreateUserRequest {
     private String lastName;
     private String middleName;
     private String streetName;
+    private String email;
     private int streetNumber;
     private String country;
     private String city;

@@ -13,6 +13,7 @@ import com.lms.backend.mappers.InstructorMapper;
 import com.lms.backend.mappers.StudentMapper;
 import com.lms.backend.repositories.relational.InstructorRepository;
 import com.lms.backend.repositories.relational.StudentRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
     private final InstructorRepository instructorRepository;
@@ -33,7 +34,7 @@ public class StudentService {
                .firstName(request.getFirstName())
                .lastName(request.getLastName())
                .middleName(request.getMiddleName())
-               .email(generateStudentEmail(request.getFirstName(), request.getLastName()))
+               .email(request.getEmail())
                .password(passwordEncoder.encode(passwordGenerator.generateRandomPassword()))
                .role(Role.STUDENT)
                .active(true)
@@ -50,35 +51,9 @@ public class StudentService {
        return StudentMapper.toResponse(studentEntity);
    }
 
-   public InstructorResponse registerInstructor(CreateUserRequest request)
-   {
-       InstructorEntity instructorEntity = InstructorEntity.builder()
-               .firstName(request.getFirstName())
-               .lastName(request.getLastName())
-               .middleName(request.getMiddleName())
-               .email(generateInstructorEmail(request.getFirstName(), request.getLastName()))
-               .password(passwordEncoder.encode(passwordGenerator.generateRandomPassword()))
-               .role(Role.INSTRUCTOR)
-               .active(true)
-               .streetName(request.getStreetName())
-               .streetNumber(request.getStreetNumber())
-               .country(request.getCountry())
-               .city(request.getCity())
-               .zipCode(request.getZipCode())
-               .createdCourses(Collections.<CourseEntity>emptyList())
-               .build();
 
-       instructorRepository.save(instructorEntity);
-       return InstructorMapper.toResponse(instructorEntity);
-   }
 
-   private String generateStudentEmail(String firstName, String lastName) {
-       return String.format("%s.%s@student.lms.com",  firstName.toLowerCase().charAt(0), lastName.toLowerCase());
-   }
 
-    private String generateInstructorEmail(String firstName, String lastName) {
-        return String.format("%s.%s@teacher.lms.com",  firstName.toLowerCase().charAt(0), lastName.toLowerCase());
-    }
 
 
 
