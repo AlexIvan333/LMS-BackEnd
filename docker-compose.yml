@@ -34,8 +34,14 @@ services:
       - postgres
       - mongodb
     ports:
-      - "8081:8080"
+      - "8445:8444"
     environment:
+      SERVER_SSL_ENABLED : true
+      SERVER_PORT : 8444
+      SERVER_SSL_KEY-STORE : /app/config/keystore.p12
+      SERVER_SSL_KEY-STORE-PASSWORD : password
+      SERVER_SSL_KEY-STORE-TYPE : PKCS12
+      SERVER_SSL_KEY-ALIAS : lmsapp
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lms_db
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: new_password
@@ -44,6 +50,8 @@ services:
       SPRING_DATA_MONGODB_DATABASE: lms_db
       SPRING_DATA_MONGODB_USERNAME: admin
       SPRING_DATA_MONGODB_PASSWORD: password
+    volumes:
+      - ./keystore.p12:/app/config/keystore.p12
 
 volumes:
   postgres_data:

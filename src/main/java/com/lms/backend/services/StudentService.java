@@ -3,6 +3,7 @@ package com.lms.backend.services;
 import com.lms.backend.configurations.authentication.PasswordGenerator;
 import com.lms.backend.controllers.requests.CreateUserRequest;
 import com.lms.backend.controllers.responses.InstructorResponse;
+import com.lms.backend.controllers.responses.ServiceResult;
 import com.lms.backend.controllers.responses.StudentResponse;
 import com.lms.backend.domain.enums.Role;
 import com.lms.backend.entities.relational.AssignmentSubmissionEntity;
@@ -13,8 +14,10 @@ import com.lms.backend.mappers.InstructorMapper;
 import com.lms.backend.mappers.StudentMapper;
 import com.lms.backend.repositories.relational.InstructorRepository;
 import com.lms.backend.repositories.relational.StudentRepository;
+import com.lms.backend.validation.interfaces.IUserValidation;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +27,20 @@ import java.util.Collections;
 @AllArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
-    private final InstructorRepository instructorRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordGenerator passwordGenerator;
+    private final IUserValidation userValidation;
 
-   public StudentResponse registerStudent (CreateUserRequest request)
+   public ServiceResult<StudentResponse> registerStudent (CreateUserRequest request)
    {
+       if (userValidation.HasValidEmail(request)) {
+           return ServiceResult.<StudentResponse>builder()
+                   .success(false)
+                   .messageError("There already is an account with this email address")
+                   .httpStatus(HttpStatus.BAD_REQUEST)
+                   .build();
+       }
+
        StudentEntity studentEntity = StudentEntity.builder()
                .firstName(request.getFirstName())
                .lastName(request.getLastName())
@@ -48,8 +59,16 @@ public class StudentService {
                .build();
 
        studentRepository.save(studentEntity);
-       return StudentMapper.toResponse(studentEntity);
+
+       return ServiceResult.<StudentResponse>builder()
+               .data(StudentMapper.toResponse(studentEntity))
+               .success(true)
+               .httpStatus(HttpStatus.CREATED)
+               .messageError(null)
+               .build();
+
    }
+
 
 
 
