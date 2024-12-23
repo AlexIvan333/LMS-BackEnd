@@ -1,7 +1,6 @@
 package com.lms.backend.mappers;
 
-import com.lms.backend.controllers.responses.AssignmentSubmissionResponse;
-import com.lms.backend.domain.relational.AssignmentSubmission;
+import com.lms.backend.dtos.responses.AssignmentSubmissionResponse;
 import com.lms.backend.entities.relational.AssignmentSubmissionEntity;
 
 public class AssignmentSubmissionMapper {

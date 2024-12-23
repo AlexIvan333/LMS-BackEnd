@@ -1,6 +1,6 @@
 package com.lms.backend.mappers;
 
-import com.lms.backend.controllers.responses.ModuleResponse;
+import com.lms.backend.dtos.responses.ModuleResponse;
 import com.lms.backend.entities.relational.ModuleEntity;
 
 import java.util.stream.Collectors;

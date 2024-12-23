@@ -1,10 +1,9 @@
 package com.lms.backend.services;
 
 import com.lms.backend.configurations.authentication.PasswordGenerator;
-import com.lms.backend.controllers.requests.CreateUserRequest;
-import com.lms.backend.controllers.responses.InstructorResponse;
-import com.lms.backend.controllers.responses.ServiceResult;
-import com.lms.backend.controllers.responses.StudentResponse;
+import com.lms.backend.dtos.requests.CreateUserRequest;
+import com.lms.backend.dtos.responses.InstructorResponse;
+import com.lms.backend.dtos.responses.ServiceResult;
 import com.lms.backend.domain.enums.Role;
 import com.lms.backend.entities.relational.CourseEntity;
 import com.lms.backend.entities.relational.InstructorEntity;
@@ -12,7 +11,6 @@ import com.lms.backend.mappers.InstructorMapper;
 import com.lms.backend.repositories.relational.InstructorRepository;
 import com.lms.backend.validation.interfaces.IUserValidation;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

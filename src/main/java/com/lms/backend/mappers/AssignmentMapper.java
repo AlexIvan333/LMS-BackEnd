@@ -1,6 +1,6 @@
 package com.lms.backend.mappers;
 
-import com.lms.backend.controllers.responses.AssignmentResponse;
+import com.lms.backend.dtos.responses.AssignmentResponse;
 import com.lms.backend.entities.relational.AssignmentEntity;
 
 public class AssignmentMapper {

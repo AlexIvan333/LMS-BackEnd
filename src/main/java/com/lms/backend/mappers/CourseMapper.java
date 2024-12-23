@@ -1,8 +1,7 @@
 package com.lms.backend.mappers;
 
-import com.lms.backend.controllers.responses.CourseResponse;
-import com.lms.backend.controllers.responses.CourseResponseForStudent;
-import com.lms.backend.domain.relational.Course;
+import com.lms.backend.dtos.responses.CourseResponse;
+import com.lms.backend.dtos.responses.CourseResponseForStudent;
 import com.lms.backend.entities.relational.CourseEntity;
 
 import java.util.stream.Collectors;

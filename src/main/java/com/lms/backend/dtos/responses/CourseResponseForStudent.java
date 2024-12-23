@@ -1,4 +1,4 @@
-package com.lms.backend.controllers.responses;
+package com.lms.backend.dtos.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

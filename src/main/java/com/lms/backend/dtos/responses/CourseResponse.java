@@ -1,21 +1,21 @@
-package com.lms.backend.controllers.responses;
+package com.lms.backend.dtos.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.sql.ast.tree.update.Assignment;
 
 import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ModuleResponse {
+public class CourseResponse {
     private Long id;
     private String title;
     private String description;
-    private List<AssignmentResponse> assignments;
-    private List<Long> resourceIds;
-    private Long courseId;
+    private List<ModuleResponse> modules;
+    private List<StudentResponse> students;
+    private Long instructorID;
+    private int maxStudents;
 }

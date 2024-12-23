@@ -1,19 +1,20 @@
-package com.lms.backend.controllers.responses;
+package com.lms.backend.dtos.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssignmentResponse {
+public class ModuleResponse {
     private Long id;
     private String title;
     private String description;
-    private Date deadline;
-    private Long moduleID;
+    private List<AssignmentResponse> assignments;
+    private List<Long> resourceIds;
+    private Long courseId;
 }

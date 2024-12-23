@@ -1,4 +1,4 @@
-package com.lms.backend.controllers.responses;
+package com.lms.backend.dtos.responses;
 
 import com.lms.backend.domain.enums.Grade;
 import com.lms.backend.domain.relational.Assignment;

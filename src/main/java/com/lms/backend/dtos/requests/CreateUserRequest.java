@@ -1,11 +1,10 @@
-package com.lms.backend.controllers.requests;
+package com.lms.backend.dtos.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
-import org.antlr.v4.runtime.misc.NotNull;
 
 @Data
 @Builder

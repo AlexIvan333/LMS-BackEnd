@@ -1,27 +1,25 @@
 package com.lms.backend.services;
 
 import com.lms.backend.configurations.authentication.PasswordGenerator;
-import com.lms.backend.controllers.requests.CreateUserRequest;
-import com.lms.backend.controllers.responses.InstructorResponse;
-import com.lms.backend.controllers.responses.ServiceResult;
-import com.lms.backend.controllers.responses.StudentResponse;
+import com.lms.backend.dtos.filters.StudentFilterParams;
+import com.lms.backend.dtos.requests.CreateUserRequest;
+import com.lms.backend.dtos.responses.ServiceResult;
+import com.lms.backend.dtos.responses.StudentResponse;
 import com.lms.backend.domain.enums.Role;
 import com.lms.backend.entities.relational.AssignmentSubmissionEntity;
 import com.lms.backend.entities.relational.CourseEntity;
-import com.lms.backend.entities.relational.InstructorEntity;
 import com.lms.backend.entities.relational.StudentEntity;
-import com.lms.backend.mappers.InstructorMapper;
 import com.lms.backend.mappers.StudentMapper;
-import com.lms.backend.repositories.relational.InstructorRepository;
 import com.lms.backend.repositories.relational.StudentRepository;
 import com.lms.backend.validation.interfaces.IUserValidation;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -66,6 +64,17 @@ public class StudentService {
                .httpStatus(HttpStatus.CREATED)
                .messageError(null)
                .build();
+
+   }
+
+   public List<StudentResponse> getStudents (StudentFilterParams filterParams)
+   {
+       List<StudentEntity> studentEntities = studentRepository.findStudentEntitiesByFilters( filterParams.getStudentId(),
+               filterParams.getActive(),
+               filterParams.getCourseID(),
+               filterParams.getSubmissionID());
+
+       return studentEntities.stream().map(StudentMapper::toResponse).collect(Collectors.toList());
 
    }
 

@@ -1,7 +1,6 @@
 package com.lms.backend.mappers;
 
-import com.lms.backend.controllers.responses.InstructorResponse;
-import com.lms.backend.domain.relational.Instructor;
+import com.lms.backend.dtos.responses.InstructorResponse;
 import com.lms.backend.entities.relational.InstructorEntity;
 
 import java.util.stream.Collectors;

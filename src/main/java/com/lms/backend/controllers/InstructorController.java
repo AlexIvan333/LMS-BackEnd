@@ -1,8 +1,7 @@
 package com.lms.backend.controllers;
 
-import com.lms.backend.controllers.requests.CreateUserRequest;
-import com.lms.backend.controllers.responses.InstructorResponse;
-import com.lms.backend.controllers.responses.StudentResponse;
+import com.lms.backend.dtos.requests.CreateUserRequest;
+import com.lms.backend.dtos.responses.InstructorResponse;
 import com.lms.backend.services.InstructorService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
