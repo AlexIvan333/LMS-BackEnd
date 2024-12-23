@@ -1,7 +1,8 @@
 package com.lms.backend.repositories.relational;
 
-import com.lms.backend.dtos.filters.StudentFilterParams;
 import com.lms.backend.entities.relational.StudentEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,5 +15,9 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
             "AND (:active IS NULL OR s.active = :active) " +
             "AND (:courseID IS NULL OR EXISTS (SELECT c FROM s.enrolledCourses c WHERE c.id = :courseID)) " +
             "AND (:submissionID IS NULL OR EXISTS (SELECT sub FROM s.submissions sub WHERE sub.id = :submissionID))")
-    List<StudentEntity> findStudentEntitiesByFilters(Long studentId, Boolean active, Long courseID, Long submissionID);
+    Page<StudentEntity> findStudentEntitiesByFilters(Long studentId,
+                                                     Boolean active,
+                                                     Long courseID,
+                                                     Long submissionID,
+                                                     Pageable pageable);
 }

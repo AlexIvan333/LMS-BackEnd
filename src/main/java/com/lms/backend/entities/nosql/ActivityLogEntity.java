@@ -19,7 +19,7 @@ public class ActivityLogEntity {
     @Id
     private String id;
 
-    private Long adminId;
+    private Long userId;
 
     private String action;
 

@@ -22,16 +22,17 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**", // Allow access to Swagger UI
                                 "/v3/api-docs/**", // Allow access to API docs
-                                "/swagger-ui.html" // Allow access to Swagger HTML page
+                                "/swagger-ui.html",
+                                "/students/**",
+                                "/instructors/**",
+                                "/courses/**",
+                                "/modules/**"// Allow access to Swagger HTML page
                         ).permitAll() // Public access to Swagger endpoints
                         .anyRequest().authenticated() // Secure all other endpoints
                 )
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity
                 .formLogin(AbstractHttpConfigurer::disable) // Disable login form
                 .httpBasic(AbstractHttpConfigurer::disable); // Disable HTTP Basic Authentication
-
         return http.build();
     }
-
-
 }

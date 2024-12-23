@@ -13,6 +13,7 @@ import com.lms.backend.mappers.StudentMapper;
 import com.lms.backend.repositories.relational.StudentRepository;
 import com.lms.backend.validation.interfaces.IUserValidation;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -72,7 +73,8 @@ public class StudentService {
        List<StudentEntity> studentEntities = studentRepository.findStudentEntitiesByFilters( filterParams.getStudentId(),
                filterParams.getActive(),
                filterParams.getCourseID(),
-               filterParams.getSubmissionID());
+               filterParams.getSubmissionID(),
+               PageRequest.of(filterParams.getPage(), filterParams.getSize())).stream().toList();
 
        return studentEntities.stream().map(StudentMapper::toResponse).collect(Collectors.toList());
 

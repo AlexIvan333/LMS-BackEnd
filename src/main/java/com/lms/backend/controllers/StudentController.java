@@ -1,5 +1,4 @@
 package com.lms.backend.controllers;
-
 import com.lms.backend.dtos.filters.StudentFilterParams;
 import com.lms.backend.dtos.requests.CreateUserRequest;
 import com.lms.backend.dtos.responses.StudentResponse;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("students")
+@RequestMapping("/students")
 public class StudentController {
 
     private final StudentService studentService;
@@ -38,13 +37,18 @@ public class StudentController {
     public ResponseEntity<List<StudentResponse>> getStudents( @RequestParam(required = false) Long studentId,
                                                               @RequestParam(required = false) Boolean active,
                                                               @RequestParam(required = false) Long courseID,
-                                                              @RequestParam(required = false) Long submissionID) {
+                                                              @RequestParam(required = false) Long submissionID,
+                                                              @RequestParam(defaultValue = "0") Integer page,
+                                                              @RequestParam(defaultValue = "10") Integer size) {
 
         StudentFilterParams filterParams = new StudentFilterParams();
         filterParams.setStudentId(studentId);
         filterParams.setActive(active);
         filterParams.setCourseID(courseID);
         filterParams.setSubmissionID(submissionID);
+        filterParams.setPage(page);
+        filterParams.setSize(size);
+
         return ResponseEntity.ok(studentService.getStudents(filterParams));
     }
 }

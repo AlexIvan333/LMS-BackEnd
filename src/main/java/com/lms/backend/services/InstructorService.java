@@ -1,6 +1,7 @@
 package com.lms.backend.services;
 
 import com.lms.backend.configurations.authentication.PasswordGenerator;
+import com.lms.backend.dtos.filters.InstructorFilterParams;
 import com.lms.backend.dtos.requests.CreateUserRequest;
 import com.lms.backend.dtos.responses.InstructorResponse;
 import com.lms.backend.dtos.responses.ServiceResult;
@@ -11,12 +12,15 @@ import com.lms.backend.mappers.InstructorMapper;
 import com.lms.backend.repositories.relational.InstructorRepository;
 import com.lms.backend.validation.interfaces.IUserValidation;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -60,5 +64,16 @@ public class InstructorService {
                 .httpStatus(HttpStatus.CREATED)
                 .messageError(null)
                 .build();
+    }
+
+    public List<InstructorResponse> getInstructors(InstructorFilterParams filterParams) {
+
+            List<InstructorEntity> instructorEntities = instructorRepository.findInstructorEntitiesByFilters(
+                    filterParams.getInstructorID(),
+                    filterParams.getActive(),
+                    filterParams.getCourseID(),
+                    PageRequest.of(filterParams.getPage(), filterParams.getSize())).stream().toList();
+
+            return instructorEntities.stream().map(InstructorMapper::toResponse).collect(Collectors.toList());
     }
 }
