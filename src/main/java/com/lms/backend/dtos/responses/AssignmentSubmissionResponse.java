@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -19,6 +20,8 @@ public class AssignmentSubmissionResponse {
     private Long studentID;
     private Long assignmentID;
     private Date submissionTime;
-    private String fileUrl;
+    List<String> resourceIds;
     private Grade grade;
+    private Boolean completed;
+    private String comment;
 }

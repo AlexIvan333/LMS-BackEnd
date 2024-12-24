@@ -12,8 +12,10 @@ public class AssignmentSubmissionMapper {
                 .studentID(entity.getStudent().getId())
                 .assignmentID(entity.getAssignment().getId())
                 .submissionTime(entity.getSubmissionTime())
-                .fileUrl(entity.getFileUrl())
+                .resourceIds(entity.getResourceIds())
                 .grade(entity.getGrade())
+                .completed(entity.getCompleted())
+                .comment(entity.getComment())
                 .build();
     }
 }

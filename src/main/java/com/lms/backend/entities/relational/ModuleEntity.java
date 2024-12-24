@@ -1,6 +1,5 @@
 package com.lms.backend.entities.relational;
 
-import com.lms.backend.entities.nosql.ResourceEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

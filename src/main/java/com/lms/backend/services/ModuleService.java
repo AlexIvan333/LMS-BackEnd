@@ -2,12 +2,10 @@ package com.lms.backend.services;
 
 import com.lms.backend.dtos.filters.ModuleFilterParams;
 import com.lms.backend.dtos.requests.CreateModuleRequest;
-import com.lms.backend.dtos.responses.CourseResponse;
 import com.lms.backend.dtos.responses.ModuleResponse;
 import com.lms.backend.dtos.responses.ServiceResult;
 import com.lms.backend.entities.relational.AssignmentEntity;
 import com.lms.backend.entities.relational.ModuleEntity;
-import com.lms.backend.mappers.CourseMapper;
 import com.lms.backend.mappers.ModuleMapper;
 import com.lms.backend.repositories.relational.CourseRepository;
 import com.lms.backend.repositories.relational.ModuleRepository;
@@ -46,6 +44,8 @@ public class ModuleService {
                 .resourceIds(Collections.<String>emptyList())
                 .course(courseRepository.findCourseEntitiesById(request.getCourseId()))
                 .build();
+
+        moduleRepository.save(moduleEntity);
 
         return ServiceResult.<ModuleResponse>builder()
                 .data(ModuleMapper.toResponse(moduleEntity))

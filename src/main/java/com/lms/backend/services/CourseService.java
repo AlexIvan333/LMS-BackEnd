@@ -33,11 +33,11 @@ public class CourseService {
     public ServiceResult<CourseResponse> createCourse(CreateCourseRequest request) {
 
         if (!courseValidation.validateCourse(request)) {
-            return ServiceResult.<CourseResponse>builder()
-                    .success(false)
-                    .messageError("The maximum number of students needs to be greater than zero or the selected instructor does not exist.")
-                    .httpStatus(HttpStatus.BAD_REQUEST)
-                    .build();
+                return ServiceResult.<CourseResponse>builder()
+                        .success(false)
+                        .messageError("The maximum number of students needs to be greater than zero or the selected instructor does not exist.")
+                        .httpStatus(HttpStatus.BAD_REQUEST)
+                        .build();
         }
         CourseEntity courseEntity = CourseEntity.builder()
                 .title(request.getTitle())

@@ -16,4 +16,6 @@ public interface ModuleRepository extends JpaRepository<ModuleEntity, Long> {
                                            Long courseId,
                                            String resourceId,
                                            Pageable pageable);
+
+    ModuleEntity findModuleEntityById(Long id);
 }

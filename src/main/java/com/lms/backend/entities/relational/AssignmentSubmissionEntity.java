@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @Builder
@@ -32,9 +33,17 @@ public class AssignmentSubmissionEntity {
     @Column(nullable = false)
     private Date submissionTime;
 
-    @Column(nullable = false)
-    private String fileUrl;
+    @ElementCollection
+    @CollectionTable(name = "assignment_resources", joinColumns = @JoinColumn(name = "submission_id"))
+    @Column(name = "resource_id")
+    private List<String> resourceIds;
 
     @Enumerated(EnumType.STRING)
     private Grade grade;
+
+    @Column(nullable = true)
+    private Boolean completed;
+
+    @Column
+    private String comment;
 }
