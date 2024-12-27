@@ -18,22 +18,22 @@ public class AuthenticationController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
-            LoginResponse loginResponse = authService.login(loginRequest);
-            return ResponseEntity.ok(loginResponse);
+            String response = authService.initiateLogin(loginRequest);
+            return ResponseEntity.ok(response);
         } catch (InvalidCredentialsException e) {
-            return ResponseEntity.status(401).body(LoginResponse.builder().message(e.getMessage()).build());
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 
     @PostMapping("/2fa")
-    public ResponseEntity<String> verify2FA(@RequestBody TwoFactorRequest request) {
+    public ResponseEntity<LoginResponse> verify2FA(@RequestBody TwoFactorRequest request) {
         try {
-            authService.verifyTwoFactorCode(request);
-            return ResponseEntity.ok("Two-factor authentication successful.");
+            LoginResponse response = authService.verifyTwoFactorCode(request);
+            return ResponseEntity.ok(response);
         } catch (TwoFactorAuthenticationException e) {
-            return ResponseEntity.status(401).body(e.getMessage());
+            return ResponseEntity.status(401).body(LoginResponse.builder().message(e.getMessage()).build());
         }
     }
 }

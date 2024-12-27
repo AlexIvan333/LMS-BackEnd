@@ -6,8 +6,6 @@ import com.google.zxing.common.BitMatrix;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.mail.MailAuthenticationException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -24,51 +22,41 @@ public class EmailService{
     }
 
     public void sendEmail(String to, String subject, String body) {
+        MimeMessage message = mailSender.createMimeMessage();
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body, true);
             mailSender.send(message);
-        } catch (MailAuthenticationException ex) {
-            throw new RuntimeException("Failed to authenticate with the email server: " + ex.getMessage());
-        } catch (Exception ex) {
-            throw new RuntimeException("Failed to send email: " + ex.getMessage());
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send email.", e);
         }
     }
 
     public void sendEmailWithQRCode(String email, String subject, String body, String qrCodeUrl) {
+        MimeMessage message = mailSender.createMimeMessage();
         try {
-            MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
             helper.setTo(email);
             helper.setSubject(subject);
             helper.setText(body, true);
 
-            byte[] qrCodeImage = generateQRCodeImage(qrCodeUrl);
-            helper.addAttachment("2fa-setup.png", new ByteArrayResource(qrCodeImage));
+            // Catch WriterException and IOException
+            byte[] qrCodeImage;
+            try {
+                qrCodeImage = generateQRCodeImage(qrCodeUrl);
+            } catch (WriterException | IOException e) {
+                throw new RuntimeException("Failed to generate QR code image.", e);
+            }
 
+            helper.addAttachment("qrcode.png", new ByteArrayResource(qrCodeImage));
             mailSender.send(message);
-        } catch (MessagingException | IOException | WriterException e) {
-            throw new RuntimeException("Failed to send email with QR code.", e);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send QR Code email.", e);
         }
     }
 
-//    public void sendTwoFactorCode(String email, int code) {
-//        try {
-//            MimeMessage message = mailSender.createMimeMessage();
-//            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-//
-//            helper.setTo(email);
-//            helper.setSubject("Your 2FA Code");
-//            helper.setText("Your 2FA code is: " + code, true);
-//
-//            mailSender.send(message);
-//        } catch (MessagingException e) {
-//            throw new RuntimeException("Failed to send email.");
-//        }
-//    }
 
     private byte[] generateQRCodeImage(String text) throws WriterException, IOException {
         BitMatrix bitMatrix = new com.google.zxing.qrcode.QRCodeWriter()
