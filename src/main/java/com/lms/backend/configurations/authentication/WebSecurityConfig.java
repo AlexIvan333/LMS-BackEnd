@@ -29,7 +29,8 @@ public class WebSecurityConfig {
                                 "/modules/**",
                                 "/assignments/**",
                                 "/assignmentsubmissions/**",
-                                "/resources/**"// Allow access to Swagger HTML page
+                                "/resources/**",
+                                "/auth/**"// Allow access to Swagger HTML page
                         ).permitAll() // Public access to Swagger endpoints
                         .anyRequest().authenticated() // Secure all other endpoints
                 )

@@ -70,20 +70,19 @@ public class StudentService {
                .build();
 
        String secretKey = google2FAService.generateSecretKey();
-       studentEntity.setTwoFactorSecretKey(secretKey); // Ensure the field exists in UserEntity
+       studentEntity.setTwoFactorSecretKey(secretKey);
        studentRepository.save(studentEntity);
 
-// Optionally send a QR code link for the user
-       String qrCodeUrl = "otpauth://totp/LMS:" + studentEntity.getEmail()
-               + "?secret=" + secretKey + "&issuer=LMS";
-       emailService.sendEmail(
+       String qrCodeUrl = "otpauth://totp/LMS:" + studentEntity.getEmail() + "?secret=" + secretKey + "&issuer=LMS";
+       emailService.sendEmailWithQRCode(
                studentEntity.getEmail(),
                "Welcome to LMS - Your Credentials",
                "Your account has been created. Use the password: " + generatedPassword +
-                       "\n\nFor added security, set up 2FA by scanning this QR Code URL: " + qrCodeUrl);
+                       "\n\nFor added security, set up 2FA by scanning this QR Code.",
+               qrCodeUrl
+       );
 
        log.info("Student registered successfully: {}", studentEntity.getEmail());
-
 
        return ServiceResult.<StudentResponse>builder()
                .data(StudentMapper.toResponse(studentEntity))
