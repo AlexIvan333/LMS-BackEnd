@@ -1,5 +1,6 @@
 package com.lms.backend.dtos.responses;
 
+import com.lms.backend.entities.nosql.ResourceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,6 @@ public class ModuleResponse {
     private String title;
     private String description;
     private List<AssignmentResponse> assignments;
-    private List<Long> resourceIds;
+    private List<ResourceResponse> resources;
     private Long courseId;
 }

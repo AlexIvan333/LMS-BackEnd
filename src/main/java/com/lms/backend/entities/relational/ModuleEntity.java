@@ -1,5 +1,6 @@
 package com.lms.backend.entities.relational;
 
+import com.lms.backend.entities.nosql.ResourceEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +32,10 @@ public class ModuleEntity {
     @ElementCollection
     @CollectionTable(name = "module_resources", joinColumns = @JoinColumn(name = "module_id"))
     @Column(name = "resource_id")
-    private List<String> resourceIds;
+    private List<Long> resourceIds;
+
+    @Transient
+    private List<ResourceEntity> resources;
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)

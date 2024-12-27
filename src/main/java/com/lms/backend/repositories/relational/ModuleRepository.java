@@ -10,12 +10,11 @@ public interface ModuleRepository extends JpaRepository<ModuleEntity, Long> {
 
     @Query("SELECT m FROM ModuleEntity m " +
             "WHERE (:moduleId IS NULL OR m.id = :moduleId) " +
-            "AND (:courseId IS NULL OR m.course.id = :courseId) " +
-            "AND (:resourceId IS NULL OR :resourceId IN (SELECT r FROM m.resourceIds r))")
-    Page<ModuleEntity>findModulesByFilters(Long moduleId,
-                                           Long courseId,
-                                           String resourceId,
-                                           Pageable pageable);
+            "AND (:courseId IS NULL OR m.course.id = :courseId) ")
+    Page<ModuleEntity> findModulesEntitiesByFilters(Long moduleId,
+                                            Long courseId,
+                                            Pageable pageable);
+
 
     ModuleEntity findModuleEntityById(Long id);
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -20,4 +21,6 @@ public class CreateAssigmentRequest {
     private Date deadline;
     @NotBlank(message = "Module can not be null")
     private Long moduleId;
+    private List<Long> resourceIds;
+
 }

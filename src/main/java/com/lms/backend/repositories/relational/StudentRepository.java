@@ -22,4 +22,5 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
                                                      Pageable pageable);
 
     StudentEntity findStudentEntityById(Long id);
+
 }

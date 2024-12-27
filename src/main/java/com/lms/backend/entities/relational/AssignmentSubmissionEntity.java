@@ -1,6 +1,7 @@
 package com.lms.backend.entities.relational;
 
 import com.lms.backend.domain.enums.Grade;
+import com.lms.backend.entities.nosql.ResourceEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,9 +35,12 @@ public class AssignmentSubmissionEntity {
     private Date submissionTime;
 
     @ElementCollection
-    @CollectionTable(name = "assignment_resources", joinColumns = @JoinColumn(name = "submission_id"))
+    @CollectionTable(name = "assignment_submission_resources", joinColumns = @JoinColumn(name = "submission_id"))
     @Column(name = "resource_id")
-    private List<String> resourceIds;
+    private List<Long> resourceIds;
+
+    @Transient // Mark as transient because it is not stored in the relational database
+    private List<ResourceEntity> resources;
 
     @Enumerated(EnumType.STRING)
     private Grade grade;

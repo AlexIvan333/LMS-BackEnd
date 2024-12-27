@@ -39,16 +39,14 @@ public class ModuleController {
     @GetMapping
     public ResponseEntity<List<ModuleResponse>> getModules(@RequestParam(required = false) Long moduleId,
                                                            @RequestParam(required = false) Long courseId,
-                                                           @RequestParam(required = false) String resourceId,
                                                            @RequestParam(defaultValue = "0") Integer page,
                                                            @RequestParam(defaultValue = "10") Integer size) {
 
         ModuleFilterParams filterParams = new ModuleFilterParams();
         filterParams.setModuleId(moduleId);
-        filterParams.setResourceId(resourceId);
         filterParams.setPage(page);
         filterParams.setSize(size);
-        filterParams.setModuleId(courseId);
+        filterParams.setCourseID(courseId);
 
         return ResponseEntity.ok(moduleService.getModules(filterParams));
 

@@ -10,8 +10,6 @@ public class ModuleFilterParams {
     @Schema
     private Long courseID;
     @Schema
-    private String resourceId;
-    @Schema
     private Integer page;
     @Schema
     private Integer size;
