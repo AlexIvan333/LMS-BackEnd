@@ -25,13 +25,10 @@ public class StudentController {
 
     @PostMapping
     public ResponseEntity<?> createStudent(@Valid @RequestBody CreateUserRequest request) {
-        log.info("Received request to create a new student: {}", request.getEmail());
 
         var result = studentService.registerStudent(request);
 
         if (!result.isSuccess()) {
-            log.warn("Failed to create student: {}", result.getMessageError());
-
             ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                     result.getHttpStatus(), result.getMessageError()
             );
@@ -39,7 +36,6 @@ public class StudentController {
             return ResponseEntity.status(result.getHttpStatus()).body(problemDetail);
         }
 
-        log.info("Successfully created student: {}", result.getData().getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(result.getData());
     }
 

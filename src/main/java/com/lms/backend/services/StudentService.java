@@ -11,7 +11,6 @@ import com.lms.backend.mappers.StudentMapper;
 import com.lms.backend.repositories.relational.StudentRepository;
 import com.lms.backend.validation.interfaces.IUserValidation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class StudentService {
     private final StudentRepository studentRepository;
     private final IUserValidation userValidation;
@@ -34,10 +32,8 @@ public class StudentService {
 
    public ServiceResult<StudentResponse> registerStudent (CreateUserRequest request)
    {
-       log.info("Registering new student with email: {}", request.getEmail());
 
        if (userValidation.HasValidEmail(request)) {
-           log.warn("Attempt to register with an existing email: {}", request.getEmail());
            return ServiceResult.<StudentResponse>builder()
                    .success(false)
                    .messageError("There already is an account with this email address.")
@@ -78,7 +74,6 @@ public class StudentService {
                qrCodeUrl
        );
 
-       log.info("Student registered successfully: {}", studentEntity.getEmail());
 
        return ServiceResult.<StudentResponse>builder()
                .data(StudentMapper.toResponse(studentEntity))
