@@ -18,8 +18,9 @@ public class JwtUtil {
     private static final SecretKey SECRET_KEY_SPEC = Keys.hmacShaKeyFor(java.util.Base64.getDecoder().decode(SECRET_KEY));// Use environment variables for production
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
-    public String generateToken(String email) {
+    public String generateToken(String email,String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
         return createToken(claims, email);
     }
 
@@ -40,6 +41,10 @@ public class JwtUtil {
 
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return extractClaims(token).get("role", String.class);
     }
 
     private Claims extractClaims(String token) {

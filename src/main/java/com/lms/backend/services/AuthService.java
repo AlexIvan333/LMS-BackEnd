@@ -47,7 +47,7 @@ public class AuthService {
         }
 
         // Generate JWT token after successful 2FA verification
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(),user.getRole().name());
 
         return LoginResponse.builder()
                 .token(token)
