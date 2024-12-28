@@ -27,6 +27,14 @@ public class AuthenticationController {
         }
     }
 
+    @PostMapping("login/admin")
+    public ResponseEntity<String> loginAdmin(@RequestBody LoginRequest loginRequest) {
+        if (authService.loginAdmin(loginRequest).getToken() != null) {
+            return ResponseEntity.ok(authService.loginAdmin(loginRequest).getToken());
+        }
+        return null;
+    }
+
     @PostMapping("/2fa")
     public ResponseEntity<LoginResponse> verify2FA(@RequestBody TwoFactorRequest request) {
         try {

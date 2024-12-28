@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Random;
 
 @Service
@@ -35,6 +36,20 @@ public class AuthService {
 
         // Redirect to 2FA input page (frontend handles the UI part)
         return "Two-factor authentication required.";
+    }
+
+    public LoginResponse loginAdmin(LoginRequest loginRequest) {
+        if (Objects.equals(loginRequest.getEmail(), "admin@gmail.com") && Objects.equals(loginRequest.getPassword(), "password")) {
+            String token = jwtUtil.generateToken(loginRequest.getEmail(),"ADMIN");
+            return LoginResponse.builder()
+                    .token(token)
+                    .message("Authentication successful.")
+                    .build();
+        }
+        return LoginResponse.builder()
+                .token(null)
+                .message("Authentication successful.")
+                .build();
     }
 
     public LoginResponse verifyTwoFactorCode(TwoFactorRequest request) {

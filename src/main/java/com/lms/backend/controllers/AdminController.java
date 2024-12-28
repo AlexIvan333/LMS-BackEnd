@@ -22,7 +22,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping
-    public ResponseEntity<?> createStudent(@Valid @RequestBody CreateUserRequest request) {
+    public ResponseEntity<?> createAdmin(@Valid @RequestBody CreateUserRequest request) {
 
         var result = adminService.createAdmin(request);
 
