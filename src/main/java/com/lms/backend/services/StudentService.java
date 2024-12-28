@@ -70,11 +70,11 @@ public class StudentService {
        studentRepository.save(studentEntity);
 
        String qrCodeUrl = "otpauth://totp/LMS:" + studentEntity.getEmail() + "?secret=" + secretKey + "&issuer=LMS";
+
        emailService.sendEmailWithQRCode(
                studentEntity.getEmail(),
                "Welcome to LMS - Your Credentials",
-               "Your account has been created. Use the password: " + generatedPassword +
-                       "\n\nFor added security, set up 2FA by scanning this QR Code.",
+               generatedPassword,
                qrCodeUrl
        );
 
