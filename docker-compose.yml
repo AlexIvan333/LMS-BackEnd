@@ -6,7 +6,7 @@ services:
     container_name: postgres_lms
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: new_password
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: lms_db
     ports:
       - "5433:5432"
