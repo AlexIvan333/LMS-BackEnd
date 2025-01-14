@@ -53,6 +53,10 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
+      # Make Gradlew executable
+      - name: Make Gradlew executable
+        run: chmod +x ./gradlew
+
       # Build the backend
       - name: Build Backend
         run: ./gradlew build
