@@ -32,6 +32,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Wait for databases to be ready
+      - name: Wait for PostgreSQL
+        run: |
+          until nc -z localhost 5433; do
+            echo "Waiting for PostgreSQL..."
+            sleep 1
+          done
+      - name: Wait for MongoDB
+        run: |
+          until nc -z localhost 27018; do
+            echo "Waiting for MongoDB..."
+            sleep 1
+          done
+
       # Set up Java
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -58,7 +72,7 @@ jobs:
 
       # Run backend tests
       - name: Run Backend Tests
-        run: ./gradlew test
+        run: ./gradlew test -Dspring.profiles.active=test
 
   dockerize:
     needs: build-and-test
