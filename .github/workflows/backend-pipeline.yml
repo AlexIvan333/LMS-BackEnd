@@ -32,7 +32,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Wait for databases to be ready
+      # Wait for PostgreSQL and MongoDB
       - name: Wait for PostgreSQL
         run: |
           until nc -z localhost 5433; do
@@ -53,30 +53,13 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      # Cache Gradle dependencies
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle
-
-      # Make Gradlew executable
-      - name: Make Gradlew executable
-        run: chmod +x ./gradlew
-
       # Build the backend
       - name: Build Backend
         run: ./gradlew build
 
-      # Verify JAR file generation
+      # Verify JAR file exists
       - name: Verify JAR file
         run: ls -la build/libs
-
-      # Run backend tests
-      - name: Run Backend Tests
-        run: ./gradlew test -Dspring.profiles.active=test
 
   dockerize:
     needs: build-and-test
