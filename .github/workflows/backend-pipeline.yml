@@ -39,7 +39,6 @@ jobs:
             echo "Waiting for PostgreSQL..."
             sleep 1
           done
-
       - name: Wait for MongoDB
         run: |
           until nc -z localhost 27018; do
