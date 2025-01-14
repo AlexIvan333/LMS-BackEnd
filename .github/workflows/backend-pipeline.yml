@@ -28,15 +28,18 @@ jobs:
           MONGO_INITDB_ROOT_PASSWORD: password
 
     steps:
+      # Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Wait for databases to be ready
       - name: Wait for PostgreSQL
         run: |
           until nc -z localhost 5433; do
             echo "Waiting for PostgreSQL..."
             sleep 1
           done
+
       - name: Wait for MongoDB
         run: |
           until nc -z localhost 27018; do
@@ -44,12 +47,14 @@ jobs:
             sleep 1
           done
 
+      # Set up Java
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: 21
           distribution: 'temurin'
 
+      # Cache Gradle dependencies
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
@@ -58,12 +63,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle
 
+      # Make Gradlew executable
       - name: Make Gradlew executable
         run: chmod +x ./gradlew
 
+      # Build the backend
       - name: Build Backend
         run: ./gradlew build
 
+      # Verify JAR file generation
+      - name: Verify JAR file
+        run: ls -la build/libs
+
+      # Run backend tests
       - name: Run Backend Tests
         run: ./gradlew test -Dspring.profiles.active=test
 
@@ -72,15 +84,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Build Docker image
       - name: Build Docker Image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/backend:latest .
