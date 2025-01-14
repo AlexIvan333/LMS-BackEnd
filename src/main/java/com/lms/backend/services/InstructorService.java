@@ -29,6 +29,8 @@ public class InstructorService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordGenerator passwordGenerator;
     private final IUserValidation userValidation;
+    private final EmailService emailService;
+    private final Google2FAService google2FAService;
 
     public ServiceResult<InstructorResponse> registerInstructor(CreateUserRequest request)
     {
@@ -40,12 +42,15 @@ public class InstructorService {
                     .build();
         }
 
+        String generatedPassword = passwordGenerator.generateRandomPassword();
+        String encodedPassword = passwordEncoder.encode(generatedPassword);
+
         InstructorEntity instructorEntity = InstructorEntity.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .middleName(request.getMiddleName())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(passwordGenerator.generateRandomPassword()))
+                .password(encodedPassword)
                 .role(Role.INSTRUCTOR)
                 .active(true)
                 .streetName(request.getStreetName())
@@ -56,7 +61,18 @@ public class InstructorService {
                 .createdCourses(Collections.<CourseEntity>emptyList())
                 .build();
 
+        String secretKey = google2FAService.generateSecretKey();
+        instructorEntity.setTwoFactorSecretKey(secretKey);
         instructorRepository.save(instructorEntity);
+
+        String qrCodeUrl = "otpauth://totp/LMS:" + instructorEntity.getEmail() + "?secret=" + secretKey + "&issuer=LMS";
+
+        emailService.sendEmailWithQRCode(
+                instructorEntity.getEmail(),
+                "Welcome to LMS - Your Credentials",
+                generatedPassword,
+                qrCodeUrl
+        );
 
         return ServiceResult.<InstructorResponse>builder()
                 .data(InstructorMapper.toResponse(instructorEntity))

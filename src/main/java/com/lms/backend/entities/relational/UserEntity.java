@@ -57,5 +57,11 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String zipCode;
+
+    @Column(name = "two_factor_secret_key")
+    private String twoFactorSecretKey;
+
+    @Column(name = "two_factor_code")
+    private Integer twoFactorCode;
 }
 

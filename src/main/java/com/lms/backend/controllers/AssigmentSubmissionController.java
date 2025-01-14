@@ -5,6 +5,7 @@ import com.lms.backend.dtos.filters.AssigmentSubmissionFilterParams;
 import com.lms.backend.dtos.requests.CreateAssigmentSubmissionRequest;
 import com.lms.backend.dtos.responses.AssignmentSubmissionResponse;
 import com.lms.backend.services.AssigmentSubmissionService;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -21,6 +22,7 @@ public class AssigmentSubmissionController {
     private final AssigmentSubmissionService assigmentSubmissionService;
 
     @PostMapping
+    @RolesAllowed({"ADMIN", "STUDENT"})
     public ResponseEntity<AssignmentSubmissionResponse> createAssignmentSubmission(@RequestBody CreateAssigmentSubmissionRequest request) {
 
         var result = assigmentSubmissionService.createAssignmentSubmission(request);
@@ -38,6 +40,7 @@ public class AssigmentSubmissionController {
     }
 
     @GetMapping
+    @RolesAllowed({"ADMIN", "STUDENT", "INSTRUCTOR"})
     public ResponseEntity<List<AssignmentSubmissionResponse>> getAssignmentSubmissions(@RequestParam(required = false) Long submissionId,
                                                                                        @RequestParam(required = false) Long studentId,
                                                                                        @RequestParam(required = false) Long assigmentId,

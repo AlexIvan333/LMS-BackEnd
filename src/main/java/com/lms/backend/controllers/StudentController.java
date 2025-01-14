@@ -3,37 +3,46 @@ import com.lms.backend.dtos.filters.StudentFilterParams;
 import com.lms.backend.dtos.requests.CreateUserRequest;
 import com.lms.backend.dtos.responses.StudentResponse;
 import com.lms.backend.services.StudentService;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping("/students")
+@Validated
 public class StudentController {
 
     private final StudentService studentService;
 
     @PostMapping
-    public ResponseEntity<StudentResponse> createStudent(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<?> createStudent(@Valid @RequestBody CreateUserRequest request) {
+
         var result = studentService.registerStudent(request);
 
-        if (!result.success) {
+        if (!result.isSuccess()) {
             ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                    result.getHttpStatus(),result.getMessageError()
+                    result.getHttpStatus(), result.getMessageError()
             );
             problemDetail.setTitle("Error creating the student");
-            return ResponseEntity.of(problemDetail).build();
+            return ResponseEntity.status(result.getHttpStatus()).body(problemDetail);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(result.data);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result.getData());
     }
 
+
     @GetMapping
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     public ResponseEntity<List<StudentResponse>> getStudents( @RequestParam(required = false) Long studentId,
                                                               @RequestParam(required = false) Boolean active,
                                                               @RequestParam(required = false) Long courseID,

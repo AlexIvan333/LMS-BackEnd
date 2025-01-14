@@ -5,6 +5,7 @@ import com.lms.backend.dtos.requests.CreateCourseRequest;
 import com.lms.backend.dtos.responses.CourseResponse;
 import com.lms.backend.dtos.responses.CourseResponseForStudent;
 import com.lms.backend.services.CourseService;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -21,6 +22,7 @@ public class CourseController {
     private final CourseService courseService;
 
     @PostMapping
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     public ResponseEntity<CourseResponse> createCourse(@RequestBody CreateCourseRequest request) {
 
         var result = courseService.createCourse(request);
@@ -38,6 +40,7 @@ public class CourseController {
     }
 
     @GetMapping
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     public ResponseEntity<List<CourseResponse>> getCourses( @RequestParam(required = false) Long courseId,
                                                             @RequestParam(required = false) Long instructorId,
                                                             @RequestParam(required = false) Long studentId,
@@ -59,6 +62,7 @@ public class CourseController {
     }
 
     @GetMapping("/forstudents")
+    @RolesAllowed({"ADMIN", "STUDENT"})
     public ResponseEntity<List<CourseResponseForStudent>> getCoursesForStudents(@RequestParam(required = false) Long courseId,
                                                                      @RequestParam(required = false) Long instructorId,
                                                                      @RequestParam(required = false) Long studentId,

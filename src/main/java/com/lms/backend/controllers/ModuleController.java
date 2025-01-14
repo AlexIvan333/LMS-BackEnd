@@ -4,6 +4,7 @@ import com.lms.backend.dtos.filters.ModuleFilterParams;
 import com.lms.backend.dtos.requests.CreateModuleRequest;
 import com.lms.backend.dtos.responses.ModuleResponse;
 import com.lms.backend.services.ModuleService;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -20,6 +21,7 @@ public class ModuleController {
     private final ModuleService moduleService;
 
     @PostMapping
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     public ResponseEntity<ModuleResponse> createModule(@RequestBody CreateModuleRequest request) {
 
         var result = moduleService.createModule(request);
@@ -37,6 +39,7 @@ public class ModuleController {
     }
 
     @GetMapping
+    @RolesAllowed({"ADMIN", "STUDENT", "INSTRUCTOR"})
     public ResponseEntity<List<ModuleResponse>> getModules(@RequestParam(required = false) Long moduleId,
                                                            @RequestParam(required = false) Long courseId,
                                                            @RequestParam(defaultValue = "0") Integer page,
