@@ -16,7 +16,7 @@ jobs:
           - 5433:5432
         env:
           POSTGRES_USER: admin
-          POSTGRES_PASSWORD: new_password
+          POSTGRES_PASSWORD: password
           POSTGRES_DB: lms_db
       mongo:
         image: mongo:6.0
