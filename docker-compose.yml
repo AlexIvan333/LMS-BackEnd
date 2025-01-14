@@ -6,7 +6,7 @@ services:
     container_name: postgres_lms
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: new_password
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: lms_db
     ports:
       - "5433:5432"
@@ -44,7 +44,7 @@ services:
       SERVER_SSL_KEY-ALIAS : lmsapp
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lms_db
       SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: new_password
+      SPRING_DATASOURCE_PASSWORD: password
       SPRING_DATA_MONGODB_HOST: mongodb
       SPRING_DATA_MONGODB_PORT: 27017
       SPRING_DATA_MONGODB_DATABASE: lms_db2
