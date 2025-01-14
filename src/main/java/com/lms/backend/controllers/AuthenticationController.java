@@ -29,8 +29,9 @@ public class AuthenticationController {
 
     @PostMapping("login/admin")
     public ResponseEntity<String> loginAdmin(@RequestBody LoginRequest loginRequest) {
-        if (authService.loginAdmin(loginRequest).getToken() != null) {
-            return ResponseEntity.ok(authService.loginAdmin(loginRequest).getToken());
+        String token= authService.loginAdmin(loginRequest).getToken();
+        if ( token!= null) {
+            return ResponseEntity.ok(token);
         }
         return null;
     }

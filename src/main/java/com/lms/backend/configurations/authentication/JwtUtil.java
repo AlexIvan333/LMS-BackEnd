@@ -18,25 +18,27 @@ public class JwtUtil {
     private static final SecretKey SECRET_KEY_SPEC = Keys.hmacShaKeyFor(java.util.Base64.getDecoder().decode(SECRET_KEY));// Use environment variables for production
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
-    public String generateToken(String email,String role) {
+    public String generateToken(String email, String role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
-        return createToken(claims, email);
-    }
-
-    private String createToken(Map<String, Object> claims, String subject) {
+        claims.put("role", role); // No "ROLE_" prefix
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject)
+                .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SECRET_KEY_SPEC, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean validateToken(String token, String email) {
-        final String username = extractEmail(token);
-        return username.equals(email) && !isTokenExpired(token);
+
+    public boolean validateToken(String token, String email, String requiredRole) {
+        try {
+            final String extractedEmail = extractEmail(token);
+            final String extractedRole = extractRole(token);
+            return extractedEmail.equals(email) && extractedRole.equals(requiredRole) && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false; // Invalid token
+        }
     }
 
     public String extractEmail(String token) {

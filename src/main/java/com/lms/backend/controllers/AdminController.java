@@ -2,6 +2,7 @@ package com.lms.backend.controllers;
 
 import com.lms.backend.dtos.requests.CreateUserRequest;
 import com.lms.backend.services.AdminService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping
+    @RolesAllowed({"ADMIN"})
     public ResponseEntity<?> createAdmin(@Valid @RequestBody CreateUserRequest request) {
 
         var result = adminService.createAdmin(request);

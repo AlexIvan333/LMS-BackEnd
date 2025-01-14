@@ -4,6 +4,7 @@ import com.lms.backend.dtos.filters.InstructorFilterParams;
 import com.lms.backend.dtos.requests.CreateUserRequest;
 import com.lms.backend.dtos.responses.InstructorResponse;
 import com.lms.backend.services.InstructorService;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -35,7 +36,9 @@ public class InstructorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result.data);
     }
 
-    @GetMapping ResponseEntity<List<InstructorResponse>> getInstructors( @RequestParam(required = false)Long instructorID,
+    @GetMapping
+    @RolesAllowed({"ADMIN", "STUDENT"})
+    ResponseEntity<List<InstructorResponse>> getInstructors( @RequestParam(required = false)Long instructorID,
                                                                             @RequestParam(required = false) Boolean active,
                                                                             @RequestParam(required = false) Long courseID,
                                                                             @RequestParam(defaultValue = "0") Integer page,

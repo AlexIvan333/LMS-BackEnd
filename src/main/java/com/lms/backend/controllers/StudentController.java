@@ -3,6 +3,7 @@ import com.lms.backend.dtos.filters.StudentFilterParams;
 import com.lms.backend.dtos.requests.CreateUserRequest;
 import com.lms.backend.dtos.responses.StudentResponse;
 import com.lms.backend.services.StudentService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,7 @@ public class StudentController {
 
 
     @GetMapping
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     public ResponseEntity<List<StudentResponse>> getStudents( @RequestParam(required = false) Long studentId,
                                                               @RequestParam(required = false) Boolean active,
                                                               @RequestParam(required = false) Long courseID,
