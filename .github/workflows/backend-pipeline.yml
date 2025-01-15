@@ -9,7 +9,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    services:
+     services:
       postgres:
         image: postgres:15
         ports:
@@ -35,17 +35,16 @@ jobs:
       # Wait for PostgreSQL and MongoDB
       - name: Wait for PostgreSQL
         run: |
-          until nc -z postgres 5433; do
+          until nc -z localhost 5433; do
             echo "Waiting for PostgreSQL..."
             sleep 1
           done
       - name: Wait for MongoDB
         run: |
-          until nc -z mongodb 27018; do
+          until nc -z localhost 27018; do
             echo "Waiting for MongoDB..."
             sleep 1
           done
-
       # Set up Java
       - name: Set up Java
         uses: actions/setup-java@v3
