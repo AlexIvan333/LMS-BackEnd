@@ -16,7 +16,7 @@ jobs:
           - 5432:5432
         env:
           POSTGRES_USER: admin
-          POSTGRES_PASSWORD: password
+          POSTGRES_PASSWORD: new_password
           POSTGRES_DB: lms_db
       mongo:
         image: mongo:6.0
@@ -56,7 +56,8 @@ jobs:
       # Modify application.properties for Pipeline
       - name: Update application.properties
         run: |
-          sed -i 's|jdbc:postgresql://localhost:5433|jdbc:postgresql://postgres:5432|g' src/main/resources/application.properties
+          sed -i 's|jdbc:postgresql://localhost:5432|jdbc:postgresql://postgres:5432|g' src/main/resources/application.properties
+          sed -i 's|spring.datasource.password=password|spring.datasource.password=new_password|g' src/main/resources/application.properties
           sed -i 's|spring.data.mongodb.host=localhost|spring.data.mongodb.host=mongodb|g' src/main/resources/application.properties
 
       # Make Gradlew executable
