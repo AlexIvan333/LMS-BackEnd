@@ -13,6 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.List;
 
 
 @Configuration
@@ -38,6 +43,14 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration configuration = new CorsConfiguration();
+                    configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Allow only the frontend origin
+                    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                    configuration.setAllowCredentials(true); // Allow cookies
+                    return configuration;
+                }))
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Swagger resources accessible to everyone
@@ -48,14 +61,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/students/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/instructors/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/admins/**").permitAll()
-                                // Protected endpoints
-//                        .requestMatchers(HttpMethod.GET, "/students/**").hasAnyRole("ADMIN", "INSTRUCTOR")
-//                        .requestMatchers(HttpMethod.GET, "/instructors/**","courses/forstudents").hasAnyRole("ADMIN", "STUDENT")
-//                        .requestMatchers(HttpMethod.GET,  "/modules/**", "/assignments/**", "/assignmentsubmissions/**","/resources/**").hasAnyRole("ADMIN", "STUDENT", "INSTRUCTOR")
-//                        .requestMatchers(HttpMethod.POST, "/courses/**", "/modules/**", "/assignments/**").hasAnyRole("ADMIN", "INSTRUCTOR")
-//                        .requestMatchers(HttpMethod.POST, "/assignmentsubmissions/**").hasAnyRole("ADMIN", "STUDENT")
-//                        .requestMatchers(HttpMethod.POST, "/admins/**").hasRole("ADMIN")
-//                        .requestMatchers(HttpMethod.POST,"/resources/**").hasAnyRole("ADMIN", "STUDENT", "INSTRUCTOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtRequestFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
@@ -65,6 +70,18 @@ public class WebSecurityConfig {
     @Bean
     public GrantedAuthorityDefaults grantedAuthorityDefaults() {
         return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Frontend origin
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true); // Allows cookies
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return new CorsFilter(source);
     }
 
 
