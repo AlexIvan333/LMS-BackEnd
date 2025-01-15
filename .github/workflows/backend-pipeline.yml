@@ -35,13 +35,13 @@ jobs:
       # Wait for PostgreSQL and MongoDB
       - name: Wait for PostgreSQL
         run: |
-          until nc -z postgres 5432; do
+          until nc -z postgres 5433; do
             echo "Waiting for PostgreSQL..."
             sleep 1
           done
       - name: Wait for MongoDB
         run: |
-          until nc -z mongodb 27017; do
+          until nc -z mongodb 27018; do
             echo "Waiting for MongoDB..."
             sleep 1
           done
