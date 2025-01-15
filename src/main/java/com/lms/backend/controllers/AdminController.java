@@ -23,7 +23,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping
-    @RolesAllowed({"ADMIN"})
+//    @RolesAllowed({"ADMIN"})
     public ResponseEntity<?> createAdmin(@Valid @RequestBody CreateUserRequest request) {
 
         var result = adminService.createAdmin(request);

@@ -47,7 +47,8 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login/admin").permitAll()
                         .requestMatchers(HttpMethod.POST, "/students/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/instructors/**").permitAll()
-                        // Protected endpoints
+                                .requestMatchers(HttpMethod.POST, "/admins/**").permitAll()
+                                // Protected endpoints
 //                        .requestMatchers(HttpMethod.GET, "/students/**").hasAnyRole("ADMIN", "INSTRUCTOR")
 //                        .requestMatchers(HttpMethod.GET, "/instructors/**","courses/forstudents").hasAnyRole("ADMIN", "STUDENT")
 //                        .requestMatchers(HttpMethod.GET,  "/modules/**", "/assignments/**", "/assignmentsubmissions/**","/resources/**").hasAnyRole("ADMIN", "STUDENT", "INSTRUCTOR")
