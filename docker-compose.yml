@@ -12,6 +12,7 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: always
 
   mongodb:
     image: mongo:6.0
@@ -24,6 +25,7 @@ services:
       - "27018:27017"
     volumes:
       - mongo_data:/data/db
+    restart: always
 
   backend:
     build:
@@ -52,6 +54,7 @@ services:
       SPRING_DATA_MONGODB_PASSWORD: password
     volumes:
       - ./keystore.p12:/app/config/keystore.p12
+    restart: unless-stopped
 
 volumes:
   postgres_data:
