@@ -9,7 +9,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-     services:
+    services:
       postgres:
         image: postgres:15
         ports:
