@@ -45,7 +45,6 @@ jobs:
             echo "Waiting for MongoDB..."
             sleep 1
           done
-
       # Set up Java
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -65,6 +64,13 @@ jobs:
       - name: Verify JAR file
         run: ls -la build/libs
 
+      # Upload build artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: build/libs/*.jar
+
   dockerize:
     needs: build-and-test
     runs-on: ubuntu-latest
@@ -73,6 +79,13 @@ jobs:
       # Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
+
+      # Download build artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: build/libs
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
