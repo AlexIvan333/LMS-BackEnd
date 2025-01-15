@@ -9,10 +9,42 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5433:5432
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: new_password
+          POSTGRES_DB: lms_db
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27018:27017
+        env:
+          MONGO_INITDB_DATABASE: lms_db2
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: password
+
     steps:
       # Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
+
+      # Wait for PostgreSQL and MongoDB
+      - name: Wait for PostgreSQL
+        run: |
+          until nc -z localhost 5433; do
+            echo "Waiting for PostgreSQL..."
+            sleep 1
+          done
+      - name: Wait for MongoDB
+        run: |
+          until nc -z localhost 27018; do
+            echo "Waiting for MongoDB..."
+            sleep 1
+          done
 
       # Set up Java
       - name: Set up Java
@@ -24,6 +56,13 @@ jobs:
       # Make Gradlew executable
       - name: Make Gradlew executable
         run: chmod +x ./gradlew
+
+      # Modify application.properties for Pipeline
+      - name: Update application.properties
+        run: |
+          sed -i 's|jdbc:postgresql://localhost:5433|jdbc:postgresql://localhost:5432|g' src/main/resources/application.properties
+          sed -i 's|spring.data.mongodb.host=localhost|spring.data.mongodb.host=localhost|g' src/main/resources/application.properties
+          sed -i 's|spring.datasource.password=password|spring.datasource.password=new_password|g' src/main/resources/application.properties
 
       # Build the backend
       - name: Build Backend
