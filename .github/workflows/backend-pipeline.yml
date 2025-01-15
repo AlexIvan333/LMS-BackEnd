@@ -104,5 +104,5 @@ jobs:
       # Build and restart only the backend service
       - name: Rebuild and Restart Backend
         run: |
-          docker-compose build backend
-          docker-compose up -d backend
+          docker compose build backend
+          docker compose up -d backend
