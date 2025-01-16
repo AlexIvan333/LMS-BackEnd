@@ -40,10 +40,6 @@ services:
     environment:
       SERVER_SSL_ENABLED : true
       SERVER_PORT : 8444
-      SERVER_SSL_KEY-STORE : /app/config/keystore.p12
-      SERVER_SSL_KEY-STORE-PASSWORD : password
-      SERVER_SSL_KEY-STORE-TYPE : PKCS12
-      SERVER_SSL_KEY-ALIAS : lmsapp
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lms_db
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: new_password
@@ -52,8 +48,11 @@ services:
       SPRING_DATA_MONGODB_DATABASE: lms_db2
       SPRING_DATA_MONGODB_USERNAME: admin
       SPRING_DATA_MONGODB_PASSWORD: password
+      SERVER_SSL_KEY_STORE: /app/config/lms_back_keystore.p12
+      SERVER_SSL_KEY_STORE_PASSWORD: password
+      SERVER_SSL_KEY_STORE_TYPE: PKCS12
     volumes:
-      - ./keystore.p12:/app/config/keystore.p12
+      - ./src/main/resources/lms_back_keystore.p12:/app/config/lms_back_keystore.p12
     restart: unless-stopped
 
 volumes:

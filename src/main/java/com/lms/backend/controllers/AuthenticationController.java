@@ -75,4 +75,9 @@ public class AuthenticationController {
 
         return ResponseEntity.ok().build();
     }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> handleOptions() {
+        return ResponseEntity.ok().build();
+    }
 }
