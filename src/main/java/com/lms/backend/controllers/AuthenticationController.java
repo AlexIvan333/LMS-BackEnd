@@ -20,16 +20,20 @@ public class AuthenticationController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
-            String token = authService.initiateLogin(loginRequest);
-            Cookie cookie = new Cookie("token", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(1800);
-            response.addCookie(cookie);
-            return ResponseEntity.ok(token);
+            String loginResult = authService.initiateLogin(loginRequest);
+            if ("Two-factor authentication required.".equals(loginResult)) {
+                return ResponseEntity.status(202).body(loginResult); // 202 Accepted
+            }
+//            String token = authService.initiateLogin(loginRequest);
+//            Cookie cookie = new Cookie("token", token);
+//            cookie.setHttpOnly(true);
+//            cookie.setSecure(true);
+//            cookie.setPath("/");
+//            cookie.setMaxAge(1800);
+//            response.addCookie(cookie);
+            return ResponseEntity.ok(loginResult);
         } catch (InvalidCredentialsException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
@@ -55,10 +59,17 @@ public class AuthenticationController {
     }
 
     @PostMapping("/2fa")
-    public ResponseEntity<LoginResponse> verify2FA(@RequestBody TwoFactorRequest request) {
+    public ResponseEntity<LoginResponse> verify2FA(@RequestBody TwoFactorRequest request, HttpServletResponse response) {
         try {
-            LoginResponse response = authService.verifyTwoFactorCode(request);
-            return ResponseEntity.ok(response);
+            LoginResponse loginResponse = authService.verifyTwoFactorCode(request);
+            String token = loginResponse.getToken();
+            Cookie cookie = new Cookie("token", token);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(1800);
+            response.addCookie(cookie);
+            return ResponseEntity.ok(loginResponse);
         } catch (TwoFactorAuthenticationException e) {
             return ResponseEntity.status(401).body(LoginResponse.builder().message(e.getMessage()).build());
         }
@@ -79,5 +90,19 @@ public class AuthenticationController {
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> handleOptions() {
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<String> validateToken(@CookieValue(name = "token", required = false) String token) {
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.status(401).body("Token is missing or invalid.");
+        }
+
+        boolean isValid = authService.validateToken(token);
+        if (isValid) {
+            return ResponseEntity.ok("Token is valid.");
+        } else {
+            return ResponseEntity.status(401).body("Token is invalid or expired.");
+        }
     }
 }
