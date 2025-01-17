@@ -27,7 +27,7 @@ public class AuthenticationController {
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
-            cookie.setMaxAge(3600);
+            cookie.setMaxAge(1800);
             response.addCookie(cookie);
             return ResponseEntity.ok(token);
         } catch (InvalidCredentialsException e) {
@@ -44,7 +44,7 @@ public class AuthenticationController {
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
-            cookie.setMaxAge(3600);
+            cookie.setMaxAge(1800);
             response.addCookie(cookie);
             return ResponseEntity.ok(token);
         }

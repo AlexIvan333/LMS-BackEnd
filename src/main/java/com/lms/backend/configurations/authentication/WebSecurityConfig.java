@@ -78,19 +78,6 @@ public class WebSecurityConfig {
         return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
     }
 
-//    @Bean
-//    public CorsFilter corsFilter() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("https://localhost:3000")); // Frontend origin
-//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow these methods
-//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Headers allowed in requests
-//        configuration.setAllowCredentials(true); // Allow cookies
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//
-//        return new CorsFilter(source);
-//    }
 
 
 }
