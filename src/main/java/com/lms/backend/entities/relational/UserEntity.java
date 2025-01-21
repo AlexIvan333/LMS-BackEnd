@@ -63,5 +63,8 @@ public class UserEntity {
 
     @Column(name = "two_factor_code")
     private Integer twoFactorCode;
+
+    @Column(name="code_forgot_password")
+    private String codeForgotPassword;
 }
 

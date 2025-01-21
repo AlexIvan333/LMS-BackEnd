@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.SecureRandom;
 
 @Service
 public class EmailService{
@@ -88,6 +89,52 @@ public class EmailService{
         } catch (IOException | WriterException e) {
             throw new RuntimeException("Failed to generate QR Code.", e);
         }
+    }
+    public String sendVerificationCodeEmail(String email) {
+        MimeMessage message = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(email);
+            helper.setSubject("Password Reset Verification Code");
+
+            String verificationCode = generateVerificationCode();
+
+            // HTML content for the email body
+            String body = "<!DOCTYPE html>" +
+                    "<html>" +
+                    "<head>" +
+                    "<style>" +
+                    "body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }" +
+                    ".container { background-color: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }" +
+                    "h1 { color: #2e6b34; }" +
+                    "p { color: #333; line-height: 1.6; }" +
+                    ".code { font-size: 24px; color: #2e6b34; font-weight: bold; text-align: center; }" +
+                    "</style>" +
+                    "</head>" +
+                    "<body>" +
+                    "<div class='container'>" +
+                    "<h1>Password Reset Request</h1>" +
+                    "<p>You requested to reset your password. Use the verification code below to proceed with resetting your password:</p>" +
+                    "<p class='code'>" + verificationCode + "</p>" +
+                    "<p>If you did not request this change, please ignore this email or contact support immediately.</p>" +
+                    "<p>Thank you,<br>The LMS Team</p>" +
+                    "</div>" +
+                    "</body>" +
+                    "</html>";
+
+            helper.setText(body, true);
+
+            mailSender.send(message);
+            return verificationCode;
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send verification code email.", e);
+        }
+    }
+
+    public String generateVerificationCode() {
+        SecureRandom random = new SecureRandom();
+        int code = random.nextInt(999999);
+        return String.format("%06d", code);
     }
 
 

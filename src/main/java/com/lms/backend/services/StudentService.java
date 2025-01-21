@@ -33,7 +33,7 @@ public class StudentService {
    public ServiceResult<StudentResponse> registerStudent (CreateUserRequest request)
    {
 
-       if (userValidation.HasValidEmail(request)) {
+       if (userValidation.HasValidEmail(request.getEmail())) {
            return ServiceResult.<StudentResponse>builder()
                    .success(false)
                    .messageError("There already is an account with this email address.")

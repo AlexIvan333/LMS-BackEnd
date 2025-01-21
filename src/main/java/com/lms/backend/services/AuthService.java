@@ -4,15 +4,21 @@ import com.lms.backend.configurations.authentication.JwtUtil;
 import com.lms.backend.dtos.requests.LoginRequest;
 import com.lms.backend.dtos.requests.TwoFactorRequest;
 import com.lms.backend.dtos.responses.LoginResponse;
+import com.lms.backend.dtos.responses.ServiceResult;
+import com.lms.backend.dtos.responses.StudentResponse;
 import com.lms.backend.entities.relational.UserEntity;
 import com.lms.backend.exceptions.InvalidCredentialsException;
 import com.lms.backend.exceptions.TwoFactorAuthenticationException;
 import com.lms.backend.repositories.relational.UserRepository;
+import com.lms.backend.validation.interfaces.IPasswordValidator;
+import com.lms.backend.validation.interfaces.IUserValidation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -23,6 +29,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final Google2FAService google2FAService;
+    private final IUserValidation userValidation;
+    private final IPasswordValidator passwordValidator;
+    private final EmailService emailService;
 
 
     public String initiateLogin(LoginRequest loginRequest) {
@@ -94,5 +103,88 @@ public class AuthService {
             return false;
         }
     }
+
+    public ServiceResult<Boolean> sendPasswordResetEmailVerification(String email) {
+        String verificationCode = emailService.sendVerificationCodeEmail(email);
+
+        if(verificationCode == null) {
+            return ServiceResult.<Boolean>builder()
+                    .success(false)
+                    .messageError("The email was not send")
+                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+        Optional<UserEntity> userEntityOptional = userRepository.findByEmail(email);
+        if (userEntityOptional.isEmpty()) {
+            return ServiceResult.<Boolean>builder()
+                    .success(false)
+                    .messageError("No account found with the provided email address.")
+                    .httpStatus(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        UserEntity userEntity = userEntityOptional.get();
+        userEntity.setCodeForgotPassword(verificationCode);
+        userRepository.save(userEntity);
+
+        return ServiceResult.<Boolean>builder()
+                .success(true)
+                .data(true)
+                .messageError("Email send successfully.")
+                .httpStatus(HttpStatus.OK)
+                .build();
+    }
+
+    public ServiceResult<Boolean> forgotPassword(String email, String newPassword, String verificationCode) {
+
+        if (!userValidation.HasValidEmail(email))
+        {
+            return ServiceResult.<Boolean>builder()
+                    .success(false)
+                    .messageError("There already is no account with this email address.")
+                    .httpStatus(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+
+        if (!passwordValidator.isValid(newPassword)) {
+            return ServiceResult.<Boolean>builder()
+                    .success(false)
+                    .messageError("The password should match the requirements below")
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+
+        Optional<UserEntity> userEntityOptional = userRepository.findByEmail(email);
+        if (userEntityOptional.isEmpty()) {
+            return ServiceResult.<Boolean>builder()
+                    .success(false)
+                    .messageError("No account found with the provided email address.")
+                    .httpStatus(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+
+
+        UserEntity userEntity = userEntityOptional.get();
+
+        if (!userEntity.getCodeForgotPassword().equals(verificationCode)) {
+            return ServiceResult.<Boolean>builder()
+                    .success(false)
+                    .messageError("The verification code is incorrect.")
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+        userEntity.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(userEntity);
+
+        return ServiceResult.<Boolean>builder()
+                .success(true)
+                .data(true)
+                .messageError("Password updated successfully.")
+                .httpStatus(HttpStatus.OK)
+                .build();
+    }
+
+
+
+
 
 }

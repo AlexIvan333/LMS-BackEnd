@@ -9,6 +9,7 @@ import com.lms.backend.services.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,13 +27,6 @@ public class AuthenticationController {
             if ("Two-factor authentication required.".equals(loginResult)) {
                 return ResponseEntity.status(202).body(loginResult); // 202 Accepted
             }
-//            String token = authService.initiateLogin(loginRequest);
-//            Cookie cookie = new Cookie("token", token);
-//            cookie.setHttpOnly(true);
-//            cookie.setSecure(true);
-//            cookie.setPath("/");
-//            cookie.setMaxAge(1800);
-//            response.addCookie(cookie);
             return ResponseEntity.ok(loginResult);
         } catch (InvalidCredentialsException e) {
             return ResponseEntity.status(401).body(e.getMessage());
@@ -105,4 +99,35 @@ public class AuthenticationController {
             return ResponseEntity.status(401).body("Token is invalid or expired.");
         }
     }
+
+    @PutMapping("/forgot_password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email, @RequestParam String newPassword,@RequestParam String verificationCode) {
+        var result = authService.forgotPassword(email, newPassword,verificationCode);
+
+        if (!result.isSuccess()) {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                    result.getHttpStatus(), result.getMessageError()
+            );
+            problemDetail.setTitle("Error resetting password");
+            return ResponseEntity.status(result.getHttpStatus()).body(problemDetail);
+        }
+
+        return ResponseEntity.ok("Password updated successfully.");
+    }
+
+    @PostMapping("/send_verification_code")
+    public ResponseEntity<?> sendVerificationCode(@RequestParam String email) {
+       var result =  authService.sendPasswordResetEmailVerification(email);
+
+        if (!result.isSuccess()) {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                    result.getHttpStatus(), result.getMessageError()
+            );
+            problemDetail.setTitle("Error sending the email with verification code");
+            return ResponseEntity.status(result.getHttpStatus()).body(problemDetail);
+        }
+        return ResponseEntity.ok("Email send successfully.");
+    }
+
+
 }

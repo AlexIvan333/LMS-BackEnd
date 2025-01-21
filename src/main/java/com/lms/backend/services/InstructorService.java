@@ -38,7 +38,7 @@ public class InstructorService {
 
     public ServiceResult<InstructorResponse> registerInstructor(CreateUserRequest request)
     {
-        if (userValidation.HasValidEmail(request)) {
+        if (userValidation.HasValidEmail(request.getEmail())) {
             return ServiceResult.<InstructorResponse>builder()
                     .success(false)
                     .messageError("There already is an account with this email address")
