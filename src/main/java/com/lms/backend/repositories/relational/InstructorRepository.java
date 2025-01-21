@@ -20,4 +20,6 @@ public interface InstructorRepository extends JpaRepository<InstructorEntity, Lo
                                                            Pageable pageable);
 
     InstructorEntity getInstructorEntityById(Long id);
+
+    Long getInstructorEntityByEmail(String email);
 }

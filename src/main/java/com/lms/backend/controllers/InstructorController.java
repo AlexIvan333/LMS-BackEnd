@@ -53,4 +53,14 @@ public class InstructorController {
         return ResponseEntity.ok(instructorService.getInstructors(filterParams));
 
     }
+
+    @GetMapping("/isvalidedbyadmin")
+    ResponseEntity<Boolean> IsValidatedByAdmin(@RequestParam Long instructorID) {
+        return ResponseEntity.ok(instructorService.IsValidatedByAdmin(instructorID).data);
+    }
+
+    @GetMapping("/email")
+    ResponseEntity<Long> getIdOFInstructorByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(instructorService.getIdOFInstructorByEmail(email));
+    }
 }
