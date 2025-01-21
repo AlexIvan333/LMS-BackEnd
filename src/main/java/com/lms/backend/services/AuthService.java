@@ -81,4 +81,18 @@ public class AuthService {
         }
     }
 
+    public boolean validateToken(String token) {
+        try {
+
+            boolean isValid = jwtUtil.validateToken(token, jwtUtil.extractEmail(token),jwtUtil.extractRole(token));
+
+            boolean isExpired = jwtUtil.isTokenExpired(token);
+
+            return isValid && !isExpired;
+        } catch (Exception e) {
+            System.err.println("Error during token validation: " + e.getMessage());
+            return false;
+        }
+    }
+
 }

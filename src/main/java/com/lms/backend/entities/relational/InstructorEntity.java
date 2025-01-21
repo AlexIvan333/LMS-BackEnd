@@ -1,9 +1,6 @@
 package com.lms.backend.entities.relational;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,5 +20,7 @@ public class InstructorEntity extends UserEntity {
     @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseEntity> createdCourses;
 
+    @Column(name = "validated_by_admin", nullable = false)
+    private boolean validatedByAdmin;
 
 }

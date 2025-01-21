@@ -1,5 +1,6 @@
 package com.lms.backend.validation;
 
+import com.lms.backend.domain.enums.Role;
 import com.lms.backend.dtos.requests.CreateUserRequest;
 import com.lms.backend.repositories.relational.UserRepository;
 import com.lms.backend.validation.interfaces.IUserValidation;
@@ -14,5 +15,18 @@ public class UserValidation implements IUserValidation {
     @Override
     public boolean HasValidEmail(CreateUserRequest request) {
         return userRepository.findByEmail(request.getEmail()).isPresent();
+    }
+
+    @Override
+    public boolean IsIdValid(Long id) {
+        return userRepository.existsById(id);
+    }
+
+    @Override
+    public boolean IsInstructor(Long id) {
+        if (userRepository.findById(id).get().getRole() == Role.INSTRUCTOR) {
+            return true;
+        };
+        return false;
     }
 }
