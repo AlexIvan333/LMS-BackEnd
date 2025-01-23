@@ -64,6 +64,8 @@ public class WebSecurityConfig {
                         // Public endpoints
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login/admin").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/send_verification_code").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/auth/forgot_password").permitAll()
                         .requestMatchers(HttpMethod.POST, "/students/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/instructors/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/instructors/isvalidedbyadmin","instructors/email").permitAll()

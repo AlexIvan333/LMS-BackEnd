@@ -13,8 +13,8 @@ public class UserValidation implements IUserValidation {
     private final UserRepository userRepository;
 
     @Override
-    public boolean HasValidEmail(CreateUserRequest request) {
-        return userRepository.findByEmail(request.getEmail()).isPresent();
+    public boolean HasValidEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
     @Override

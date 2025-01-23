@@ -22,7 +22,7 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
 
     public ServiceResult<AdminResponse> createAdmin(CreateUserRequest request) {
-        if (userValidation.HasValidEmail(request)) {
+        if (userValidation.HasValidEmail(request.getEmail())) {
             return ServiceResult.<AdminResponse>builder()
                     .success(false)
                     .messageError("There already is an account with this email address.")
