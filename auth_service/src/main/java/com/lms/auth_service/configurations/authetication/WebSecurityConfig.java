@@ -1,4 +1,4 @@
-package com.lms.backend.configurations.authentication;
+package com.lms.auth_service.configurations.authetication;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,10 +66,10 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login/admin").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/send_verification_code").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/auth/forgot_password").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/students/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/instructors/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/instructors/isvalidedbyadmin","instructors/email").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/admins/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/students/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/instructors/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/instructors/isvalidedbyadmin", "/auth/instructors/email").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/admins/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtRequestFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);

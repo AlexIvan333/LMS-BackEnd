@@ -1,4 +1,4 @@
-package com.lms.backend.configurations.authentication;
+package com.lms.auth_service.configurations.authetication;
 
 import java.security.SecureRandom;
 import java.util.Base64;

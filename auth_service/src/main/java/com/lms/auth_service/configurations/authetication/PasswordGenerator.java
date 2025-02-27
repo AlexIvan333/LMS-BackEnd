@@ -1,4 +1,4 @@
-package com.lms.backend.configurations.authentication;
+package com.lms.auth_service.configurations.authetication;
 
 import org.springframework.stereotype.Component;
 
