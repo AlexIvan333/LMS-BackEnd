@@ -1,0 +1,43 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+title Container Diagram for LMS PLatform
+
+Person(client, "LMS User", "A user of the platform, with personal account")
+
+System(web, "LMS Platform", "Provides user interface and functionality for the LMS platform", Container: React)
+
+System(gateway, "API Gateway", "Acts as a single entry point to handle and route request to the correct service", "Java and Spring MVC")
+
+System(auth, Auth Service, Provides functionality regarding user registration and authentication)
+
+System(course, Course Service, Provides functionality regarding courses and modules)
+
+System(assignment, Assignment Service, Provides functionality regarding assignments and grades)
+
+System(resource, Resource Service, Provides functionality regarding resources(files, pdfs, videos, etc.))
+
+Container(event_bus, "Event bus", "Enable asynchronous communication by reliably managing the routing, queuing, and delivery of messages", "Container: RabbitMQ")
+
+Container(db_auth,"Auth Database" ,"Stores user account information")
+
+Container(db_course,"Course Database" ,"Stores courses and modules information")
+
+Container(db_assignment,"Assignment Database" ,"Stores assignment and submission information")
+
+Container(db_resource,"Resource Database" ,"Stores resources ")
+
+Rel(client, web,"")
+Rel(web,gateway,"Makes API calls to","JSON/HTTP")
+Rel(gateway,auth,"Makes API calls to","JSON/HTTP")
+Rel(gateway,course,"Makes API calls to","JSON/HTTP")
+Rel(gateway,assignment,"Makes API calls to","JSON/HTTP")
+Rel(gateway,resource,"Makes API calls to","JSON/HTTP")
+Rel(auth,event_bus,)
+Rel(course,event_bus,)
+Rel(assignment,event_bus,)
+Rel(resource,event_bus,)
+Rel(auth,db_auth,"Reads from and writes to")
+Rel(course,db_course,"Reads from and writes to")
+Rel(assignment,db_assignment,"Reads from and writes to")
+Rel(resource,db_resource,"Reads from and writes to")
+@enduml
