@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Auth Service
+  postgres_auth:
+    image: postgres:15
+    container_name: postgres_auth
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: lms_auth
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - backend-network
+
+  # MongoDB Database for Auth Service
+  mongodb_auth:
+    image: mongo:6.0
+    container_name: mongodb_auth
+    environment:
+      MONGO_INITDB_DATABASE: lms_auth
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo_auth_data:/data/db
+    restart: always
+    networks:
+      - backend-network
+
+  # Auth Service
+  auth_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth_service
+    ports:
+      - "8091:8081"
+    environment:
+      SERVER_PORT: "8081"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_auth:5432/lms_auth
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATA_MONGODB_HOST: mongodb_auth
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: lms_auth
+      SPRING_DATA_MONGODB_USERNAME: admin
+      SPRING_DATA_MONGODB_PASSWORD: password
+    restart: unless-stopped
+    depends_on:
+      - postgres_auth
+      - mongodb_auth
+    networks:
+      - backend-network
+
+volumes:
+  postgres_auth_data:
+  mongo_auth_data:
+
+networks:
+  backend-network:
+    external: true
