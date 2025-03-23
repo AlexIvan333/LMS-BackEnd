@@ -1,5 +1,5 @@
 FROM openjdk:21-jdk-slim
 VOLUME /tmp
 COPY build/libs/*.jar app.jar
-EXPOSE 8082
+EXPOSE 8083
 ENTRYPOINT ["java", "-jar", "app.jar"]

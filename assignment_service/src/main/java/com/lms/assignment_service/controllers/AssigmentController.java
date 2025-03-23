@@ -1,9 +1,10 @@
-package com.lms.backend.controllers;
+package com.lms.assignment_service.controllers;
 
-import com.lms.backend.dtos.filters.AssigmentFilterParams;
-import com.lms.backend.dtos.requests.CreateAssigmentRequest;
-import com.lms.backend.dtos.responses.AssignmentResponse;
-import com.lms.backend.services.AssigmentService;
+
+import com.lms.assignment_service.dtos.filters.AssigmentFilterParams;
+import com.lms.assignment_service.dtos.requests.CreateAssigmentRequest;
+import com.lms.assignment_service.dtos.responses.AssignmentResponse;
+import com.lms.assignment_service.services.AssigmentService;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,5 @@
-package com.lms.backend.entities.relational;
+package com.lms.assignment_service.entities;
 
-import com.lms.backend.domain.enums.Grade;
-import com.lms.backend.entities.nosql.ResourceEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,32 +20,26 @@ public class AssignmentSubmissionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private StudentEntity student;
+    @Column(nullable = false)
+    private Long student_id;
 
     @ManyToOne
     @JoinColumn(name = "assignment_id", nullable = false)
     private AssignmentEntity assignment;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date submissionTime;
-
-    @ElementCollection
-    @CollectionTable(name = "assignment_submission_resources", joinColumns = @JoinColumn(name = "submission_id"))
-    @Column(name = "resource_id")
-    private List<Long> resourceIds;
-
-    @Transient // Mark as transient because it is not stored in the relational database
-    private List<ResourceEntity> resources;
+    private Date submission_time;
 
     @Enumerated(EnumType.STRING)
     private Grade grade;
 
-    @Column(nullable = true)
     private Boolean completed;
 
     @Column
     private String comment;
+
+    @ElementCollection
+    @CollectionTable(name = "submission_resource_ids", joinColumns = @JoinColumn(name = "assignment_aubmission_id"))
+    @Column(name = "resource_id")
+    private List<Long> resourceIds;
 }

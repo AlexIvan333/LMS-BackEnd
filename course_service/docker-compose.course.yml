@@ -7,28 +7,12 @@ services:
     container_name: postgres_course
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: new_password
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: lms_course
     ports:
       - "5435:5432"
     volumes:
       - postgres_course_data:/var/lib/postgresql/data
-    restart: always
-    networks:
-      - backend-network
-
-  # MongoDB Database for Course Service
-  mongodb_course:
-    image: mongo:6.0
-    container_name: mongodb_course
-    environment:
-      MONGO_INITDB_DATABASE: lms_course
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-    ports:
-      - "27020:27017"
-    volumes:
-      - mongo_course_data:/data/db
     restart: always
     networks:
       - backend-network
@@ -45,7 +29,7 @@ services:
       SERVER_PORT: 8082
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_course:5432/lms_course
       SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: new_password
+      SPRING_DATASOURCE_PASSWORD: password
       SPRING_DATA_MONGODB_HOST: mongodb_course
       SPRING_DATA_MONGODB_PORT: 27017
       SPRING_DATA_MONGODB_DATABASE: lms_course
@@ -56,13 +40,11 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres_course
-      - mongodb_course
     networks:
       - backend-network
 
 volumes:
   postgres_course_data:
-  mongo_course_data:
 
 networks:
   backend-network:

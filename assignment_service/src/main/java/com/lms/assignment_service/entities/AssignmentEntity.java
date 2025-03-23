@@ -1,6 +1,5 @@
-package com.lms.backend.entities.relational;
+package com.lms.assignment_service.entities;
 
-import com.lms.backend.entities.nosql.ResourceEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,19 +26,18 @@ public class AssignmentEntity {
     @Column(nullable = false)
     private String description;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date deadline;
 
-    @ManyToOne
-    @JoinColumn(name = "module_id", nullable = false)
-    private ModuleEntity module;
+    @Column(nullable = false)
+    private Long courseId;
+
+    @Column(nullable = false)
+    private Long module_id;
 
     @ElementCollection
     @CollectionTable(name = "assignment_resource_ids", joinColumns = @JoinColumn(name = "assignment_id"))
     @Column(name = "resource_id")
     private List<Long> resourceIds;
 
-    @Transient
-    private List<ResourceEntity> resources;
 }

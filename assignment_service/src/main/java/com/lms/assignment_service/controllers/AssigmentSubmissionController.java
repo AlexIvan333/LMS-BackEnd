@@ -1,10 +1,11 @@
-package com.lms.backend.controllers;
+package com.lms.assignment_service.controllers;
 
-import com.lms.backend.domain.enums.Grade;
-import com.lms.backend.dtos.filters.AssigmentSubmissionFilterParams;
-import com.lms.backend.dtos.requests.CreateAssigmentSubmissionRequest;
-import com.lms.backend.dtos.responses.AssignmentSubmissionResponse;
-import com.lms.backend.services.AssigmentSubmissionService;
+
+import com.lms.assignment_service.dtos.filters.AssigmentSubmissionFilterParams;
+import com.lms.assignment_service.dtos.requests.CreateAssigmentSubmissionRequest;
+import com.lms.assignment_service.dtos.responses.AssignmentSubmissionResponse;
+import com.lms.assignment_service.entities.Grade;
+import com.lms.assignment_service.services.AssigmentSubmissionService;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/assignmentsubmissions")
+@RequestMapping("/assignments/submissions")
 public class AssigmentSubmissionController {
     private final AssigmentSubmissionService assigmentSubmissionService;
 
@@ -45,8 +46,7 @@ public class AssigmentSubmissionController {
                                                                                        @RequestParam(required = false) Long studentId,
                                                                                        @RequestParam(required = false) Long assigmentId,
                                                                                        @RequestParam(required = false) Boolean completed,
-                                                                                       @RequestParam(required = false)Grade grade,
-                                                                                       @RequestParam(required = false) Date submissionTime,
+                                                                                       @RequestParam(required = false) Grade grade,
                                                                                        @RequestParam(defaultValue = "0") Integer page,
                                                                                        @RequestParam(defaultValue = "10") Integer size
                                                                                        ){
@@ -57,7 +57,6 @@ public class AssigmentSubmissionController {
         filterParams.setAssigmentId(assigmentId);
         filterParams.setCompleted(completed);
         filterParams.setGrade(grade);
-        filterParams.setSubmissionTime(submissionTime);
         filterParams.setPage(page);
         filterParams.setSize(size);
 
