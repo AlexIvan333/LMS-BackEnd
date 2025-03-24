@@ -64,6 +64,12 @@ jobs:
 
       - name: Copy JAR to services
         run: |
+          mkdir -p auth_service/build/libs
+          mkdir -p course_service/build/libs
+          mkdir -p assignment_service/build/libs
+          mkdir -p resource_service/build/libs
+          mkdir -p api_gateway/build/libs
+          
           cp *.jar auth_service/build/libs/
           cp *.jar course_service/build/libs/
           cp *.jar assignment_service/build/libs/
