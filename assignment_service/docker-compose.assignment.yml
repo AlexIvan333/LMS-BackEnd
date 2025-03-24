@@ -33,12 +33,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
     restart: unless-stopped
     depends_on:
-      - postgres_course
+      - postgres_assignment
     networks:
       - backend-network
 
 volumes:
-  postgres_course_data:
+  postgres_assignment_data:
 
 networks:
   backend-network:

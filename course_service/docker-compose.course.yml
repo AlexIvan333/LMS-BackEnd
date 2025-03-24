@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   # PostgreSQL Database for Course Service
-  postgres_course:
+  postgres_courses:
     image: postgres:15
-    container_name: postgres_course
+    container_name: postgres_courses
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
@@ -12,39 +12,32 @@ services:
     ports:
       - "5435:5432"
     volumes:
-      - postgres_course_data:/var/lib/postgresql/data
+      - postgres_courses_data:/var/lib/postgresql/data
     restart: always
     networks:
       - backend-network
 
   # Course Service
-  course_service:
+  courses_service:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: course_service
+    container_name: courses_service
     ports:
       - "8092:8082"
     environment:
       SERVER_PORT: 8082
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_course:5432/lms_course
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_courses:5432/lms_course
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: password
-      SPRING_DATA_MONGODB_HOST: mongodb_course
-      SPRING_DATA_MONGODB_PORT: 27017
-      SPRING_DATA_MONGODB_DATABASE: lms_course
-      SPRING_DATA_MONGODB_USERNAME: admin
-      SPRING_DATA_MONGODB_PASSWORD: password
-    volumes:
-      - ./src/main/resources/certs:/app/certs
     restart: unless-stopped
     depends_on:
-      - postgres_course
+      - postgres_courses
     networks:
       - backend-network
 
 volumes:
-  postgres_course_data:
+  postgres_courses_data:
 
 networks:
   backend-network:
