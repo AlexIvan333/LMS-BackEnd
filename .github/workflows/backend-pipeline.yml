@@ -60,7 +60,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: build/libs
+          path: .
+
+      - name: Copy JAR to services
+        run: |
+          cp *.jar auth_service/build/libs/
+          cp *.jar course_service/build/libs/
+          cp *.jar assignment_service/build/libs/
+          cp *.jar resource_service/build/libs/
+          cp *.jar api_gateway/build/libs/
+      
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
