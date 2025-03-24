@@ -30,6 +30,7 @@ jobs:
         with:
           name: build-artifacts
           path: build/libs/*.jar
+          retention-days: 1
 
   dockerize:
     needs: build-and-test
