@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Assignment Service
+  postgres_assignment:
+    image: postgres:15
+    container_name: postgres_assignment
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: lms_assignment
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_assignment_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - backend-network
+
+
+  # Assignment Service
+  assignment_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: assignment_service
+    ports:
+      - "8093:8083"
+    environment:
+      SERVER_PORT: 8083
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_assignment:5432/lms_assignment
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password
+    restart: unless-stopped
+    depends_on:
+      - postgres_assignment
+    networks:
+      - backend-network
+
+volumes:
+  postgres_assignment_data:
+
+networks:
+  backend-network:
+    external: true

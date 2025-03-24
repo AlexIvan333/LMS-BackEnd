@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # MongoDB for Resource Service
+  mongodb_resource:
+    image: mongo:6.0
+    container_name: mongodb_resource
+    environment:
+      MONGO_INITDB_DATABASE: lms_resource
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27020:27017"
+    volumes:
+      - mongo_resource_data:/data/db
+    restart: always
+    networks:
+      - backend-network
+
+  # Resource  Service
+  resource_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: resource_service
+    ports:
+      - "8094:8084"
+    environment:
+      SERVER_PORT: 8084
+      SPRING_DATA_MONGODB_HOST: mongodb_resource
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: lms_resource
+      SPRING_DATA_MONGODB_USERNAME: admin
+      SPRING_DATA_MONGODB_PASSWORD: password
+      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+    restart: unless-stopped
+    depends_on:
+      - mongodb_resource
+    networks:
+      - backend-network
+
+volumes:
+  mongo_resource_data:
+
+networks:
+  backend-network:
+    external: true

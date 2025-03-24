@@ -1,0 +1,36 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram for SneakerCityHub
+
+System(system, "LMS Service", "One of the services within the LMS backend")
+
+Component(controller1, "Controller 1", "Component:Spring Rest Controller")
+Component(controller2, "Controller 2", "Component:Spring Rest Controller")
+Component(controller, "Controller ...", "Component:Spring Rest Controller")
+
+Component(service1, "Manager 1", "Component: Spring Rest Manager",)
+Component(service2, "Manager 2", "Component: Spring Rest Manager",)
+Component(service, "Manager ...", "Component: Spring Rest Manager",)
+
+Component(repository1, "Repository 1", "Component: Spring Repository",)
+Component(repository2, "Repository 2", "Component: Spring Repository",)
+Component(repository, "Repository ...", "Component: Spring Repository",)
+
+System(db, "Database", "Stores user registration information,hashed,authentication,credentials,posts,etc")
+
+Rel(system, controller1,)
+Rel(system, controller2,)
+Rel(system, controller,)
+Rel(controller1, service1,)
+Rel(controller2, service2,)
+Rel(controller, service,)
+Rel(service1,repository1,)
+Rel(service2,repository2,)
+Rel(service,repository,)
+Rel(repository1, db,)
+Rel(repository2, db,)
+Rel(repository, db,)
+
+
+@enduml

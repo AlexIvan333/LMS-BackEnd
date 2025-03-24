@@ -1,0 +1,76 @@
+package com.lms.assignment_service.services;
+
+
+import com.lms.assignment_service.dtos.filters.AssigmentSubmissionFilterParams;
+import com.lms.assignment_service.dtos.requests.CreateAssigmentSubmissionRequest;
+import com.lms.assignment_service.dtos.responses.AssignmentSubmissionResponse;
+import com.lms.assignment_service.dtos.responses.ServiceResult;
+import com.lms.assignment_service.entities.AssignmentSubmissionEntity;
+import com.lms.assignment_service.entities.Grade;
+import com.lms.assignment_service.mappers.AssignmentSubmissionMapper;
+import com.lms.assignment_service.repositories.AssignmentRepository;
+import com.lms.assignment_service.repositories.AssignmentSubmissionRepository;
+import com.lms.assignment_service.validation.interfaces.IAssigmentSubmissionValidation;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@AllArgsConstructor
+public class AssigmentSubmissionService {
+    private final AssignmentSubmissionRepository assignmentSubmissionRepository;
+    private final AssignmentRepository assignmentRepository;
+    private final IAssigmentSubmissionValidation assigmentSubmissionValidation;
+
+    public ServiceResult<AssignmentSubmissionResponse> createAssignmentSubmission(@RequestBody CreateAssigmentSubmissionRequest request) {
+
+        if (!assigmentSubmissionValidation.isValid(request)) {
+            return ServiceResult.<AssignmentSubmissionResponse>builder()
+                    .success(false)
+                    .messageError("The student or the assigment does not exist.")
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+        AssignmentSubmissionEntity assignmentSubmissionEntity = AssignmentSubmissionEntity.builder()
+                .student_id(request.getStudentId())
+                .assignment(assignmentRepository.findAssignmentEntitiesById(request.getAssigmentId()))
+                .submission_time(new Date())
+                .resourceIds(request.getResourceIds())
+                .grade(Grade.UNDEFINED)
+                .completed(false)
+                .comment("")
+                .build();
+
+        assignmentSubmissionRepository.save(assignmentSubmissionEntity);
+
+        return ServiceResult.<AssignmentSubmissionResponse>builder()
+                .data(AssignmentSubmissionMapper.toResponse(assignmentSubmissionEntity))
+                .success(true)
+                .httpStatus(HttpStatus.CREATED)
+                .build();
+    }
+
+    public List<AssignmentSubmissionResponse> getAssignmentSubmissions(AssigmentSubmissionFilterParams filterParams) {
+        List<AssignmentSubmissionEntity> list = assignmentSubmissionRepository.getAssignmentSubmissionsEntitiesByFilters(
+                filterParams.getSubmissionId(),
+                filterParams.getStudentId(),
+                filterParams.getAssigmentId(),
+                filterParams.getCompleted(),
+                filterParams.getGrade(),
+                PageRequest.of(filterParams.getPage(), filterParams.getSize())
+        ).stream().toList();
+
+
+        return list.stream()
+                .map(AssignmentSubmissionMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+}

@@ -1,0 +1,24 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+title System Context Diagram for LMS Platform
+
+Person(student, "LMS Student", "A user that has a personal account")
+
+Person(admin, "LMS Admin", "A user that manages the system data and users")
+
+Person(instructor, "LMS Instructor", "A user that manages the course system data and students")
+
+System(system, "LMS System", "Allow users to see course and register to the system")
+
+System_Ext(api, "External API", "Contains information about courses, instructors, assignments")
+
+Rel(student, system, "Views account details,courses,modules and assignments  using")
+
+Rel(admin, system, "Views all system data and users,adds,removes,updates information using")
+
+Rel(instructor, system, "Manage courses, modules and assignments")
+
+Rel(system, api, "Gets information from")
+
+
+@enduml
