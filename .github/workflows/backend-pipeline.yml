@@ -25,6 +25,21 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
+      # Delete old artifact if it exists
+      - name: Delete existing build-artifacts (if any)
+        run: |
+          ARTIFACT_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/artifacts \
+            | jq '.artifacts[] | select(.name=="build-artifacts") | .id')
+
+          if [ ! -z "$ARTIFACT_ID" ]; then
+            echo "Deleting artifact with ID: $ARTIFACT_ID"
+            curl -X DELETE -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID
+          else
+            echo "No existing artifact found to delete."
+          fi
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -60,7 +75,7 @@ jobs:
           docker compose -f docker-compose.resource.yml build
           docker compose -f docker-compose.gateway.yml build
 
-      # Optional: Push images if desired
+      # Optional: Push Docker images
       # - name: Push images to Docker Hub
       #   run: |
       #     docker tag auth_service yourname/auth_service:latest
@@ -79,7 +94,7 @@ jobs:
       - name: Wait for services to start
         run: sleep 20
 
-      # Optionally run integration tests here
+      # Optional: run integration tests here
 
       - name: Tear down containers
         if: always()
