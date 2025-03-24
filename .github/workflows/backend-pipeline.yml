@@ -28,10 +28,11 @@ jobs:
       # Delete old artifact if it exists
       - name: Delete existing build-artifacts (if any)
         run: |
-          ARTIFACT_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/actions/artifacts \
-            | jq '.artifacts[] | select(.name=="build-artifacts") | .id')
+          RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/artifacts)
 
+          ARTIFACT_ID=$(echo "$RESPONSE" | jq -r '.artifacts // [] | map(select(.name == "build-artifacts")) | .[0].id // empty')
+          
           if [ ! -z "$ARTIFACT_ID" ]; then
             echo "Deleting artifact with ID: $ARTIFACT_ID"
             curl -X DELETE -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
