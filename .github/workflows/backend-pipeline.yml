@@ -70,11 +70,11 @@ jobs:
 
       - name: Build all services
         run: |
-          docker compose -f docker-compose.auth.yml build
-          docker compose -f docker-compose.course.yml build
-          docker compose -f docker-compose.assignment.yml build
-          docker compose -f docker-compose.resource.yml build
-          docker compose -f docker-compose.gateway.yml build
+          docker compose -f auth_service/docker-compose.auth.yml build
+          docker compose -f course_service/docker-compose.course.yml build
+          docker compose -f assignment_service/docker-compose.assignment.yml build
+          docker compose -f resource_service/docker-compose.resource.yml build
+          docker compose -f api_gateway/docker-compose.gateway.yml build
 
       # Optional: Push Docker images
       # - name: Push images to Docker Hub
@@ -86,11 +86,11 @@ jobs:
       - name: Run all services
         run: |
           docker network create backend-network || true
-          docker compose -f docker-compose.auth.yml up -d
-          docker compose -f docker-compose.course.yml up -d
-          docker compose -f docker-compose.assignment.yml up -d
-          docker compose -f docker-compose.resource.yml up -d
-          docker compose -f docker-compose.gateway.yml up -d
+          docker compose -f auth_service/docker-compose.auth.yml up -d
+          docker compose -f course_service/docker-compose.course.yml up -d
+          docker compose -f assignment_service/docker-compose.assignment.yml up -d
+          docker compose -f resource_service/docker-compose.resource.yml up -d
+          docker compose -f api_gateway/docker-compose.gateway.yml up -d
 
       - name: Wait for services to start
         run: sleep 20
@@ -100,8 +100,8 @@ jobs:
       - name: Tear down containers
         if: always()
         run: |
-          docker compose -f docker-compose.gateway.yml down
-          docker compose -f docker-compose.resource.yml down
-          docker compose -f docker-compose.assignment.yml down
-          docker compose -f docker-compose.course.yml down
-          docker compose -f docker-compose.auth.yml down
+          docker compose -f api_gateway/docker-compose.gateway.yml down
+          docker compose -f resource_service/docker-compose.resource.yml down
+          docker compose -f assignment_service/docker-compose.assignment.yml down
+          docker compose -f course_service/docker-compose.course.yml down
+          docker compose -f auth_service/docker-compose.auth.yml down
