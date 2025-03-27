@@ -20,7 +20,7 @@ services:
   # Resource  Service
   resource_service:
     build:
-      context: .
+      context: ./resource_service
       dockerfile: Dockerfile
     container_name: resource_service
     ports:

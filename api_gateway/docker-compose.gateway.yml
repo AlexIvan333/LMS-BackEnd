@@ -4,7 +4,7 @@ services:
   # API Gateway
   lms_gateway:
     build:
-      context: .
+      context: ./api_gateway
       dockerfile: Dockerfile
     container_name: api_gateway
     ports:

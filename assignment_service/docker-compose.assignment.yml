@@ -21,7 +21,7 @@ services:
   # Assignment Service
   assignment_service:
     build:
-      context: .
+      context: ./assignment_service
       dockerfile: Dockerfile
     container_name: assignment_service
     ports:
