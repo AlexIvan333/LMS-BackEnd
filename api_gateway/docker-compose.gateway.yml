@@ -18,11 +18,6 @@ services:
     restart: unless-stopped
     networks:
       - backend-network
-    depends_on:
-      - auth_service
-      - course_service
-      - assignment_service
-      - resource_service
 
 networks:
   backend-network:
