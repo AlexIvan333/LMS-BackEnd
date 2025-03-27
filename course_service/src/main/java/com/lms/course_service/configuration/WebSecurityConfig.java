@@ -59,6 +59,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/courses/**").hasAnyAuthority("INSTRUCTOR", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/courses/modules/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/courses/modules/**").hasAnyAuthority("INSTRUCTOR", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/courses/modules/**").hasAnyAuthority("INSTRUCTOR", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtRequestFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
