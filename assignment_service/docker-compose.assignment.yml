@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   # PostgreSQL Database for Assignment Service
@@ -21,8 +21,8 @@ services:
   # Assignment Service
   assignment_service:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: assignment_service/Dockerfile
     container_name: assignment_service
     ports:
       - "8093:8083"

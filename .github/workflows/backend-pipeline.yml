@@ -33,16 +33,15 @@ jobs:
 
       - name: Build Course Service
         run: cd course_service && ./gradlew clean build -x test
-      
+
       - name: Build Assignment Service
         run: cd assignment_service && ./gradlew clean build -x test
-      
+
       - name: Build Resource Service
         run: cd resource_service && ./gradlew clean build -x test
-      
+
       - name: Build API Gateway
         run: cd api_gateway && ./gradlew clean build -x test
-
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -63,11 +62,27 @@ jobs:
       - name: Run Docker containers
         run: |
           docker network create backend-network || true
+          
+          # Start databases first
           docker compose -f auth_service/docker-compose.auth.yml up -d --force-recreate
           docker compose -f course_service/docker-compose.course.yml up -d --force-recreate
           docker compose -f assignment_service/docker-compose.assignment.yml up -d --force-recreate
           docker compose -f resource_service/docker-compose.resource.yml up -d --force-recreate
+          
+          # Wait for databases to be ready
+          sleep 30
+          
+          # Start services
+          docker compose -f auth_service/docker-compose.auth.yml up -d --force-recreate
+          docker compose -f course_service/docker-compose.course.yml up -d --force-recreate
+          docker compose -f assignment_service/docker-compose.assignment.yml up -d --force-recreate
+          docker compose -f resource_service/docker-compose.resource.yml up -d --force-recreate
+          
+          # Start gateway last
           docker compose -f api_gateway/docker-compose.gateway.yml up -d --force-recreate
+          
+          # Wait for services to initialize
+          sleep 30
 
       - name: Wait for services to start
         run: sleep 20

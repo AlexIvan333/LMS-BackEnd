@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   # PostgreSQL Database for Course Service
@@ -20,8 +20,8 @@ services:
   # Course Service
   courses_service:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: course_service/Dockerfile
     container_name: courses_service
     ports:
       - "8092:8082"
