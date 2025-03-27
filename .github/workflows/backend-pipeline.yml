@@ -49,40 +49,52 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 🔧 Build Docker images with updated JARs
+      - name: Debug Confirm JARs exist
+        run: |
+          ls -lh auth_service/build/libs
+          ls -lh course_service/build/libs
+          ls -lh assignment_service/build/libs
+          ls -lh resource_service/build/libs
+          ls -lh api_gateway/build/libs
+
+      # 🔧 Remove existing containers/images/volumes (cleanup)
+      - name: Stop and remove existing containers
+        run: |
+          docker compose -f auth_service/docker-compose.auth.yml down -v || true
+          docker compose -f course_service/docker-compose.course.yml down -v || true
+          docker compose -f assignment_service/docker-compose.assignment.yml down -v || true
+          docker compose -f resource_service/docker-compose.resource.yml down -v || true
+          docker compose -f api_gateway/docker-compose.gateway.yml down -v || true
+          docker image prune -a -f
+
+      # 🔧 Build Docker images
       - name: Build Docker images
         run: |
-          docker compose --progress plain -f auth_service/docker-compose.auth.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d)
-          docker compose --progress plain -f course_service/docker-compose.course.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d)
-          docker compose --progress plain -f assignment_service/docker-compose.assignment.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d)
-          docker compose --progress plain -f resource_service/docker-compose.resource.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d)
-          docker compose --progress plain -f api_gateway/docker-compose.gateway.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d)
+          docker compose --progress plain -f auth_service/docker-compose.auth.yml build --no-cache
+          docker compose --progress plain -f course_service/docker-compose.course.yml build --no-cache
+          docker compose --progress plain -f assignment_service/docker-compose.assignment.yml build --no-cache
+          docker compose --progress plain -f resource_service/docker-compose.resource.yml build --no-cache
+          docker compose --progress plain -f api_gateway/docker-compose.gateway.yml build --no-cache
 
       # 🚀 Run containers with updated images
-      - name: Run Docker containers
+      - name: Run Docker containers (services + DBs)
         run: |
           docker network create backend-network || true
-          
-          # Start databases first
-          docker compose -f auth_service/docker-compose.auth.yml up -d --force-recreate
-          docker compose -f course_service/docker-compose.course.yml up -d --force-recreate
-          docker compose -f assignment_service/docker-compose.assignment.yml up -d --force-recreate
-          docker compose -f resource_service/docker-compose.resource.yml up -d --force-recreate
-          
-          # Wait for databases to be ready
-          sleep 30
-          
-          # Start services
-          docker compose -f auth_service/docker-compose.auth.yml up -d --force-recreate
-          docker compose -f course_service/docker-compose.course.yml up -d --force-recreate
-          docker compose -f assignment_service/docker-compose.assignment.yml up -d --force-recreate
-          docker compose -f resource_service/docker-compose.resource.yml up -d --force-recreate
-          
-          # Start gateway last
-          docker compose -f api_gateway/docker-compose.gateway.yml up -d --force-recreate
-          
-          # Wait for services to initialize
-          sleep 30
 
-      - name: Wait for services to start
-        run: sleep 20
+          # Start DBs and services
+          docker compose -f auth_service/docker-compose.auth.yml up -d
+          docker compose -f course_service/docker-compose.course.yml up -d
+          docker compose -f assignment_service/docker-compose.assignment.yml up -d
+          docker compose -f resource_service/docker-compose.resource.yml up -d
+
+          # Wait for them to initialize
+          sleep 25
+
+          # Start gateway
+          docker compose -f api_gateway/docker-compose.gateway.yml up -d
+
+          # Final wait to stabilize
+          sleep 20
+
+      - name: Check running containers
+        run: docker ps -a
