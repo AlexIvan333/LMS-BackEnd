@@ -45,13 +45,13 @@ jobs:
           cp build/libs/*.jar resource_service/build/libs/
           cp build/libs/*.jar api_gateway/build/libs/
 
-      - name: Build Docker images
+      - name: Build Docker images (no cache)
         run: |
-          docker compose -f auth_service/docker-compose.auth.yml build
-          docker compose -f course_service/docker-compose.course.yml build
-          docker compose -f assignment_service/docker-compose.assignment.yml build
-          docker compose -f resource_service/docker-compose.resource.yml build
-          docker compose -f api_gateway/docker-compose.gateway.yml build
+          docker compose -f auth_service/docker-compose.auth.yml build --no-cache
+          docker compose -f course_service/docker-compose.course.yml build --no-cache
+          docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
+          docker compose -f resource_service/docker-compose.resource.yml build --no-cache
+          docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
 
       # Optional: Push Docker images to Docker Hub
       # - name: Push Docker images
