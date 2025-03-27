@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-test-and-dockerize:
+  build-test-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,40 +45,16 @@ jobs:
           cp build/libs/*.jar resource_service/build/libs/
           cp build/libs/*.jar api_gateway/build/libs/
 
-      - name: Build Docker images (no cache)
-        run: |
-          docker compose -f auth_service/docker-compose.auth.yml build --no-cache
-          docker compose -f course_service/docker-compose.course.yml build --no-cache
-          docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
-          docker compose -f resource_service/docker-compose.resource.yml build --no-cache
-          docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
-
-      # Optional: Push Docker images to Docker Hub
-      # - name: Push Docker images
-      #   run: |
-      #     docker tag auth_service yourname/auth_service:latest
-      #     docker push yourname/auth_service:latest
-      #     # Repeat for other services...
-
-      - name: Run all services
+      - name: Rebuild and run updated services
         run: |
           docker network create backend-network || true
-          docker compose -f auth_service/docker-compose.auth.yml up -d
-          docker compose -f course_service/docker-compose.course.yml up -d
-          docker compose -f assignment_service/docker-compose.assignment.yml up -d
-          docker compose -f resource_service/docker-compose.resource.yml up -d
-          docker compose -f api_gateway/docker-compose.gateway.yml up -d
+          docker compose -f auth_service/docker-compose.auth.yml up -d --build
+          docker compose -f course_service/docker-compose.course.yml up -d --build
+          docker compose -f assignment_service/docker-compose.assignment.yml up -d --build
+          docker compose -f resource_service/docker-compose.resource.yml up -d --build
+          docker compose -f api_gateway/docker-compose.gateway.yml up -d --build
 
       - name: Wait for services to start
         run: sleep 20
 
       # Optional: Add integration tests here
-
-      - name: Tear down containers
-        if: always()
-        run: |
-          docker compose -f api_gateway/docker-compose.gateway.yml down
-          docker compose -f resource_service/docker-compose.resource.yml down
-          docker compose -f assignment_service/docker-compose.assignment.yml down
-          docker compose -f course_service/docker-compose.course.yml down
-          docker compose -f auth_service/docker-compose.auth.yml down
