@@ -45,7 +45,7 @@ jobs:
           cp build/libs/*.jar resource_service/build/libs/
           cp build/libs/*.jar api_gateway/build/libs/
 
-      # Step 1: Build updated Docker images
+      # Step 1: Build updated Docker images (force rebuild)
       - name: Build Docker images
         run: |
           docker compose -f auth_service/docker-compose.auth.yml build --no-cache
@@ -54,15 +54,15 @@ jobs:
           docker compose -f resource_service/docker-compose.resource.yml build --no-cache
           docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
 
-      # Step 2: Start or restart containers with the updated images
+      # Step 2: Recreate running containers with updated images
       - name: Run Docker containers
         run: |
           docker network create backend-network || true
-          docker compose -f auth_service/docker-compose.auth.yml up -d
-          docker compose -f course_service/docker-compose.course.yml up -d
-          docker compose -f assignment_service/docker-compose.assignment.yml up -d
-          docker compose -f resource_service/docker-compose.resource.yml up -d
-          docker compose -f api_gateway/docker-compose.gateway.yml up -d
+          docker compose -f auth_service/docker-compose.auth.yml up -d --force-recreate
+          docker compose -f course_service/docker-compose.course.yml up -d --force-recreate
+          docker compose -f assignment_service/docker-compose.assignment.yml up -d --force-recreate
+          docker compose -f resource_service/docker-compose.resource.yml up -d --force-recreate
+          docker compose -f api_gateway/docker-compose.gateway.yml up -d --force-recreate
 
       - name: Wait for services to start
         run: sleep 20
