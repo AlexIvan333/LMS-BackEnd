@@ -20,8 +20,8 @@ services:
   # Course Service
   courses_service:
     build:
-      context: ..
-      dockerfile: course_service/Dockerfile
+      context: ./course_service
+      dockerfile: Dockerfile
     container_name: courses_service
     ports:
       - "8082:8082"

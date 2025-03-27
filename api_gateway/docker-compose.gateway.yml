@@ -4,8 +4,8 @@ services:
   # API Gateway
   lms_gateway:
     build:
-      context: ..
-      dockerfile: api_gateway/Dockerfile
+      context: ./api_gateway
+      dockerfile: Dockerfile
     container_name: api_gateway
     ports:
       - "8090:8080"

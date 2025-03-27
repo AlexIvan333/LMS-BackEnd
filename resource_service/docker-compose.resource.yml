@@ -20,8 +20,8 @@ services:
   # Resource  Service
   resource_service:
     build:
-      context: ..
-      dockerfile: resource_service/Dockerfile
+      context: ./resource_service
+      dockerfile: Dockerfile
     container_name: resource_service
     ports:
       - "8084:8084"

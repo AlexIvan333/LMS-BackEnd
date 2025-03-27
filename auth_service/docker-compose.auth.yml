@@ -36,8 +36,8 @@ services:
   # Auth Service
   auth_service:
     build:
-      context: ..
-      dockerfile: auth_service/Dockerfile
+      context: ./auth_service
+      dockerfile: Dockerfile
     container_name: auth_service
     ports:
       - "8081:8081"
