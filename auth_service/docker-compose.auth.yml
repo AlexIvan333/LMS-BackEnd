@@ -40,9 +40,9 @@ services:
       dockerfile: auth_service/Dockerfile
     container_name: auth_service
     ports:
-      - "8091:8081"
+      - "8081:8081"
     environment:
-      SERVER_PORT: "8081"
+      SERVER_PORT: 8081
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_auth:5432/lms_auth
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: password
