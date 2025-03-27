@@ -3,6 +3,7 @@ package com.lms.assignment_service.validation;
 
 import com.lms.assignment_service.dtos.requests.CreateAssigmentSubmissionRequest;
 import com.lms.assignment_service.repositories.AssignmentRepository;
+import com.lms.assignment_service.repositories.AssignmentSubmissionRepository;
 import com.lms.assignment_service.validation.interfaces.IAssigmentSubmissionValidation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AssigmentSubmissionValidation implements IAssigmentSubmissionValidation {
     private final AssignmentRepository assignmentRepository;
+    private final AssignmentSubmissionRepository assignmentSubmissionRepository;
 
 
     @Override
@@ -25,4 +27,11 @@ public class AssigmentSubmissionValidation implements IAssigmentSubmissionValida
 
         return true; //todo: add check if the resource ids exists in the system ;
     }
+
+    @Override
+    public boolean Exists(Long assigmentSubmissionId) {
+        return assignmentSubmissionRepository.existsById(assigmentSubmissionId);
+    }
+
+
 }
