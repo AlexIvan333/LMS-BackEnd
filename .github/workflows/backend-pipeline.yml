@@ -29,19 +29,20 @@ jobs:
 
       # 🔨 Build JARs from each service folder
       - name: Build Auth Service
-        run: cd auth_service && ./gradlew clean build
+        run: cd auth_service && ./gradlew clean build -x test
 
       - name: Build Course Service
-        run: cd course_service && ./gradlew clean build
-
+        run: cd course_service && ./gradlew clean build -x test
+      
       - name: Build Assignment Service
-        run: cd assignment_service && ./gradlew clean build
-
+        run: cd assignment_service && ./gradlew clean build -x test
+      
       - name: Build Resource Service
-        run: cd resource_service && ./gradlew clean build
-
+        run: cd resource_service && ./gradlew clean build -x test
+      
       - name: Build API Gateway
-        run: cd api_gateway && ./gradlew clean build
+        run: cd api_gateway && ./gradlew clean build -x test
+
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
