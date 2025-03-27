@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build-test-and-dockerize:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,44 +23,13 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew clean build
 
-      # Delete old artifact if it exists
-      - name: Delete existing build-artifacts (if any)
-        run: |
-          RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/actions/artifacts)
-
-          ARTIFACT_ID=$(echo "$RESPONSE" | jq -r '.artifacts // [] | map(select(.name == "build-artifacts")) | .[0].id // empty')
-          
-          if [ ! -z "$ARTIFACT_ID" ]; then
-            echo "Deleting artifact with ID: $ARTIFACT_ID"
-            curl -X DELETE -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID
-          else
-            echo "No existing artifact found to delete."
-          fi
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
         with:
-          name: build-artifacts
-          path: build/libs/*.jar
-          retention-days: 1
-
-  dockerize:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-          path: .
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Copy JAR to services
         run: |
@@ -69,21 +38,14 @@ jobs:
           mkdir -p assignment_service/build/libs
           mkdir -p resource_service/build/libs
           mkdir -p api_gateway/build/libs
-          
-          cp *.jar auth_service/build/libs/
-          cp *.jar course_service/build/libs/
-          cp *.jar assignment_service/build/libs/
-          cp *.jar resource_service/build/libs/
-          cp *.jar api_gateway/build/libs/
-      
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          cp build/libs/*.jar auth_service/build/libs/
+          cp build/libs/*.jar course_service/build/libs/
+          cp build/libs/*.jar assignment_service/build/libs/
+          cp build/libs/*.jar resource_service/build/libs/
+          cp build/libs/*.jar api_gateway/build/libs/
 
-      - name: Build all services
+      - name: Build Docker images
         run: |
           docker compose -f auth_service/docker-compose.auth.yml build
           docker compose -f course_service/docker-compose.course.yml build
@@ -91,12 +53,12 @@ jobs:
           docker compose -f resource_service/docker-compose.resource.yml build
           docker compose -f api_gateway/docker-compose.gateway.yml build
 
-      # Optional: Push Docker images
-      # - name: Push images to Docker Hub
+      # Optional: Push Docker images to Docker Hub
+      # - name: Push Docker images
       #   run: |
       #     docker tag auth_service yourname/auth_service:latest
       #     docker push yourname/auth_service:latest
-      #     # repeat for other services
+      #     # Repeat for other services...
 
       - name: Run all services
         run: |
@@ -110,7 +72,7 @@ jobs:
       - name: Wait for services to start
         run: sleep 20
 
-      # Optional: run integration tests here
+      # Optional: Add integration tests here
 
       - name: Tear down containers
         if: always()
