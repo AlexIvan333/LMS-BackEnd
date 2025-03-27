@@ -1,6 +1,7 @@
 package com.lms.course_service.services;
 
 import com.lms.course_service.dtos.filters.ModuleFilterParams;
+import com.lms.course_service.dtos.requests.AddResourceToModuleRequest;
 import com.lms.course_service.dtos.requests.CreateModuleRequest;
 import com.lms.course_service.dtos.responses.ModuleResponse;
 import com.lms.course_service.dtos.responses.ServiceResult;
@@ -66,5 +67,29 @@ public class ModuleService {
 
 
         return moduleEntities.stream().map(ModuleMapper::toResponse).collect(Collectors.toList());
+    }
+
+    public ServiceResult<ModuleResponse> addResourceToModule(AddResourceToModuleRequest request ) {
+
+        if (!moduleRepository.existsById(request.getModuleId())) {
+            return ServiceResult.<ModuleResponse>builder()
+                    .success(false)
+                    .httpStatus(HttpStatus.NOT_FOUND)
+                    .messageError("Module not found for ID: " + request.getModuleId())
+                    .build();
+        }
+
+        //todo: check if the resource exists in the database
+
+        ModuleEntity moduleEntity = moduleRepository.findModuleEntityById(request.getModuleId());
+
+        moduleEntity.getResourceIds().add(request.getResourceId());
+        moduleRepository.save(moduleEntity);
+
+        return ServiceResult.<ModuleResponse>builder()
+                .data(ModuleMapper.toResponse(moduleEntity))
+                .success(true)
+                .httpStatus(HttpStatus.OK)
+                .build();
     }
 }

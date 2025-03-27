@@ -3,6 +3,7 @@ package com.lms.assignment_service.controllers;
 
 import com.lms.assignment_service.dtos.filters.AssigmentSubmissionFilterParams;
 import com.lms.assignment_service.dtos.requests.CreateAssigmentSubmissionRequest;
+import com.lms.assignment_service.dtos.requests.GradeAssignmentSubmissionRequest;
 import com.lms.assignment_service.dtos.responses.AssignmentSubmissionResponse;
 import com.lms.assignment_service.entities.Grade;
 import com.lms.assignment_service.services.AssigmentSubmissionService;
@@ -62,5 +63,23 @@ public class AssigmentSubmissionController {
 
         return ResponseEntity.ok(assigmentSubmissionService.getAssignmentSubmissions(filterParams));
 
+    }
+
+    @PutMapping
+    @RolesAllowed({"ADMIN","INSTRUCTOR"})
+    public ResponseEntity<AssignmentSubmissionResponse>gradeAssignmentSubmission(@RequestBody GradeAssignmentSubmissionRequest request) {
+
+        var result = assigmentSubmissionService.gradeAssignmentSubmission(request);
+
+        if (!result.success)
+        {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                    result.getHttpStatus(),result.getMessageError()
+            );
+            problemDetail.setTitle("Error grading the assignment submission");
+            return ResponseEntity.of(problemDetail).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(result.data);
     }
 }

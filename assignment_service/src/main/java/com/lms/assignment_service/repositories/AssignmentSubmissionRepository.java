@@ -29,4 +29,5 @@ public interface AssignmentSubmissionRepository extends JpaRepository<Assignment
             Pageable pageable
     );
 
+    AssignmentSubmissionEntity findAssignmentSubmissionEntityById(Long id);
 }

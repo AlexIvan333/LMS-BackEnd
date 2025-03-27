@@ -3,6 +3,7 @@ package com.lms.assignment_service.services;
 
 import com.lms.assignment_service.dtos.filters.AssigmentSubmissionFilterParams;
 import com.lms.assignment_service.dtos.requests.CreateAssigmentSubmissionRequest;
+import com.lms.assignment_service.dtos.requests.GradeAssignmentSubmissionRequest;
 import com.lms.assignment_service.dtos.responses.AssignmentSubmissionResponse;
 import com.lms.assignment_service.dtos.responses.ServiceResult;
 import com.lms.assignment_service.entities.AssignmentSubmissionEntity;
@@ -72,5 +73,30 @@ public class AssigmentSubmissionService {
         return list.stream()
                 .map(AssignmentSubmissionMapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    public ServiceResult<AssignmentSubmissionResponse> gradeAssignmentSubmission(GradeAssignmentSubmissionRequest request)
+    {
+        if (!assigmentSubmissionValidation.Exists(request.assignmentSubmissionId))
+        {
+            return ServiceResult.<AssignmentSubmissionResponse>builder()
+                    .success(false)
+                    .messageError("The the assigment does not exist.")
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+
+        AssignmentSubmissionEntity assignmentSubmissionEntity = assignmentSubmissionRepository.findAssignmentSubmissionEntityById(request.assignmentSubmissionId);
+
+        assignmentSubmissionEntity.setGrade(request.getGrade());
+        assignmentSubmissionEntity.setCompleted(request.getCompleted());
+        assignmentSubmissionEntity.setComment(request.getComment());
+        assignmentSubmissionRepository.save(assignmentSubmissionEntity);
+
+        return ServiceResult.<AssignmentSubmissionResponse>builder()
+                .data(AssignmentSubmissionMapper.toResponse(assignmentSubmissionEntity))
+                .success(true)
+                .httpStatus(HttpStatus.CREATED)
+                .build();
     }
 }

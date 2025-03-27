@@ -1,6 +1,7 @@
 package com.lms.course_service.controllers;
 
 import com.lms.course_service.dtos.filters.ModuleFilterParams;
+import com.lms.course_service.dtos.requests.AddResourceToModuleRequest;
 import com.lms.course_service.dtos.requests.CreateModuleRequest;
 import com.lms.course_service.dtos.responses.ModuleResponse;
 import com.lms.course_service.services.ModuleService;
@@ -53,5 +54,23 @@ public class ModuleController {
 
         return ResponseEntity.ok(moduleService.getModules(filterParams));
 
+    }
+
+    @PutMapping
+    @RolesAllowed({"ADMIN","INSTRUCTOR"})
+    public ResponseEntity<ModuleResponse> addResourceToModule(@RequestBody AddResourceToModuleRequest request) {
+
+        var result = moduleService.addResourceToModule(request);
+
+        if (!result.success)
+        {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                    result.getHttpStatus(),result.getMessageError()
+            );
+            problemDetail.setTitle("Error adding the resource to the module");
+            return ResponseEntity.of(problemDetail).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(result.data);
     }
 }
