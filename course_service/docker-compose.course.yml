@@ -20,7 +20,7 @@ services:
   # Course Service
   courses_service:
     build:
-      context: ./course_service
+      context: .
       dockerfile: Dockerfile
     container_name: courses_service
     ports:
