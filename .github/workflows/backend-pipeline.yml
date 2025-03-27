@@ -53,11 +53,11 @@ jobs:
       # 🔧 Build Docker images with updated JARs
       - name: Build Docker images
         run: |
-          docker compose -f auth_service/docker-compose.auth.yml build --no-cache
-          docker compose -f course_service/docker-compose.course.yml build --no-cache
-          docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
-          docker compose -f resource_service/docker-compose.resource.yml build --no-cache
-          docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
+          docker compose -f auth_service/docker-compose.auth.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d) --progress=plain
+          docker compose -f course_service/docker-compose.course.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d) --progress=plain
+          docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d) --progress=plain
+          docker compose -f resource_service/docker-compose.resource.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d) --progress=plain
+          docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache --build-arg BUILD_DATE=$(date +%Y-%m-%d) --progress=plain
 
       # 🚀 Run containers with updated images
       - name: Run Docker containers
