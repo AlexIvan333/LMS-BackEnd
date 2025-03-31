@@ -10,10 +10,10 @@ services:
       - "8090:8080"
     environment:
       SERVER_PORT: 8080
-      AUTH_SERVICE_URL: http://auth_service:8091
-      COURSE_SERVICE_URL: http://course_service:8092
-      ASSIGNMENT_SERVICE_URL: http://assignment_service:8093
-      RESOURCE_SERVICE_URL: http://resource_service:8094
+      AUTH_SERVICE_URL: http://localhost:8091
+      COURSE_SERVICE_URL: http://localhost:8092
+      ASSIGNMENT_SERVICE_URL: http://localhost:8093
+      RESOURCE_SERVICE_URL: http://localhost:8094
     restart: unless-stopped
     networks:
       - backend-network
