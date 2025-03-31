@@ -25,9 +25,9 @@ jobs:
       # AUTH SERVICE
       # ========================
       - name: Build Auth Service
-        if: |
+        if: >
           contains(github.event.head_commit.message, '[auth]') ||
-          contains(join(format('{0},{1},{2}', toJson(github.event.commits.*.added), toJson(github.event.commits.*.modified), toJson(github.event.commits.*.renamed)), ','), 'auth_service/')
+          contains(toJson(github.event.commits), 'auth_service')
         run: |
           cd auth_service
           ./gradlew clean build -x test
@@ -40,9 +40,9 @@ jobs:
       # COURSE SERVICE
       # ========================
       - name: Build Course Service
-        if: |
+        if: >
           contains(github.event.head_commit.message, '[course]') ||
-          contains(join(format('{0},{1},{2}', toJson(github.event.commits.*.added), toJson(github.event.commits.*.modified), toJson(github.event.commits.*.renamed)), ','), 'course_service/')
+          contains(toJson(github.event.commits), 'course_service')
         run: |
           cd course_service
           ./gradlew clean build -x test
@@ -55,9 +55,9 @@ jobs:
       # ASSIGNMENT SERVICE
       # ========================
       - name: Build Assignment Service
-        if: |
+        if: >
           contains(github.event.head_commit.message, '[assignment]') ||
-          contains(join(format('{0},{1},{2}', toJson(github.event.commits.*.added), toJson(github.event.commits.*.modified), toJson(github.event.commits.*.renamed)), ','), 'assignment_service/')
+          contains(toJson(github.event.commits), 'assignment_service')
         run: |
           cd assignment_service
           ./gradlew clean build -x test
@@ -70,9 +70,9 @@ jobs:
       # RESOURCE SERVICE
       # ========================
       - name: Build Resource Service
-        if: |
+        if: >
           contains(github.event.head_commit.message, '[resource]') ||
-          contains(join(format('{0},{1},{2}', toJson(github.event.commits.*.added), toJson(github.event.commits.*.modified), toJson(github.event.commits.*.renamed)), ','), 'resource_service/')
+          contains(toJson(github.event.commits), 'resource_service')
         run: |
           cd resource_service
           ./gradlew clean build -x test
@@ -85,9 +85,9 @@ jobs:
       # API GATEWAY
       # ========================
       - name: Build API Gateway
-        if: |
+        if: >
           contains(github.event.head_commit.message, '[gateway]') ||
-          contains(join(format('{0},{1},{2}', toJson(github.event.commits.*.added), toJson(github.event.commits.*.modified), toJson(github.event.commits.*.renamed)), ','), 'api_gateway/')
+          contains(toJson(github.event.commits), 'api_gateway')
         run: |
           cd api_gateway
           ./gradlew clean build -x test
