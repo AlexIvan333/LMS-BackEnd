@@ -27,7 +27,7 @@ jobs:
           chmod +x resource_service/gradlew
           chmod +x api_gateway/gradlew
 
-      # 🔨 Build JARs from each service
+      #  Build JARs from each service
       - name: Build Auth Service
         run: cd auth_service && ./gradlew clean build -x test
 
@@ -57,7 +57,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 🧹 Clean up existing containers and network
+      # Clean up existing containers and network
       - name: Stop and remove existing containers
         run: |
           docker compose -f auth_service/docker-compose.auth.yml down -v || true
@@ -68,7 +68,7 @@ jobs:
           docker network rm backend-network || true
           docker image prune -a -f
 
-      # 🐳 Build Docker images
+      # Build Docker images
       - name: Build Docker images
         run: |
           docker compose -f auth_service/docker-compose.auth.yml build --no-cache
@@ -77,7 +77,7 @@ jobs:
           docker compose -f resource_service/docker-compose.resource.yml build --no-cache
           docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
 
-      # 🚀 Run all containers
+      # Run all containers
       - name: Run Docker containers (services + DBs)
         run: |
           docker network create backend-network || true
@@ -98,11 +98,4 @@ jobs:
       - name: Show running containers
         run: docker ps -a
 
-      # ✅ Optional: Health check logs
-      - name: Print service logs (last 50 lines)
-        run: docker compose logs --tail=50
 
-      # 🧹 Optional Cleanup (if not using self-hosted runner)
-      - name: Clean up containers after run
-        if: always()
-        run: docker compose down -v || true
