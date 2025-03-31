@@ -14,11 +14,6 @@ services:
       ASSIGNMENT_SERVICE_URL: http://assignment_service:8093
       RESOURCE_SERVICE_URL: http://resource_service:8094
     restart: unless-stopped
-    depends_on:
-      - auth_service
-      - courses_service
-      - assignment_service
-      - resource_service
     networks:
       - backend-network
 
