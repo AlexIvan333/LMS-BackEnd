@@ -19,13 +19,13 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      - name: Make Gradlew executable
-        run: |
-          chmod +x auth_service/gradlew
-          chmod +x course_service/gradlew
-          chmod +x assignment_service/gradlew
-          chmod +x resource_service/gradlew
-          chmod +x api_gateway/gradlew
+#      - name: Make Gradlew executable
+#        run: |
+#          chmod +x auth_service/gradlew
+#          chmod +x course_service/gradlew
+#          chmod +x assignment_service/gradlew
+#          chmod +x resource_service/gradlew
+#          chmod +x api_gateway/gradlew
 
       #  Build JARs from each service
       - name: Build Auth Service
