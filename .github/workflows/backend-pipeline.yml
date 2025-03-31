@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '**'
 
 jobs:
-  build-test-and-deploy:
+  build-and-deploy:
     runs-on: self-hosted
 
     steps:
@@ -19,80 +21,83 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      # Build JARs from each service
+      # ========================
+      # AUTH SERVICE
+      # ========================
       - name: Build Auth Service
+        if: |
+          contains(github.event.head_commit.message, '[auth]') ||
+          contains(join(toJson(github.event.commits.*.modified), ','), 'auth_service/')
         run: |
           cd auth_service
           ./gradlew clean build -x test
+          cd ..
+          docker compose -f auth_service/docker-compose.auth.yml down -v || true
+          docker compose -f auth_service/docker-compose.auth.yml build --no-cache
+          docker compose -f auth_service/docker-compose.auth.yml up -d
 
+      # ========================
+      # COURSE SERVICE
+      # ========================
       - name: Build Course Service
+        if: |
+          contains(github.event.head_commit.message, '[course]') ||
+          contains(join(toJson(github.event.commits.*.modified), ','), 'course_service/')
         run: |
           cd course_service
           ./gradlew clean build -x test
+          cd ..
+          docker compose -f course_service/docker-compose.course.yml down -v || true
+          docker compose -f course_service/docker-compose.course.yml build --no-cache
+          docker compose -f course_service/docker-compose.course.yml up -d
 
+      # ========================
+      # ASSIGNMENT SERVICE
+      # ========================
       - name: Build Assignment Service
+        if: |
+          contains(github.event.head_commit.message, '[assignment]') ||
+          contains(join(toJson(github.event.commits.*.modified), ','), 'assignment_service/')
         run: |
           cd assignment_service
           ./gradlew clean build -x test
+          cd ..
+          docker compose -f assignment_service/docker-compose.assignment.yml down -v || true
+          docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
+          docker compose -f assignment_service/docker-compose.assignment.yml up -d
 
+      # ========================
+      # RESOURCE SERVICE
+      # ========================
       - name: Build Resource Service
+        if: |
+          contains(github.event.head_commit.message, '[resource]') ||
+          contains(join(toJson(github.event.commits.*.modified), ','), 'resource_service/')
         run: |
           cd resource_service
           ./gradlew clean build -x test
+          cd ..
+          docker compose -f resource_service/docker-compose.resource.yml down -v || true
+          docker compose -f resource_service/docker-compose.resource.yml build --no-cache
+          docker compose -f resource_service/docker-compose.resource.yml up -d
 
+      # ========================
+      # API GATEWAY
+      # ========================
       - name: Build API Gateway
+        if: |
+          contains(github.event.head_commit.message, '[gateway]') ||
+          contains(join(toJson(github.event.commits.*.modified), ','), 'api_gateway/')
         run: |
           cd api_gateway
           ./gradlew clean build -x test
-
-      - name: Debug Confirm JARs exist
-        run: |
-          dir auth_service\build\libs
-          dir course_service\build\libs
-          dir assignment_service\build\libs
-          dir resource_service\build\libs
-          dir api_gateway\build\libs
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Stop and remove existing containers
-        run: |
-          docker compose -f auth_service/docker-compose.auth.yml down -v
-          docker compose -f course_service/docker-compose.course.yml down -v
-          docker compose -f assignment_service/docker-compose.assignment.yml down -v
-          docker compose -f resource_service/docker-compose.resource.yml down -v
-          docker compose -f api_gateway/docker-compose.gateway.yml down -v
-          docker network rm backend-network
-          docker image prune -a -f
-
-      - name: Build Docker images
-        run: |
-          docker compose -f auth_service/docker-compose.auth.yml build --no-cache
-          docker compose -f course_service/docker-compose.course.yml build --no-cache
-          docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
-          docker compose -f resource_service/docker-compose.resource.yml build --no-cache
+          cd ..
+          docker compose -f api_gateway/docker-compose.gateway.yml down -v || true
           docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
-
-      - name: Run Docker containers (services + DBs)
-        run: |
-          docker network create backend-network
-
-          docker compose -f auth_service/docker-compose.auth.yml up -d
-          docker compose -f course_service/docker-compose.course.yml up -d
-          docker compose -f assignment_service/docker-compose.assignment.yml up -d
-          docker compose -f resource_service/docker-compose.resource.yml up -d
-
-          Write-Host "Waiting for services to stabilize..."
-          Start-Sleep -Seconds 25
-
           docker compose -f api_gateway/docker-compose.gateway.yml up -d
 
-          Write-Host "Final stabilization..."
-          Start-Sleep -Seconds 20
-
+      # ========================
+      # Show active containers
+      # ========================
       - name: Show running containers
         run: docker ps -a
