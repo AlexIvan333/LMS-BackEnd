@@ -1,4 +1,3 @@
-
 services:
   # API Gateway
   lms_gateway:
@@ -17,7 +16,6 @@ services:
     restart: unless-stopped
     networks:
       - backend-network
-
 networks:
   backend-network:
     external: true
