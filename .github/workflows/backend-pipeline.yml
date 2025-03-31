@@ -26,63 +26,57 @@ jobs:
       # AUTH SERVICE
       - name: Build Auth Service
         if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
-        shell: bash
         run: |
           cd auth_service
           ./gradlew clean build -x test
           cd ..
-          docker compose -f auth_service/docker-compose.auth.yml down -v || true
+          try { docker compose -f auth_service/docker-compose.auth.yml down -v } catch { Write-Host "Ignore docker down error" }
           docker compose -f auth_service/docker-compose.auth.yml build --no-cache
           docker compose -f auth_service/docker-compose.auth.yml up -d
 
       # COURSE SERVICE
       - name: Build Course Service
         if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
-        shell: bash
         run: |
           cd course_service
           ./gradlew clean build -x test
           cd ..
-          docker compose -f course_service/docker-compose.course.yml down -v || true
+          try { docker compose -f course_service/docker-compose.course.yml down -v } catch { Write-Host "Ignore docker down error" }
           docker compose -f course_service/docker-compose.course.yml build --no-cache
           docker compose -f course_service/docker-compose.course.yml up -d
 
       # ASSIGNMENT SERVICE
       - name: Build Assignment Service
         if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
-        shell: bash
         run: |
           cd assignment_service
           ./gradlew clean build -x test
           cd ..
-          docker compose -f assignment_service/docker-compose.assignment.yml down -v || true
+          try { docker compose -f assignment_service/docker-compose.assignment.yml down -v } catch { Write-Host "Ignore docker down error" }
           docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
           docker compose -f assignment_service/docker-compose.assignment.yml up -d
 
       # RESOURCE SERVICE
       - name: Build Resource Service
         if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
-        shell: bash
         run: |
           cd resource_service
           ./gradlew clean build -x test
           cd ..
-          docker compose -f resource_service/docker-compose.resource.yml down -v || true
+          try { docker compose -f resource_service/docker-compose.resource.yml down -v } catch { Write-Host "Ignore docker down error" }
           docker compose -f resource_service/docker-compose.resource.yml build --no-cache
           docker compose -f resource_service/docker-compose.resource.yml up -d
 
       # API GATEWAY
       - name: Build API Gateway
         if: ${{ contains(github.event.head_commit.message, '[gateway]') || contains(github.event.head_commit.message, 'api_gateway/') }}
-        shell: bash
         run: |
           cd api_gateway
           ./gradlew clean build -x test
           cd ..
-          docker compose -f api_gateway/docker-compose.gateway.yml down -v || true
+          try { docker compose -f api_gateway/docker-compose.gateway.yml down -v } catch { Write-Host "Ignore docker down error" }
           docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
           docker compose -f api_gateway/docker-compose.gateway.yml up -d
 
       - name: Show running containers
-        shell: bash
         run: docker ps -a
