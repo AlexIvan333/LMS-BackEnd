@@ -27,7 +27,7 @@ jobs:
           chmod +x resource_service/gradlew
           chmod +x api_gateway/gradlew
 
-      # 🔨 Build JARs from each service folder
+      # 🔨 Build JARs from each service
       - name: Build Auth Service
         run: cd auth_service && ./gradlew clean build -x test
 
@@ -43,12 +43,6 @@ jobs:
       - name: Build API Gateway
         run: cd api_gateway && ./gradlew clean build -x test
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Debug Confirm JARs exist
         run: |
           ls -lh auth_service/build/libs
@@ -57,7 +51,13 @@ jobs:
           ls -lh resource_service/build/libs
           ls -lh api_gateway/build/libs
 
-      # 🔧 Remove existing containers/images/volumes (cleanup)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 🧹 Clean up existing containers and network
       - name: Stop and remove existing containers
         run: |
           docker compose -f auth_service/docker-compose.auth.yml down -v || true
@@ -65,36 +65,44 @@ jobs:
           docker compose -f assignment_service/docker-compose.assignment.yml down -v || true
           docker compose -f resource_service/docker-compose.resource.yml down -v || true
           docker compose -f api_gateway/docker-compose.gateway.yml down -v || true
+          docker network rm backend-network || true
           docker image prune -a -f
 
-      # 🔧 Build Docker images
+      # 🐳 Build Docker images
       - name: Build Docker images
         run: |
-          docker compose --progress plain -f auth_service/docker-compose.auth.yml build --no-cache
-          docker compose --progress plain -f course_service/docker-compose.course.yml build --no-cache
-          docker compose --progress plain -f assignment_service/docker-compose.assignment.yml build --no-cache
-          docker compose --progress plain -f resource_service/docker-compose.resource.yml build --no-cache
-          docker compose --progress plain -f api_gateway/docker-compose.gateway.yml build --no-cache
+          docker compose -f auth_service/docker-compose.auth.yml build --no-cache
+          docker compose -f course_service/docker-compose.course.yml build --no-cache
+          docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
+          docker compose -f resource_service/docker-compose.resource.yml build --no-cache
+          docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
 
-      # 🚀 Run containers with updated images
+      # 🚀 Run all containers
       - name: Run Docker containers (services + DBs)
         run: |
           docker network create backend-network || true
 
-          # Start DBs and services
           docker compose -f auth_service/docker-compose.auth.yml up -d
           docker compose -f course_service/docker-compose.course.yml up -d
           docker compose -f assignment_service/docker-compose.assignment.yml up -d
           docker compose -f resource_service/docker-compose.resource.yml up -d
 
-          # Wait for them to initialize
+          echo "Waiting for services to stabilize..."
           sleep 25
 
-          # Start gateway
           docker compose -f api_gateway/docker-compose.gateway.yml up -d
 
-          # Final wait to stabilize
+          echo "Final stabilization..."
           sleep 20
 
-      - name: Check running containers
+      - name: Show running containers
         run: docker ps -a
+
+      # ✅ Optional: Health check logs
+      - name: Print service logs (last 50 lines)
+        run: docker compose logs --tail=50
+
+      # 🧹 Optional Cleanup (if not using self-hosted runner)
+      - name: Clean up containers after run
+        if: always()
+        run: docker compose down -v || true

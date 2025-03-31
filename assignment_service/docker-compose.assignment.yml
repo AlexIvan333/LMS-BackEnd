@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
     container_name: assignment_service
     ports:
-      - "8083:8083"
+      - "8093:8083"
     environment:
       SERVER_PORT: 8083
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_assignment:5432/lms_assignment

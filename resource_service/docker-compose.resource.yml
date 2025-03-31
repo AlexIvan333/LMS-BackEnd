@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
     container_name: resource_service
     ports:
-      - "8084:8084"
+      - "8094:8084"
     environment:
       SERVER_PORT: 8084
       SPRING_DATA_MONGODB_HOST: mongodb_resource
