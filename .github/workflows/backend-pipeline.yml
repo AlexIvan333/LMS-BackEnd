@@ -4,16 +4,15 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'auth_service/**'
-      - 'course_service/**'
-      - 'assignment_service/**'
-      - 'resource_service/**'
-      - 'api_gateway/**'
 
 jobs:
   build-and-deploy:
     runs-on: self-hosted
+
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - uses: actions/checkout@v3
 
@@ -23,9 +22,11 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
+      # ========================
       # AUTH SERVICE
+      # ========================
       - name: Build Auth Service
-        if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
+        if: ${{ contains(join(github.event.commits.*.modified, ',') , 'auth_service/') || contains(join(github.event.commits.*.added, ',') , 'auth_service/') || contains(join(github.event.commits.*.renamed, ','), 'auth_service/') }}
         run: |
           cd auth_service
           ./gradlew clean build -x test
@@ -34,9 +35,11 @@ jobs:
           docker compose -f auth_service/docker-compose.auth.yml build --no-cache
           docker compose -f auth_service/docker-compose.auth.yml up -d
 
+      # ========================
       # COURSE SERVICE
+      # ========================
       - name: Build Course Service
-        if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
+        if: ${{ contains(join(github.event.commits.*.modified, ',') , 'course_service/') || contains(join(github.event.commits.*.added, ',') , 'course_service/') || contains(join(github.event.commits.*.renamed, ','), 'course_service/') }}
         run: |
           cd course_service
           ./gradlew clean build -x test
@@ -45,9 +48,11 @@ jobs:
           docker compose -f course_service/docker-compose.course.yml build --no-cache
           docker compose -f course_service/docker-compose.course.yml up -d
 
+      # ========================
       # ASSIGNMENT SERVICE
+      # ========================
       - name: Build Assignment Service
-        if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
+        if: ${{ contains(join(github.event.commits.*.modified, ',') , 'assignment_service/') || contains(join(github.event.commits.*.added, ',') , 'assignment_service/') || contains(join(github.event.commits.*.renamed, ','), 'assignment_service/') }}
         run: |
           cd assignment_service
           ./gradlew clean build -x test
@@ -56,9 +61,11 @@ jobs:
           docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
           docker compose -f assignment_service/docker-compose.assignment.yml up -d
 
+      # ========================
       # RESOURCE SERVICE
+      # ========================
       - name: Build Resource Service
-        if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
+        if: ${{ contains(join(github.event.commits.*.modified, ',') , 'resource_service/') || contains(join(github.event.commits.*.added, ',') , 'resource_service/') || contains(join(github.event.commits.*.renamed, ','), 'resource_service/') }}
         run: |
           cd resource_service
           ./gradlew clean build -x test
@@ -67,9 +74,11 @@ jobs:
           docker compose -f resource_service/docker-compose.resource.yml build --no-cache
           docker compose -f resource_service/docker-compose.resource.yml up -d
 
+      # ========================
       # API GATEWAY
+      # ========================
       - name: Build API Gateway
-        if: ${{ contains(github.event.head_commit.message, '[gateway]') || contains(github.event.head_commit.message, 'api_gateway/') }}
+        if: ${{ contains(join(github.event.commits.*.modified, ',') , 'api_gateway/') || contains(join(github.event.commits.*.added, ',') , 'api_gateway/') || contains(join(github.event.commits.*.renamed, ','), 'api_gateway/') }}
         run: |
           cd api_gateway
           ./gradlew clean build -x test
@@ -78,5 +87,8 @@ jobs:
           docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
           docker compose -f api_gateway/docker-compose.gateway.yml up -d
 
+      # ========================
+      # Show active containers
+      # ========================
       - name: Show running containers
         run: docker ps -a
