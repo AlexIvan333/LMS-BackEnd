@@ -19,37 +19,39 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-#      - name: Make Gradlew executable
-#        run: |
-#          chmod +x auth_service/gradlew
-#          chmod +x course_service/gradlew
-#          chmod +x assignment_service/gradlew
-#          chmod +x resource_service/gradlew
-#          chmod +x api_gateway/gradlew
-
-      #  Build JARs from each service
+      # Build JARs from each service
       - name: Build Auth Service
-        run: cd auth_service && ./gradlew clean build -x test
+        run: |
+          cd auth_service
+          ./gradlew clean build -x test
 
       - name: Build Course Service
-        run: cd course_service && ./gradlew clean build -x test
+        run: |
+          cd course_service
+          ./gradlew clean build -x test
 
       - name: Build Assignment Service
-        run: cd assignment_service && ./gradlew clean build -x test
+        run: |
+          cd assignment_service
+          ./gradlew clean build -x test
 
       - name: Build Resource Service
-        run: cd resource_service && ./gradlew clean build -x test
+        run: |
+          cd resource_service
+          ./gradlew clean build -x test
 
       - name: Build API Gateway
-        run: cd api_gateway && ./gradlew clean build -x test
+        run: |
+          cd api_gateway
+          ./gradlew clean build -x test
 
       - name: Debug Confirm JARs exist
         run: |
-          ls -lh auth_service/build/libs
-          ls -lh course_service/build/libs
-          ls -lh assignment_service/build/libs
-          ls -lh resource_service/build/libs
-          ls -lh api_gateway/build/libs
+          dir auth_service\build\libs
+          dir course_service\build\libs
+          dir assignment_service\build\libs
+          dir resource_service\build\libs
+          dir api_gateway\build\libs
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -57,18 +59,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Clean up existing containers and network
       - name: Stop and remove existing containers
         run: |
-          docker compose -f auth_service/docker-compose.auth.yml down -v || true
-          docker compose -f course_service/docker-compose.course.yml down -v || true
-          docker compose -f assignment_service/docker-compose.assignment.yml down -v || true
-          docker compose -f resource_service/docker-compose.resource.yml down -v || true
-          docker compose -f api_gateway/docker-compose.gateway.yml down -v || true
-          docker network rm backend-network || true
+          docker compose -f auth_service/docker-compose.auth.yml down -v
+          docker compose -f course_service/docker-compose.course.yml down -v
+          docker compose -f assignment_service/docker-compose.assignment.yml down -v
+          docker compose -f resource_service/docker-compose.resource.yml down -v
+          docker compose -f api_gateway/docker-compose.gateway.yml down -v
+          docker network rm backend-network
           docker image prune -a -f
 
-      # Build Docker images
       - name: Build Docker images
         run: |
           docker compose -f auth_service/docker-compose.auth.yml build --no-cache
@@ -77,25 +77,22 @@ jobs:
           docker compose -f resource_service/docker-compose.resource.yml build --no-cache
           docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
 
-      # Run all containers
       - name: Run Docker containers (services + DBs)
         run: |
-          docker network create backend-network || true
+          docker network create backend-network
 
           docker compose -f auth_service/docker-compose.auth.yml up -d
           docker compose -f course_service/docker-compose.course.yml up -d
           docker compose -f assignment_service/docker-compose.assignment.yml up -d
           docker compose -f resource_service/docker-compose.resource.yml up -d
 
-          echo "Waiting for services to stabilize..."
-          sleep 25
+          Write-Host "Waiting for services to stabilize..."
+          Start-Sleep -Seconds 25
 
           docker compose -f api_gateway/docker-compose.gateway.yml up -d
 
-          echo "Final stabilization..."
-          sleep 20
+          Write-Host "Final stabilization..."
+          Start-Sleep -Seconds 20
 
       - name: Show running containers
         run: docker ps -a
-
-
