@@ -4,16 +4,16 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '**'
 
 jobs:
-  build-and-deploy:
+  build-auth:
+    name: Build Auth Service
     runs-on: self-hosted
-
+    if: github.repository == 'AlexIvan333/LMS-BackEnd'
+    paths:
+      - 'auth_service/**'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -21,13 +21,7 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      # ========================
-      # AUTH SERVICE
-      # ========================
-      - name: Build Auth Service
-        if: >
-          contains(github.event.head_commit.message, '[auth]') ||
-          contains(toJson(github.event.commits), 'auth_service')
+      - name: Build Auth
         run: |
           cd auth_service
           ./gradlew clean build -x test
@@ -36,13 +30,21 @@ jobs:
           docker compose -f auth_service/docker-compose.auth.yml build --no-cache
           docker compose -f auth_service/docker-compose.auth.yml up -d
 
-      # ========================
-      # COURSE SERVICE
-      # ========================
-      - name: Build Course Service
-        if: >
-          contains(github.event.head_commit.message, '[course]') ||
-          contains(toJson(github.event.commits), 'course_service')
+  build-course:
+    name: Build Course Service
+    runs-on: self-hosted
+    paths:
+      - 'course_service/**'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Build Course
         run: |
           cd course_service
           ./gradlew clean build -x test
@@ -51,13 +53,21 @@ jobs:
           docker compose -f course_service/docker-compose.course.yml build --no-cache
           docker compose -f course_service/docker-compose.course.yml up -d
 
-      # ========================
-      # ASSIGNMENT SERVICE
-      # ========================
-      - name: Build Assignment Service
-        if: >
-          contains(github.event.head_commit.message, '[assignment]') ||
-          contains(toJson(github.event.commits), 'assignment_service')
+  build-assignment:
+    name: Build Assignment Service
+    runs-on: self-hosted
+    paths:
+      - 'assignment_service/**'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Build Assignment
         run: |
           cd assignment_service
           ./gradlew clean build -x test
@@ -66,13 +76,21 @@ jobs:
           docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
           docker compose -f assignment_service/docker-compose.assignment.yml up -d
 
-      # ========================
-      # RESOURCE SERVICE
-      # ========================
-      - name: Build Resource Service
-        if: >
-          contains(github.event.head_commit.message, '[resource]') ||
-          contains(toJson(github.event.commits), 'resource_service')
+  build-resource:
+    name: Build Resource Service
+    runs-on: self-hosted
+    paths:
+      - 'resource_service/**'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Build Resource
         run: |
           cd resource_service
           ./gradlew clean build -x test
@@ -81,13 +99,21 @@ jobs:
           docker compose -f resource_service/docker-compose.resource.yml build --no-cache
           docker compose -f resource_service/docker-compose.resource.yml up -d
 
-      # ========================
-      # API GATEWAY
-      # ========================
-      - name: Build API Gateway
-        if: >
-          contains(github.event.head_commit.message, '[gateway]') ||
-          contains(toJson(github.event.commits), 'api_gateway')
+  build-gateway:
+    name: Build API Gateway
+    runs-on: self-hosted
+    paths:
+      - 'api_gateway/**'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Build Gateway
         run: |
           cd api_gateway
           ./gradlew clean build -x test
@@ -95,9 +121,3 @@ jobs:
           docker compose -f api_gateway/docker-compose.gateway.yml down -v || true
           docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
           docker compose -f api_gateway/docker-compose.gateway.yml up -d
-
-      # ========================
-      # Show active containers
-      # ========================
-      - name: Show running containers
-        run: docker ps -a
