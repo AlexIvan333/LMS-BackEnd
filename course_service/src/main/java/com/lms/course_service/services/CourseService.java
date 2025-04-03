@@ -11,14 +11,17 @@ import com.lms.course_service.entities.CourseEntity;
 import com.lms.course_service.entities.ModuleEntity;
 import com.lms.course_service.repositories.CourseRepository;
 import com.lms.course_service.repositories.CourseStudentRepository;
+import com.lms.shared.events.CheckUserExistsEvent;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,11 +29,14 @@ import java.util.stream.Collectors;
 public class CourseService {
     private final CourseRepository courseRepository;
     private final CourseStudentRepository courseStudentRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
 
     public ServiceResult<CourseResponse> createCourse(CreateCourseRequest request) {
 
-        //TODO: check if the instructorId exists by calling the auth_service
+        String correlationId = UUID.randomUUID().toString();
+        kafkaTemplate.send("user-validation-request",
+                new CheckUserExistsEvent(request.getInstructorID(), "INSTRUCTOR", correlationId));
 
         CourseEntity courseEntity = CourseEntity.builder()
                 .title(request.getTitle())
@@ -65,7 +71,9 @@ public class CourseService {
         Optional<CourseEntity> courseOptional = courseRepository.findCourseEntitiesById(request.getCourse_id());
         CourseEntity course = null;
 
-        //TODO: Add check if the student id exists by calling the other auth_service.
+        kafkaTemplate.send("user-validation-request",
+                new CheckUserExistsEvent(request.getStudent_id(), "STUDENT", UUID.randomUUID().toString()));
+
         if(courseOptional.isPresent())
         {
             course = courseOptional.get();

@@ -10,13 +10,16 @@ import com.lms.course_service.entities.ModuleEntity;
 import com.lms.course_service.mappers.ModuleMapper;
 import com.lms.course_service.repositories.CourseRepository;
 import com.lms.course_service.repositories.ModuleRepository;
+import com.lms.shared.events.CheckResourceExistsEvent;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +28,7 @@ public class ModuleService {
 
     private final ModuleRepository moduleRepository;
     private final CourseRepository courseRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public ServiceResult<ModuleResponse> createModule(CreateModuleRequest request) {
 
@@ -79,7 +83,8 @@ public class ModuleService {
                     .build();
         }
 
-        //todo: check if the resource exists in the database
+        kafkaTemplate.send("resource-validation-request",
+                new CheckResourceExistsEvent(List.of(request.getResourceId()), UUID.randomUUID().toString()));
 
         ModuleEntity moduleEntity = moduleRepository.findModuleEntityById(request.getModuleId());
 

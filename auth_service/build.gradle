@@ -55,6 +55,7 @@ dependencies {
 	implementation 'com.google.zxing:javase:3.5.2'
 
 	implementation 'org.springframework.kafka:spring-kafka:3.0.12'
+	implementation project(":shared")
 }
 
 tasks.named('test') {
