@@ -26,4 +26,14 @@ public class KafkaTopicConfig {
     public NewTopic resourceValidationResponseTopic() {
         return new NewTopic("resource-validation-response", 1, (short) 1);
     }
+
+    @Bean
+    public NewTopic resourceDetailsRequestTopic() {
+        return new NewTopic("resource-details-request", 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic resourceDetailsResponseTopic() {
+        return new NewTopic("resource-details-response", 1, (short) 1);
+    }
 }

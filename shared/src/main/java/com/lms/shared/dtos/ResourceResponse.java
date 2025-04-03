@@ -1,4 +1,4 @@
-package com.lms.assignment_service.dtos.responses;
+package com.lms.shared.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

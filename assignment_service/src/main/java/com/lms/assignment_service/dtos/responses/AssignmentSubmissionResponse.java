@@ -1,6 +1,7 @@
 package com.lms.assignment_service.dtos.responses;
 
 import com.lms.assignment_service.entities.Grade;
+import com.lms.shared.dtos.ResourceResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
