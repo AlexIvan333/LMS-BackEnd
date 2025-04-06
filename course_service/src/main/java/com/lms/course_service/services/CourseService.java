@@ -12,16 +12,24 @@ import com.lms.course_service.entities.ModuleEntity;
 import com.lms.course_service.repositories.CourseRepository;
 import com.lms.course_service.repositories.CourseStudentRepository;
 import com.lms.shared.events.CheckUserExistsEvent;
+import com.lms.shared.events.UserExistsResponseEvent;
 import lombok.AllArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyFuture;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,30 +37,60 @@ import java.util.stream.Collectors;
 public class CourseService {
     private final CourseRepository courseRepository;
     private final CourseStudentRepository courseStudentRepository;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
-
+    private final ReplyingKafkaTemplate<String, Object, UserExistsResponseEvent> userReplyingKafkaTemplate;
 
     public ServiceResult<CourseResponse> createCourse(CreateCourseRequest request) {
-
         String correlationId = UUID.randomUUID().toString();
-        kafkaTemplate.send("user-validation-request",
-                new CheckUserExistsEvent(request.getInstructorID(), "INSTRUCTOR", correlationId));
+        CheckUserExistsEvent event = new CheckUserExistsEvent(request.getInstructorID(), "INSTRUCTOR", correlationId);
 
-        CourseEntity courseEntity = CourseEntity.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .modules(Collections.<ModuleEntity>emptyList())
-                .instructorId(request.getInstructorID())
-                .maxStudents(request.getMaxStudents())
-                .build();
+        try {
+            ProducerRecord<String, Object> record = new ProducerRecord<>("user-validation-request", event);
+            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "user-validation-response".getBytes()));
+            record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
 
-        courseRepository.save(courseEntity);
+            RequestReplyFuture<String, Object, UserExistsResponseEvent> future =
+                    userReplyingKafkaTemplate.sendAndReceive(record);
 
-        return ServiceResult.<CourseResponse>builder()
-                .data(CourseMapper.toResponse(courseEntity))
-                .success(true)
-                .httpStatus(HttpStatus.CREATED)
-                .build();
+            ConsumerRecord<String, UserExistsResponseEvent> response = future.get();
+
+            if (response == null || response.value() == null || !response.value().exists()) {
+                return ServiceResult.<CourseResponse>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.BAD_REQUEST)
+                        .messageError("Instructor ID is invalid or validation failed")
+                        .build();
+            }
+
+            CourseEntity courseEntity = CourseEntity.builder()
+                    .title(request.getTitle())
+                    .description(request.getDescription())
+                    .modules(Collections.<ModuleEntity>emptyList())
+                    .instructorId(request.getInstructorID())
+                    .maxStudents(request.getMaxStudents())
+                    .build();
+
+            courseRepository.save(courseEntity);
+
+            return ServiceResult.<CourseResponse>builder()
+                    .data(CourseMapper.toResponse(courseEntity))
+                    .success(true)
+                    .httpStatus(HttpStatus.CREATED)
+                    .build();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ServiceResult.<CourseResponse>builder()
+                    .success(false)
+                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .messageError("Kafka request interrupted: " + e.getMessage())
+                    .build();
+        } catch (ExecutionException e) {
+            return ServiceResult.<CourseResponse>builder()
+                    .success(false)
+                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .messageError("Kafka execution failed: " + e.getMessage())
+                    .build();
+        }
     }
 
     public List<CourseResponse> getCourses(CourseFilterParams filterParams) {
@@ -64,24 +102,46 @@ public class CourseService {
                 PageRequest.of(filterParams.getPage(), filterParams.getSize())
         ).stream().toList();
 
-        return courseEntities.stream().map(CourseMapper ::toResponse).collect(Collectors.toList());
+        return courseEntities.stream().map(CourseMapper::toResponse).collect(Collectors.toList());
     }
 
     public ServiceResult<Boolean> assignStudentToCourse(AssignStudentToCourseRequest request) {
-        Optional<CourseEntity> courseOptional = courseRepository.findCourseEntitiesById(request.getCourse_id());
-        CourseEntity course = null;
+        try {
+            Optional<CourseEntity> courseOptional = courseRepository.findCourseEntitiesById(request.getCourse_id());
 
-        kafkaTemplate.send("user-validation-request",
-                new CheckUserExistsEvent(request.getStudent_id(), "STUDENT", UUID.randomUUID().toString()));
+            if (courseOptional.isEmpty()) {
+                return ServiceResult.<Boolean>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.NOT_FOUND)
+                        .messageError("The course was not found")
+                        .build();
+            }
 
-        if(courseOptional.isPresent())
-        {
-            course = courseOptional.get();
+            String correlationId = UUID.randomUUID().toString();
+            CheckUserExistsEvent event = new CheckUserExistsEvent(request.getStudent_id(), "STUDENT", correlationId);
 
+            ProducerRecord<String, Object> record = new ProducerRecord<>("user-validation-request", event);
+            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "user-validation-response".getBytes()));
+            record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
+
+            RequestReplyFuture<String, Object, UserExistsResponseEvent> future =
+                    userReplyingKafkaTemplate.sendAndReceive(record);
+            ConsumerRecord<String, UserExistsResponseEvent> response = future.get();
+
+            if (response == null || response.value() == null || !response.value().exists()) {
+                return ServiceResult.<Boolean>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.BAD_REQUEST)
+                        .messageError("Student ID is invalid or validation failed")
+                        .build();
+            }
+
+            CourseEntity course = courseOptional.get();
             CourseStudentEntity courseStudentEntity = CourseStudentEntity.builder()
                     .courseId(course.getId())
                     .studentId(request.getStudent_id())
                     .build();
+
             courseStudentRepository.save(courseStudentEntity);
 
             return ServiceResult.<Boolean>builder()
@@ -89,19 +149,14 @@ public class CourseService {
                     .success(true)
                     .httpStatus(HttpStatus.CREATED)
                     .build();
-        }
-        else
-        {
+
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
             return ServiceResult.<Boolean>builder()
                     .success(false)
-                    .httpStatus(HttpStatus.NOT_FOUND)
-                    .messageError("The course was not found")
+                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .messageError("Kafka request failed: " + e.getMessage())
                     .build();
         }
-
-
-
-
     }
-
 }

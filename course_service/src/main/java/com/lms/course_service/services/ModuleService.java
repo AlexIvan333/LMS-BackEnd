@@ -11,15 +11,23 @@ import com.lms.course_service.mappers.ModuleMapper;
 import com.lms.course_service.repositories.CourseRepository;
 import com.lms.course_service.repositories.ModuleRepository;
 import com.lms.shared.events.CheckResourceExistsEvent;
+import com.lms.shared.events.ResourceExistsResponseEvent;
 import lombok.AllArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+import org.springframework.kafka.requestreply.RequestReplyFuture;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +36,7 @@ public class ModuleService {
 
     private final ModuleRepository moduleRepository;
     private final CourseRepository courseRepository;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ReplyingKafkaTemplate<String, Object, ResourceExistsResponseEvent> resourceReplyingKafkaTemplate;
 
     public ServiceResult<ModuleResponse> createModule(CreateModuleRequest request) {
 
@@ -74,7 +82,6 @@ public class ModuleService {
     }
 
     public ServiceResult<ModuleResponse> addResourceToModule(AddResourceToModuleRequest request ) {
-
         if (!moduleRepository.existsById(request.getModuleId())) {
             return ServiceResult.<ModuleResponse>builder()
                     .success(false)
@@ -83,18 +90,44 @@ public class ModuleService {
                     .build();
         }
 
-        kafkaTemplate.send("resource-validation-request",
-                new CheckResourceExistsEvent(List.of(request.getResourceId()), UUID.randomUUID().toString()));
+        try {
+            String correlationId = UUID.randomUUID().toString();
+            CheckResourceExistsEvent event = new CheckResourceExistsEvent(List.of(request.getResourceId()), correlationId);
 
-        ModuleEntity moduleEntity = moduleRepository.findModuleEntityById(request.getModuleId());
+            ProducerRecord<String, Object> record = new ProducerRecord<>("resource-validation-request", event);
+            record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
+            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "resource-validation-response".getBytes()));
 
-        moduleEntity.getResourceIds().add(request.getResourceId());
-        moduleRepository.save(moduleEntity);
+            RequestReplyFuture<String, Object, ResourceExistsResponseEvent> future =
+                    resourceReplyingKafkaTemplate.sendAndReceive(record);
 
-        return ServiceResult.<ModuleResponse>builder()
-                .data(ModuleMapper.toResponse(moduleEntity))
-                .success(true)
-                .httpStatus(HttpStatus.OK)
-                .build();
+            ConsumerRecord<String, ResourceExistsResponseEvent> response = future.get(); // this line can throw exceptions
+
+            if (!response.value().validResourceIds().contains(request.getResourceId())) {
+                return ServiceResult.<ModuleResponse>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.BAD_REQUEST)
+                        .messageError("Invalid resource ID: " + request.getResourceId())
+                        .build();
+            }
+
+            ModuleEntity moduleEntity = moduleRepository.findModuleEntityById(request.getModuleId());
+            moduleEntity.getResourceIds().add(request.getResourceId());
+            moduleRepository.save(moduleEntity);
+
+            return ServiceResult.<ModuleResponse>builder()
+                    .data(ModuleMapper.toResponse(moduleEntity))
+                    .success(true)
+                    .httpStatus(HttpStatus.OK)
+                    .build();
+
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            return ServiceResult.<ModuleResponse>builder()
+                    .success(false)
+                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .messageError("Kafka request failed: " + e.getMessage())
+                    .build();
+        }
     }
 }

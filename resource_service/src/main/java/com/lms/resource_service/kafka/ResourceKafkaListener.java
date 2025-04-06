@@ -5,6 +5,8 @@ import com.lms.resource_service.repositories.ResourceRepository;
 import com.lms.shared.events.CheckResourceExistsEvent;
 import com.lms.shared.events.ResourceExistsResponseEvent;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -19,11 +21,15 @@ public class ResourceKafkaListener {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
 
-    @KafkaListener(topics = "resource-validation-request", groupId = "lms-group")
+    @KafkaListener(topics = "resource-validation-request", groupId = "lms-group", containerFactory = "kafkaListenerContainerFactory")
     public void onResourceValidation(CheckResourceExistsEvent event) {
         List<Long> valid = resourceRepo.findAllById(event.resourceIds())
                 .stream().map(ResourceEntity::getId).toList();
+
         ResourceExistsResponseEvent response = new ResourceExistsResponseEvent(valid, event.correlationId());
-        kafkaTemplate.send("resource-validation-response", response);
+
+        ProducerRecord<String, Object> record = new ProducerRecord<>("resource-validation-response", response);
+        record.headers().add(new RecordHeader("kafka_correlationId", event.correlationId().getBytes()));
+        kafkaTemplate.send(record);
     }
 }
