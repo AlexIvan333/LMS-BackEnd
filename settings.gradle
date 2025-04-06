@@ -1,15 +1,13 @@
 rootProject.name = 'backend'
 include 'shared'
-include 'api_gateway'
 include 'assignment_service'
 include 'auth_service'
 include 'course_service'
 include 'resource_service'
 
 
-project(':shared').projectDir = file('shared')
-project(':api_gateway').projectDir = file('api_gateway')
-project(':assignment_service').projectDir = file('assignment_service')
-project(':auth_service').projectDir = file('auth_service')
-project(':course_service').projectDir = file('course_service')
-project(':resource_service').projectDir = file('resource_service')
+project(':shared').projectDir = file('../shared')
+project(':assignment_service').projectDir = file('../assignment_service')
+project(':auth_service').projectDir = file('../auth_service')
+project(':course_service').projectDir = file('../course_service')
+project(':resource_service').projectDir = file('../resource_service')
