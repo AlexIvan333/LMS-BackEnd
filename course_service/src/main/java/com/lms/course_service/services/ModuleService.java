@@ -39,19 +39,17 @@ public class ModuleService {
     private final ReplyingKafkaTemplate<String, Object, ResourceExistsResponseEvent> resourceReplyingKafkaTemplate;
 
     public ServiceResult<ModuleResponse> createModule(CreateModuleRequest request) {
-
         Optional<CourseEntity> courseOptional = courseRepository.findCourseEntitiesById(request.getCourseId());
-        CourseEntity course = null;
 
-        if (courseOptional.isPresent()) {
-            course = courseOptional.get();
-        } else {
+        if (courseOptional.isEmpty()) {
             return ServiceResult.<ModuleResponse>builder()
                     .success(false)
                     .httpStatus(HttpStatus.NOT_FOUND)
                     .messageError("Course not found for ID: " + request.getCourseId())
                     .build();
         }
+
+        CourseEntity course = courseOptional.get();
 
         ModuleEntity moduleEntity = ModuleEntity.builder()
                 .title(request.getTitle())
@@ -70,18 +68,18 @@ public class ModuleService {
     }
 
     public List<ModuleResponse> getModules(ModuleFilterParams filterParams) {
-
         List<ModuleEntity> moduleEntities = moduleRepository.findModulesEntitiesByFilters(
                 filterParams.getModuleId(),
                 filterParams.getCourseID(),
                 PageRequest.of(filterParams.getPage(), filterParams.getSize())
         ).stream().toList();
 
-
-        return moduleEntities.stream().map(ModuleMapper::toResponse).collect(Collectors.toList());
+        return moduleEntities.stream()
+                .map(ModuleMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
-    public ServiceResult<ModuleResponse> addResourceToModule(AddResourceToModuleRequest request ) {
+    public ServiceResult<ModuleResponse> addResourceToModule(AddResourceToModuleRequest request) {
         if (!moduleRepository.existsById(request.getModuleId())) {
             return ServiceResult.<ModuleResponse>builder()
                     .success(false)
@@ -89,21 +87,22 @@ public class ModuleService {
                     .messageError("Module not found for ID: " + request.getModuleId())
                     .build();
         }
-
+         //todo: add a check if the resource is already in the module
         try {
             String correlationId = UUID.randomUUID().toString();
             CheckResourceExistsEvent event = new CheckResourceExistsEvent(List.of(request.getResourceId()), correlationId);
 
             ProducerRecord<String, Object> record = new ProducerRecord<>("resource-validation-request", event);
-            record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
             record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "resource-validation-response".getBytes()));
+            record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
 
             RequestReplyFuture<String, Object, ResourceExistsResponseEvent> future =
                     resourceReplyingKafkaTemplate.sendAndReceive(record);
 
-            ConsumerRecord<String, ResourceExistsResponseEvent> response = future.get(); // this line can throw exceptions
+            ConsumerRecord<String, ResourceExistsResponseEvent> response = future.get();
 
-            if (!response.value().validResourceIds().contains(request.getResourceId())) {
+            if (response == null || response.value() == null ||
+                    !response.value().validResourceIds().contains(request.getResourceId())) {
                 return ServiceResult.<ModuleResponse>builder()
                         .success(false)
                         .httpStatus(HttpStatus.BAD_REQUEST)
@@ -121,12 +120,18 @@ public class ModuleService {
                     .httpStatus(HttpStatus.OK)
                     .build();
 
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return ServiceResult.<ModuleResponse>builder()
                     .success(false)
                     .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .messageError("Kafka request failed: " + e.getMessage())
+                    .messageError("Kafka interrupted: " + e.getMessage())
+                    .build();
+        } catch (ExecutionException e) {
+            return ServiceResult.<ModuleResponse>builder()
+                    .success(false)
+                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .messageError("Kafka error: " + e.getMessage())
                     .build();
         }
     }

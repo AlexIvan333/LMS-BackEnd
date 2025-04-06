@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,15 +22,12 @@ public class ResourceKafkaListener {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
 
-    @KafkaListener(topics = "resource-validation-request", groupId = "lms-group", containerFactory = "kafkaListenerContainerFactory")
-    public void onResourceValidation(CheckResourceExistsEvent event) {
+    @KafkaListener(topics = "resource-validation-request", groupId = "resource-service")
+    @SendTo("resource-validation-response")
+    public ResourceExistsResponseEvent onResourceValidation(CheckResourceExistsEvent event) {
         List<Long> valid = resourceRepo.findAllById(event.resourceIds())
                 .stream().map(ResourceEntity::getId).toList();
 
-        ResourceExistsResponseEvent response = new ResourceExistsResponseEvent(valid, event.correlationId());
-
-        ProducerRecord<String, Object> record = new ProducerRecord<>("resource-validation-response", response);
-        record.headers().add(new RecordHeader("kafka_correlationId", event.correlationId().getBytes()));
-        kafkaTemplate.send(record);
+        return new ResourceExistsResponseEvent(valid, event.correlationId());
     }
 }

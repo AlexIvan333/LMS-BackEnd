@@ -93,7 +93,6 @@ public class KafkaConfig {
     public ConcurrentMessageListenerContainer<String, ResourceExistsResponseEvent> resourceRepliesContainer() {
         var container = resourceExistsListenerFactory().createContainer("resource-validation-response");
         container.getContainerProperties().setGroupId("course-service-user-replies"); // 👈 Important!
-        container.setAutoStartup(true);
         return container;
     }
 

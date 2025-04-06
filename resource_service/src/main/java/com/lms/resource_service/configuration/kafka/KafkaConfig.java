@@ -1,5 +1,6 @@
 package com.lms.resource_service.configuration.kafka;
 
+import com.lms.shared.events.CheckResourceExistsEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -36,23 +37,23 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
         JsonDeserializer<Object> deserializer = new JsonDeserializer<>();
-        deserializer.addTrustedPackages("*");
-        deserializer.setRemoveTypeHeaders(false);
-        deserializer.setUseTypeMapperForKey(true);
-
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "resource-service");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
+            KafkaTemplate<String, Object> kafkaTemplate
+    ) {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+        factory.setReplyTemplate(kafkaTemplate);
         return factory;
     }
 
