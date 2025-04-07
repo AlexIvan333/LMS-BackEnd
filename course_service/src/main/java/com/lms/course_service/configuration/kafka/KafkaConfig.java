@@ -28,7 +28,6 @@ public class KafkaConfig {
     private static final String USER_REPLY_TOPIC = "user-validation-response";
     private static final String RESOURCE_REPLY_TOPIC = "resource-validation-response";
 
-    // === Producer Factory ===
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -43,7 +42,6 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    // === ReplyingKafkaTemplate for User Validation ===
     @Bean
     public ConsumerFactory<String, UserExistsResponseEvent> userExistsConsumerFactory() {
         JsonDeserializer<UserExistsResponseEvent> deserializer = new JsonDeserializer<>(UserExistsResponseEvent.class);
@@ -72,7 +70,6 @@ public class KafkaConfig {
         return new ReplyingKafkaTemplate<>(producerFactory(), userRepliesContainer());
     }
 
-    // === ReplyingKafkaTemplate for Resource Validation ===
     @Bean
     public ConsumerFactory<String, ResourceExistsResponseEvent> resourceExistsConsumerFactory() {
         JsonDeserializer<ResourceExistsResponseEvent> deserializer = new JsonDeserializer<>(ResourceExistsResponseEvent.class);

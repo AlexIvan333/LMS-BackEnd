@@ -40,7 +40,6 @@ public class AuthService {
             throw new InvalidCredentialsException("Invalid email or password.");
         }
 
-        // Redirect to 2FA input page (frontend handles the UI part)
         return "Two-factor authentication required.";
     }
 

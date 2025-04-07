@@ -19,8 +19,6 @@ import java.util.List;
 public class ResourceKafkaListener {
 
     private final ResourceRepository resourceRepo;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
-
 
     @KafkaListener(topics = "resource-validation-request", groupId = "resource-service")
     @SendTo("resource-validation-response")

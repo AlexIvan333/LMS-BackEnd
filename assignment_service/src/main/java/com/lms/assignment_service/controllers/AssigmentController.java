@@ -14,10 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//get filtes: completed, student id, page, size, course, module iD
-//grade and comment assigment with complete
-//create assigment
-//create assigment submission date= date.now when press (start assigment)
 @RestController
 @AllArgsConstructor
 @RequestMapping("/assignments")

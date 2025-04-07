@@ -17,7 +17,7 @@ public class ResourceRequestDispatcher {
 
     public String requestResources(List<Long> ids) {
         String correlationId = UUID.randomUUID().toString();
-        // You may rename the event to GetResourceDetailsEvent if you want a new one
+
         kafkaTemplate.send("resource-details-request", new CheckResourceExistsEvent(ids, correlationId));
         return correlationId;
     }

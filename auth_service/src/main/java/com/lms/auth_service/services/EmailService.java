@@ -77,10 +77,8 @@ public class EmailService {
 
             helper.setText(body, true);
 
-            // Generate QR Code
             byte[] qrCodeImage = generateQRCodeImage(qrCodeUrl);
 
-            // Embed QR code as inline content
             helper.addInline("qrcode", new ByteArrayResource(qrCodeImage), "image/png");
 
             mailSender.send(message);
@@ -99,7 +97,6 @@ public class EmailService {
 
             String verificationCode = generateVerificationCode();
 
-            // HTML content for the email body
             String body = "<!DOCTYPE html>" +
                     "<html>" +
                     "<head>" +

@@ -35,7 +35,7 @@ public class AssigmentSubmissionValidation implements IAssigmentSubmissionValida
     @Override
     public boolean isValid(CreateAssigmentSubmissionRequest request) {
         try {
-            // Validate user
+
             if (request.getStudentId() == null) return false;
 
             String userCorrelationId = UUID.randomUUID().toString();
@@ -53,10 +53,10 @@ public class AssigmentSubmissionValidation implements IAssigmentSubmissionValida
                 return false;
             }
 
-            // Validate assignment existence
+
             if (!assignmentRepository.existsById(request.getAssigmentId())) return false;
 
-            // Validate resources
+
             List<Long> resourceIds = request.getResourceIds();
             if (resourceIds != null && !resourceIds.isEmpty()) {
                 String resCorrelationId = UUID.randomUUID().toString();

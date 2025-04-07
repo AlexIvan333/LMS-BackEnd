@@ -17,7 +17,6 @@ public class SequenceGeneratorService {
     private final MongoTemplate mongoTemplate;
 
     public long generateSequence(String seqName) {
-        // Use MongoTemplate's findAndModify method
         DatabaseSequence counter = mongoTemplate.findAndModify(
                 Query.query(Criteria.where("_id").is(seqName)),
                 new Update().inc("seq", 1),

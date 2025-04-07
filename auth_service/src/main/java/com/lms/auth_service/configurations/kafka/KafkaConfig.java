@@ -47,12 +47,12 @@ public class KafkaConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
-            KafkaTemplate<String, Object> kafkaTemplate // inject it here
+            KafkaTemplate<String, Object> kafkaTemplate
     ) {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        factory.setReplyTemplate(kafkaTemplate); // 👈👈 this is the missing line!
+        factory.setReplyTemplate(kafkaTemplate);
         return factory;
     }
 }
