@@ -6,6 +6,7 @@ import com.lms.course_service.dtos.requests.CreateCourseRequest;
 import com.lms.course_service.dtos.responses.CourseResponse;
 import com.lms.course_service.dtos.responses.ServiceResult;
 import com.lms.course_service.entities.CourseStudentEntity;
+import com.lms.course_service.entities.Role;
 import com.lms.course_service.mappers.CourseMapper;
 import com.lms.course_service.entities.CourseEntity;
 import com.lms.course_service.entities.ModuleEntity;

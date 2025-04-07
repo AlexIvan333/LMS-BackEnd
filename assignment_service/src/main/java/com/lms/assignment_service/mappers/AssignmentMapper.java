@@ -14,14 +14,9 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class AssignmentMapper {
-    private static ResourceRequestDispatcher dispatcher;
     public static AssignmentResponse toResponse(AssignmentEntity entity)
     {
         if (entity == null) return null;
-
-        List<Long> resourceIds = entity.getResourceIds();
-        String correlationId = dispatcher.requestResources(resourceIds);
-        List<ResourceResponse> resources = dispatcher.getResponseIfAvailable(correlationId);
 
         return AssignmentResponse.builder()
                 .id(entity.getId())
@@ -30,7 +25,7 @@ public class AssignmentMapper {
                 .deadline(entity.getDeadline())
                 .courseID(entity.getCourseId())
                 .moduleID(entity.getModule_id())
-                .resources(resources)
+                .resources(entity.getResourceIds())
                 .build();
     }
 }

@@ -87,7 +87,7 @@ public class ModuleService {
                     .messageError("Module not found for ID: " + request.getModuleId())
                     .build();
         }
-         //todo: add a check if the resource is already in the module
+
         try {
             String correlationId = UUID.randomUUID().toString();
             CheckResourceExistsEvent event = new CheckResourceExistsEvent(List.of(request.getResourceId()), correlationId);
@@ -110,7 +110,17 @@ public class ModuleService {
                         .build();
             }
 
+
             ModuleEntity moduleEntity = moduleRepository.findModuleEntityById(request.getModuleId());
+
+            if (moduleEntity != null && moduleEntity.getResourceIds().contains(request.getResourceId())) {
+                return ServiceResult.<ModuleResponse>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.BAD_REQUEST)
+                        .messageError("The resource ID: " + request.getResourceId() + " already exists!")
+                        .build();
+            }
+
             moduleEntity.getResourceIds().add(request.getResourceId());
             moduleRepository.save(moduleEntity);
 

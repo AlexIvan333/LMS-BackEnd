@@ -8,32 +8,32 @@ import org.springframework.context.annotation.Configuration;
 public class KafkaTopicConfig {
 
     @Bean
-    public NewTopic userValidationRequestTopic() {
+    public NewTopic userValidationRequest() {
         return new NewTopic("user-validation-request", 1, (short) 1);
     }
 
     @Bean
-    public NewTopic userValidationResponseTopic() {
+    public NewTopic userValidationResponse() {
         return new NewTopic("user-validation-response", 1, (short) 1);
     }
 
     @Bean
-    public NewTopic resourceValidationRequestTopic() {
+    public NewTopic resourceValidationRequest() {
         return new NewTopic("resource-validation-request", 1, (short) 1);
     }
 
     @Bean
-    public NewTopic resourceValidationResponseTopic() {
+    public NewTopic resourceValidationResponse() {
         return new NewTopic("resource-validation-response", 1, (short) 1);
     }
 
     @Bean
-    public NewTopic resourceDetailsRequestTopic() {
+    public NewTopic resourceDetailsRequest() {
         return new NewTopic("resource-details-request", 1, (short) 1);
     }
 
     @Bean
-    public NewTopic resourceDetailsResponseTopic() {
+    public NewTopic resourceDetailsResponse() {
         return new NewTopic("resource-details-response", 1, (short) 1);
     }
 }

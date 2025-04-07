@@ -20,5 +20,5 @@ public class AssignmentResponse {
     private Date deadline;
     private Long courseID;
     private Long moduleID;
-    private List<ResourceResponse> resources;
+    private List<Long> resources;
 }

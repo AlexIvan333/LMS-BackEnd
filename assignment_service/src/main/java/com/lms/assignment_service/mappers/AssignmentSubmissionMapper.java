@@ -13,12 +13,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class AssignmentSubmissionMapper {
-    private static ResourceRequestDispatcher dispatcher;
     public static AssignmentSubmissionResponse toResponse(AssignmentSubmissionEntity entity) {
         if (entity == null) {return null;}
-
-        String correlationId = dispatcher.requestResources(entity.getResourceIds());
-        List<ResourceResponse> resources = dispatcher.getResponseIfAvailable(correlationId);
 
         return AssignmentSubmissionResponse.builder()
                 .id(entity.getId())
@@ -28,7 +24,7 @@ public class AssignmentSubmissionMapper {
                 .grade(entity.getGrade())
                 .completed(entity.getCompleted())
                 .comment(entity.getComment())
-                .resources(resources)
+                .resources(entity.getResourceIds())
                 .build();
     }
 }

@@ -22,5 +22,5 @@ public class AssignmentSubmissionResponse {
     private Grade grade;
     private Boolean completed;
     private String comment;
-    private List<ResourceResponse> resources;
+    private List<Long> resources;
 }
