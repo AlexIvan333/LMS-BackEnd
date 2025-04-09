@@ -1,5 +1,6 @@
 package com.lms.assignment_service.dtos.responses;
 
+import com.lms.shared.dtos.ResourceResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +20,5 @@ public class AssignmentResponse {
     private Date deadline;
     private Long courseID;
     private Long moduleID;
-    private List<ResourceResponse> resources;
+    private List<Long> resources;
 }

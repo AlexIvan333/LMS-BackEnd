@@ -29,7 +29,7 @@ public class AssigmentService {
         if (!assigmentValidation.isValid(request)) {
             return ServiceResult.<AssignmentResponse>builder()
                     .success(false)
-                    .messageError("The selected module does not exist.")
+                    .messageError("The request is not valid.")
                     .httpStatus(HttpStatus.BAD_REQUEST)
                     .build();
         }

@@ -4,9 +4,15 @@ package com.lms.assignment_service.mappers;
 
 import com.lms.assignment_service.dtos.responses.AssignmentResponse;
 import com.lms.assignment_service.entities.AssignmentEntity;
+import com.lms.assignment_service.kafka.ResourceRequestDispatcher;
+import com.lms.shared.dtos.ResourceResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.List;
 
+@Component
+@RequiredArgsConstructor
 public class AssignmentMapper {
     public static AssignmentResponse toResponse(AssignmentEntity entity)
     {
@@ -19,7 +25,7 @@ public class AssignmentMapper {
                 .deadline(entity.getDeadline())
                 .courseID(entity.getCourseId())
                 .moduleID(entity.getModule_id())
-                .resources(Collections.emptyList()) // todo: get the list of the resources response from the resource service
+                .resources(entity.getResourceIds())
                 .build();
     }
 }

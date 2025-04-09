@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'com.lms'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

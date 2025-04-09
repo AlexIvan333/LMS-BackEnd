@@ -46,5 +46,13 @@ public class ResourceController {
         return ResponseEntity.ok(resourceService.getResourceById(id).data);
     }
 
+    @GetMapping("/validate")
+    @RolesAllowed({"ADMIN", "INSTRUCTOR", "STUDENT"})
+    public ResponseEntity<List<Long>> validateResourceIds(@RequestBody List<Long> ids) {
+        List<Long> existingIds = resourceService.findExistingIds(ids);
+        return ResponseEntity.ok(existingIds);
+    }
+
+
 
 }

@@ -1,6 +1,5 @@
 package com.lms.resource_service.configuration;
 
-import com.lms.resource_service.configuration.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

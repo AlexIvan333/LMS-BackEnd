@@ -1,1 +1,13 @@
 rootProject.name = 'backend'
+include 'shared'
+include 'assignment_service'
+include 'auth_service'
+include 'course_service'
+include 'resource_service'
+
+
+project(':shared').projectDir = file('../shared')
+project(':assignment_service').projectDir = file('../assignment_service')
+project(':auth_service').projectDir = file('../auth_service')
+project(':course_service').projectDir = file('../course_service')
+project(':resource_service').projectDir = file('../resource_service')

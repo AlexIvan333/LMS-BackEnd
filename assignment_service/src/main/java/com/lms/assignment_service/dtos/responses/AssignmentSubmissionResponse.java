@@ -1,6 +1,7 @@
 package com.lms.assignment_service.dtos.responses;
 
 import com.lms.assignment_service.entities.Grade;
+import com.lms.shared.dtos.ResourceResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +22,5 @@ public class AssignmentSubmissionResponse {
     private Grade grade;
     private Boolean completed;
     private String comment;
-    private List<ResourceResponse> resources;
+    private List<Long> resources;
 }
