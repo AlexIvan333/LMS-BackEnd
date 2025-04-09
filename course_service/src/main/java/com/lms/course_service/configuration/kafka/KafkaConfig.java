@@ -24,7 +24,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
+    private static final String BOOTSTRAP_SERVERS = "host.docker.internal:9092";
     private static final String USER_REPLY_TOPIC = "user-validation-response";
     private static final String RESOURCE_REPLY_TOPIC = "resource-validation-response";
 
