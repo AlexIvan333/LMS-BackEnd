@@ -12,7 +12,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
@@ -24,9 +23,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    private static final String BOOTSTRAP_SERVERS = "kafka:9092";
-    private static final String USER_REPLY_TOPIC = "user-validation-response";
-    private static final String RESOURCE_REPLY_TOPIC = "resource-validation-response";
+    private static final String BOOTSTRAP_SERVERS = "host.docker.internal:9092";
 
     @Bean
     public ProducerFactory<String, Object> producerFactory() {

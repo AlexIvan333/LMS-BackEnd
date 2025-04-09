@@ -23,7 +23,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    private static final String BOOTSTRAP_SERVERS = "kafka:9092";
+    private static final String BOOTSTRAP_SERVERS = "host.docker.internal:9092";
 
     // === Producer Factory ===
     @Bean
