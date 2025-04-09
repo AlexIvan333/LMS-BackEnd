@@ -30,6 +30,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_assignment:5432/lms_assignment
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: password
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_GROUP_ID: assignment-service
     restart: unless-stopped
     depends_on:
       - postgres_assignment

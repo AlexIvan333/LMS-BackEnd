@@ -50,6 +50,8 @@ services:
       SPRING_DATA_MONGODB_DATABASE: lms_auth
       SPRING_DATA_MONGODB_USERNAME: admin
       SPRING_DATA_MONGODB_PASSWORD: password
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_GROUP_ID: auth-service
     restart: unless-stopped
     depends_on:
       - postgres_auth

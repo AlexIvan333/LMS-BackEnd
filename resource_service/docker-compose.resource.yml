@@ -32,6 +32,8 @@ services:
       SPRING_DATA_MONGODB_USERNAME: admin
       SPRING_DATA_MONGODB_PASSWORD: password
       SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_GROUP_ID: resource-service
     restart: unless-stopped
     depends_on:
       - mongodb_resource
