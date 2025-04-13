@@ -6,7 +6,6 @@ import com.lms.course_service.dtos.requests.CreateCourseRequest;
 import com.lms.course_service.dtos.responses.CourseResponse;
 import com.lms.course_service.dtos.responses.ServiceResult;
 import com.lms.course_service.entities.CourseStudentEntity;
-import com.lms.course_service.entities.Role;
 import com.lms.course_service.mappers.CourseMapper;
 import com.lms.course_service.entities.CourseEntity;
 import com.lms.course_service.entities.ModuleEntity;
@@ -25,7 +24,6 @@ import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +63,7 @@ public class CourseService {
             CourseEntity courseEntity = CourseEntity.builder()
                     .title(request.getTitle())
                     .description(request.getDescription())
-                    .modules(Collections.<ModuleEntity>emptyList())
+                    .modules(Collections.emptyList())
                     .instructorId(request.getInstructorID())
                     .maxStudents(request.getMaxStudents())
                     .build();

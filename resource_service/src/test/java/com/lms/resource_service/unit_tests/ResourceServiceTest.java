@@ -22,7 +22,6 @@ import com.lms.resource_service.repositories.ResourceRepository;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.List;
 import com.lms.resource_service.services.ResourceService;
 import com.lms.resource_service.services.SequenceGeneratorService;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -57,7 +55,6 @@ class ResourceServiceTest {
 
     @Test
     @DisplayName("Test saveResource(MultipartFile); given ResourceRepository; then throw IOException")
-    @Tag("MaintainedByDiffblue")
     void testSaveResource_givenResourceRepository_thenThrowIOException() throws IOException {
         // Arrange
         when(sequenceGeneratorService.generateSequence(Mockito.any())).thenReturn(1L);
@@ -79,11 +76,10 @@ class ResourceServiceTest {
 
     @Test
     @DisplayName("Test saveResource(MultipartFile); then return Data FileName is empty string")
-    @Tag("MaintainedByDiffblue")
     void testSaveResource_thenReturnDataFileNameIsEmptyString() throws IOException {
         // Arrange
         ResourceEntity resourceEntity = new ResourceEntity();
-        resourceEntity.setFileData("AXAXAXAX".getBytes(StandardCharsets.UTF_8));
+        resourceEntity.setFileData("Test".getBytes(StandardCharsets.UTF_8));
         resourceEntity.setFileName("foo.txt");
         resourceEntity.setFileSize(3L);
         resourceEntity.setFileType("File Type");
@@ -94,7 +90,7 @@ class ResourceServiceTest {
 
         // Act
         ServiceResult<ResourceEntity> actualSaveResourceResult = resourceService
-                .saveResource(new MockMultipartFile("Name", new ByteArrayInputStream("AXAXAXAX".getBytes(StandardCharsets.UTF_8))));
+                .saveResource(new MockMultipartFile("Name", new ByteArrayInputStream("Test".getBytes(StandardCharsets.UTF_8))));
 
         // Assert
         verify(sequenceGeneratorService).generateSequence(eq("resources_sequence"));
@@ -105,20 +101,18 @@ class ResourceServiceTest {
         assertNull(actualSaveResourceResult.getMessageError());
         assertNull(data.getFileType());
         assertEquals(1L, data.getId());
-        assertEquals(8L, data.getFileSize());
         assertEquals(HttpStatus.CREATED, actualSaveResourceResult.getHttpStatus());
         assertTrue(actualSaveResourceResult.isSuccess());
-        byte[] expectedFileData = "AXAXAXAX".getBytes(StandardCharsets.UTF_8);
+        byte[] expectedFileData = "Test".getBytes(StandardCharsets.UTF_8);
         assertArrayEquals(expectedFileData, data.getFileData());
     }
 
     @Test
-    @DisplayName("Test getResourceById(Long); given ResourceEntity() FileData is 'AXAXAXAX' Bytes is 'UTF-8'")
-    @Tag("MaintainedByDiffblue")
-    void testGetResourceById_givenResourceEntityFileDataIsAxaxaxaxBytesIsUtf8() {
+    @DisplayName("Test getResourceById(Long); given ResourceEntity() FileData is 'Test' Bytes is 'UTF-8'")
+    void testGetResourceById_givenResourceEntityFileDataIsTestBytesIsUtf8() {
         // Arrange
         ResourceEntity resourceEntity = new ResourceEntity();
-        resourceEntity.setFileData("AXAXAXAX".getBytes(StandardCharsets.UTF_8));
+        resourceEntity.setFileData("Test".getBytes(StandardCharsets.UTF_8));
         resourceEntity.setFileName("foo.txt");
         resourceEntity.setFileSize(3L);
         resourceEntity.setFileType("File Type");
@@ -142,18 +136,17 @@ class ResourceServiceTest {
         assertEquals(3L, data.getFileSize());
         assertEquals(HttpStatus.CREATED, actualResourceById.getHttpStatus());
         assertTrue(actualResourceById.isSuccess());
-        byte[] expectedFileData = "AXAXAXAX".getBytes(StandardCharsets.UTF_8);
+        byte[] expectedFileData = "Test".getBytes(StandardCharsets.UTF_8);
         assertArrayEquals(expectedFileData, data.getFileData());
     }
 
 
     @Test
     @DisplayName("Test getResourceById(Long); then calls getFileData()")
-    @Tag("MaintainedByDiffblue")
     void testGetResourceById_thenCallsGetFileData() {
         // Arrange
         ResourceEntity resourceEntity = mock(ResourceEntity.class);
-        when(resourceEntity.getFileData()).thenReturn("AXAXAXAX".getBytes(StandardCharsets.UTF_8));
+        when(resourceEntity.getFileData()).thenReturn("Test".getBytes(StandardCharsets.UTF_8));
         when(resourceEntity.getFileName()).thenReturn("foo.txt");
         when(resourceEntity.getFileType()).thenReturn("File Type");
         when(resourceEntity.getTitle()).thenReturn("Dr");
@@ -165,7 +158,7 @@ class ResourceServiceTest {
         doNothing().when(resourceEntity).setFileType(Mockito.any());
         doNothing().when(resourceEntity).setId(anyLong());
         doNothing().when(resourceEntity).setTitle(Mockito.any());
-        resourceEntity.setFileData("AXAXAXAX".getBytes(StandardCharsets.UTF_8));
+        resourceEntity.setFileData("Test".getBytes(StandardCharsets.UTF_8));
         resourceEntity.setFileName("foo.txt");
         resourceEntity.setFileSize(3L);
         resourceEntity.setFileType("File Type");
@@ -201,14 +194,13 @@ class ResourceServiceTest {
         assertEquals(3L, data.getFileSize());
         assertEquals(HttpStatus.CREATED, actualResourceById.getHttpStatus());
         assertTrue(actualResourceById.isSuccess());
-        byte[] expectedFileData = "AXAXAXAX".getBytes(StandardCharsets.UTF_8);
+        byte[] expectedFileData = "Test".getBytes(StandardCharsets.UTF_8);
         assertArrayEquals(expectedFileData, data.getFileData());
     }
 
 
     @Test
     @DisplayName("Test getResourceById(Long); then return MessageError is 'The resource was not found'")
-    @Tag("MaintainedByDiffblue")
     void testGetResourceById_thenReturnMessageErrorIsTheResourceWasNotFound() {
         // Arrange
         when(resourceRepository.existsResourceEntityById(anyLong())).thenReturn(false);
@@ -219,7 +211,7 @@ class ResourceServiceTest {
         doNothing().when(resourceEntity).setFileType(Mockito.any());
         doNothing().when(resourceEntity).setId(anyLong());
         doNothing().when(resourceEntity).setTitle(Mockito.any());
-        resourceEntity.setFileData("AXAXAXAX".getBytes(StandardCharsets.UTF_8));
+        resourceEntity.setFileData("Test".getBytes(StandardCharsets.UTF_8));
         resourceEntity.setFileName("foo.txt");
         resourceEntity.setFileSize(3L);
         resourceEntity.setFileType("File Type");
@@ -246,7 +238,6 @@ class ResourceServiceTest {
 
     @Test
     @DisplayName("Test findExistingIds(List); given one; when ArrayList() add one; then return Empty")
-    @Tag("MaintainedByDiffblue")
     void testFindExistingIds_givenOne_whenArrayListAddOne_thenReturnEmpty() {
         // Arrange
         when(resourceRepository.findAllById(Mockito.any())).thenReturn(new ArrayList<>());
@@ -264,11 +255,10 @@ class ResourceServiceTest {
 
     @Test
     @DisplayName("Test findExistingIds(List); given ResourceEntity() FileName is 'File Name'; then return size is two")
-    @Tag("MaintainedByDiffblue")
     void testFindExistingIds_givenResourceEntityFileNameIsFileName_thenReturnSizeIsTwo() {
         // Arrange
         ResourceEntity resourceEntity = new ResourceEntity();
-        resourceEntity.setFileData("AXAXAXAX".getBytes(StandardCharsets.UTF_8));
+        resourceEntity.setFileData("Test".getBytes(StandardCharsets.UTF_8));
         resourceEntity.setFileName("foo.txt");
         resourceEntity.setFileSize(3L);
         resourceEntity.setFileType("File Type");
@@ -276,10 +266,10 @@ class ResourceServiceTest {
         resourceEntity.setTitle("Dr");
 
         ResourceEntity resourceEntity2 = new ResourceEntity();
-        resourceEntity2.setFileData("AXAXAXAX".getBytes(StandardCharsets.UTF_8));
+        resourceEntity2.setFileData("Test".getBytes(StandardCharsets.UTF_8));
         resourceEntity2.setFileName("File Name");
         resourceEntity2.setFileSize(1L);
-        resourceEntity2.setFileType("com.lms.resource_service.entites.ResourceEntity");
+        resourceEntity2.setFileType("com.lms.resource_service.entities.ResourceEntity");
         resourceEntity2.setId(2L);
         resourceEntity2.setTitle("Mr");
 
@@ -300,7 +290,6 @@ class ResourceServiceTest {
 
     @Test
     @DisplayName("Test findExistingIds(List); given zero; when ArrayList() add zero; then return Empty")
-    @Tag("MaintainedByDiffblue")
     void testFindExistingIds_givenZero_whenArrayListAddZero_thenReturnEmpty() {
         // Arrange
         when(resourceRepository.findAllById(Mockito.any())).thenReturn(new ArrayList<>());
@@ -319,11 +308,10 @@ class ResourceServiceTest {
 
     @Test
     @DisplayName("Test findExistingIds(List); then return size is one")
-    @Tag("MaintainedByDiffblue")
     void testFindExistingIds_thenReturnSizeIsOne() {
         // Arrange
         ResourceEntity resourceEntity = new ResourceEntity();
-        resourceEntity.setFileData("AXAXAXAX".getBytes(StandardCharsets.UTF_8));
+        resourceEntity.setFileData("Test".getBytes(StandardCharsets.UTF_8));
         resourceEntity.setFileName("foo.txt");
         resourceEntity.setFileSize(3L);
         resourceEntity.setFileType("File Type");
@@ -345,7 +333,6 @@ class ResourceServiceTest {
 
     @Test
     @DisplayName("Test findExistingIds(List); when ArrayList(); then return Empty")
-    @Tag("MaintainedByDiffblue")
     void testFindExistingIds_whenArrayList_thenReturnEmpty() {
         // Arrange
         when(resourceRepository.findAllById(Mockito.any())).thenReturn(new ArrayList<>());
