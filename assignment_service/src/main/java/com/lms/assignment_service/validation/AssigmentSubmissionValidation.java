@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -71,10 +70,8 @@ public class AssigmentSubmissionValidation implements IAssigmentSubmissionValida
 
                 ConsumerRecord<String, ResourceExistsResponseEvent> resResponse = resFuture.get();
 
-                if (resResponse == null || resResponse.value() == null ||
-                        resResponse.value().validResourceIds().size() != resourceIds.size()) {
-                    return false;
-                }
+                return resResponse != null && resResponse.value() != null &&
+                        resResponse.value().validResourceIds().size() == resourceIds.size();
             }
 
             return true;

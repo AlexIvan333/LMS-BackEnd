@@ -86,7 +86,7 @@ public class KafkaConfig {
     @Bean
     public ConcurrentMessageListenerContainer<String, ResourceExistsResponseEvent> resourceRepliesContainer() {
         var container = resourceExistsListenerFactory().createContainer("resource-validation-response");
-        container.getContainerProperties().setGroupId("course-service-user-replies"); // 👈 Important!
+        container.getContainerProperties().setGroupId("course-service-user-replies");
         return container;
     }
 
@@ -98,7 +98,7 @@ public class KafkaConfig {
     private Map<String, Object> commonConsumerProps() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "course-service"); // 👈 For other general consumers
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "course-service");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         return props;
