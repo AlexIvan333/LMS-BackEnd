@@ -8,7 +8,6 @@ public interface ResourceRepository extends MongoRepository<ResourceEntity, Long
 
     ResourceEntity findResourceById(Long id);
 
-    Boolean existsResourceById(Long id);
 
-
+    boolean existsResourceEntityById(long id);
 }

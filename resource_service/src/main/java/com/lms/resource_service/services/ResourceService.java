@@ -45,9 +45,7 @@ public class ResourceService {
 
     public ServiceResult<ResourceResponse> getResourceById(Long id)
     {
-        ResourceEntity entity = resourceRepository.findResourceById(id);
-
-        if (entity == null)
+        if (!resourceRepository.existsResourceEntityById(id))
         {
             return ServiceResult.<ResourceResponse>builder()
                     .success(false)
@@ -55,6 +53,10 @@ public class ResourceService {
                     .messageError("The resource was not found")
                     .build();
         }
+
+        ResourceEntity entity = resourceRepository.findResourceById(id);
+
+
         return ServiceResult.<ResourceResponse>builder()
                 .data(ResourceMapper.toResponse(entity))
                 .success(true)

@@ -6,9 +6,7 @@ import com.lms.resource_service.entites.ResourceEntity;
 import com.lms.resource_service.services.ResourceService;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,12 +41,21 @@ public class ResourceController {
     @RolesAllowed({"ADMIN", "STUDENT", "INSTRUCTOR"})
     public ResponseEntity<ResourceResponse>getResources(@PathVariable Long id) {
 
-        return ResponseEntity.ok(resourceService.getResourceById(id).data);
+        var result = resourceService.getResourceById(id);
+        if (!result.success)
+        {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                    result.getHttpStatus(),result.getMessageError()
+            );
+            problemDetail.setTitle("Error getting the resource");
+            return ResponseEntity.of(problemDetail).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(result.data);
     }
 
     @GetMapping("/validate")
     @RolesAllowed({"ADMIN", "INSTRUCTOR", "STUDENT"})
-    public ResponseEntity<List<Long>> validateResourceIds(@RequestBody List<Long> ids) {
+    public ResponseEntity<List<Long>> validateResourceIds(@RequestParam List<Long> ids) {
         List<Long> existingIds = resourceService.findExistingIds(ids);
         return ResponseEntity.ok(existingIds);
     }
