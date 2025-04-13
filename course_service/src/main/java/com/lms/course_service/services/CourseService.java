@@ -8,7 +8,6 @@ import com.lms.course_service.dtos.responses.ServiceResult;
 import com.lms.course_service.entities.CourseStudentEntity;
 import com.lms.course_service.mappers.CourseMapper;
 import com.lms.course_service.entities.CourseEntity;
-import com.lms.course_service.entities.ModuleEntity;
 import com.lms.course_service.repositories.CourseRepository;
 import com.lms.course_service.repositories.CourseStudentRepository;
 import com.lms.shared.events.CheckUserExistsEvent;
