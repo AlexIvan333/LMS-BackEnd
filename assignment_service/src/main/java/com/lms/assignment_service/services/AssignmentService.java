@@ -1,14 +1,14 @@
 package com.lms.assignment_service.services;
 
 
-import com.lms.assignment_service.dtos.filters.AssigmentFilterParams;
-import com.lms.assignment_service.dtos.requests.CreateAssigmentRequest;
+import com.lms.assignment_service.dtos.filters.AssignmentFilterParams;
+import com.lms.assignment_service.dtos.requests.CreateAssignmentRequest;
 import com.lms.assignment_service.dtos.responses.AssignmentResponse;
 import com.lms.assignment_service.dtos.responses.ServiceResult;
 import com.lms.assignment_service.entities.AssignmentEntity;
 import com.lms.assignment_service.mappers.AssignmentMapper;
 import com.lms.assignment_service.repositories.AssignmentRepository;
-import com.lms.assignment_service.validation.interfaces.IAssigmentValidation;
+import com.lms.assignment_service.validation.interfaces.IAssignmentValidation;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class AssigmentService {
+public class AssignmentService {
     private final AssignmentRepository assignmentRepository;
-    private final IAssigmentValidation assigmentValidation;
+    private final IAssignmentValidation assigmentValidation;
 
 
-    public ServiceResult<AssignmentResponse> createAssigment(CreateAssigmentRequest request) {
+    public ServiceResult<AssignmentResponse> createAssignment(CreateAssignmentRequest request) {
 
         if (!assigmentValidation.isValid(request)) {
             return ServiceResult.<AssignmentResponse>builder()
@@ -52,7 +52,7 @@ public class AssigmentService {
                 .build();
     }
 
-    public List<AssignmentResponse> getAssigments(AssigmentFilterParams filterParams) {
+    public List<AssignmentResponse> getAssignments(AssignmentFilterParams filterParams) {
 
         List<AssignmentEntity> assignmentEntities = assignmentRepository.findAssignmentEntitiesByFilters(
                 filterParams.getAssigmentId(),

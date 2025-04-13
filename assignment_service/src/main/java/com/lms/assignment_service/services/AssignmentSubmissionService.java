@@ -1,8 +1,8 @@
 package com.lms.assignment_service.services;
 
 
-import com.lms.assignment_service.dtos.filters.AssigmentSubmissionFilterParams;
-import com.lms.assignment_service.dtos.requests.CreateAssigmentSubmissionRequest;
+import com.lms.assignment_service.dtos.filters.AssignmentSubmissionFilterParams;
+import com.lms.assignment_service.dtos.requests.CreateAssignmentSubmissionRequest;
 import com.lms.assignment_service.dtos.requests.GradeAssignmentSubmissionRequest;
 import com.lms.assignment_service.dtos.responses.AssignmentSubmissionResponse;
 import com.lms.assignment_service.dtos.responses.ServiceResult;
@@ -11,27 +11,25 @@ import com.lms.assignment_service.entities.Grade;
 import com.lms.assignment_service.mappers.AssignmentSubmissionMapper;
 import com.lms.assignment_service.repositories.AssignmentRepository;
 import com.lms.assignment_service.repositories.AssignmentSubmissionRepository;
-import com.lms.assignment_service.validation.interfaces.IAssigmentSubmissionValidation;
+import com.lms.assignment_service.validation.interfaces.IAssignmentSubmissionValidation;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class AssigmentSubmissionService {
+public class AssignmentSubmissionService {
     private final AssignmentSubmissionRepository assignmentSubmissionRepository;
     private final AssignmentRepository assignmentRepository;
-    private final IAssigmentSubmissionValidation assigmentSubmissionValidation;
+    private final IAssignmentSubmissionValidation assigmentSubmissionValidation;
 
-    public ServiceResult<AssignmentSubmissionResponse> createAssignmentSubmission(@RequestBody CreateAssigmentSubmissionRequest request) {
+    public ServiceResult<AssignmentSubmissionResponse> createAssignmentSubmission(@RequestBody CreateAssignmentSubmissionRequest request) {
 
         if (!assigmentSubmissionValidation.isValid(request)) {
             return ServiceResult.<AssignmentSubmissionResponse>builder()
@@ -59,7 +57,7 @@ public class AssigmentSubmissionService {
                 .build();
     }
 
-    public List<AssignmentSubmissionResponse> getAssignmentSubmissions(AssigmentSubmissionFilterParams filterParams) {
+    public List<AssignmentSubmissionResponse> getAssignmentSubmissions(AssignmentSubmissionFilterParams filterParams) {
         List<AssignmentSubmissionEntity> list = assignmentSubmissionRepository.getAssignmentSubmissionsEntitiesByFilters(
                 filterParams.getSubmissionId(),
                 filterParams.getStudentId(),

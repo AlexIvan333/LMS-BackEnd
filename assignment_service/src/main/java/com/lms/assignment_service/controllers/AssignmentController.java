@@ -1,10 +1,10 @@
 package com.lms.assignment_service.controllers;
 
 
-import com.lms.assignment_service.dtos.filters.AssigmentFilterParams;
-import com.lms.assignment_service.dtos.requests.CreateAssigmentRequest;
+import com.lms.assignment_service.dtos.filters.AssignmentFilterParams;
+import com.lms.assignment_service.dtos.requests.CreateAssignmentRequest;
 import com.lms.assignment_service.dtos.responses.AssignmentResponse;
-import com.lms.assignment_service.services.AssigmentService;
+import com.lms.assignment_service.services.AssignmentService;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,15 +17,15 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/assignments")
-public class AssigmentController {
+public class AssignmentController {
 
-    private final AssigmentService assigmentService;
+    private final AssignmentService assigmentService;
 
     @PostMapping
     @RolesAllowed({"ADMIN", "INSTRUCTOR"})
-    public ResponseEntity<AssignmentResponse> createAssignment(@RequestBody CreateAssigmentRequest request) {
+    public ResponseEntity<AssignmentResponse> createAssignment(@RequestBody CreateAssignmentRequest request) {
 
-        var result = assigmentService.createAssigment(request);
+        var result = assigmentService.createAssignment(request);
 
         if (!result.success)
         {
@@ -47,13 +47,13 @@ public class AssigmentController {
                                                                    @RequestParam(defaultValue = "0") Integer page,
                                                                    @RequestParam(defaultValue = "10") Integer size) {
 
-        AssigmentFilterParams filterParams = new AssigmentFilterParams();
+        AssignmentFilterParams filterParams = new AssignmentFilterParams();
         filterParams.setAssigmentId(assigmentId);
         filterParams.setCourseId(courseId);
         filterParams.setModuleId(moduleId);
         filterParams.setPage(page);
         filterParams.setSize(size);
 
-        return ResponseEntity.ok(assigmentService.getAssigments(filterParams));
+        return ResponseEntity.ok(assigmentService.getAssignments(filterParams));
     }
 }

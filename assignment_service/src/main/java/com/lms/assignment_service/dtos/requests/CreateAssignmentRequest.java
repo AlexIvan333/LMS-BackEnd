@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateAssigmentRequest {
+public class CreateAssignmentRequest {
     @NotBlank(message = "Title is required")
     private String title;
     @NotBlank(message = "Description is required")

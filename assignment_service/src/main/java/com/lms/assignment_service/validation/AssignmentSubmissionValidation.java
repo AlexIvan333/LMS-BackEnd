@@ -1,10 +1,10 @@
 package com.lms.assignment_service.validation;
 
 
-import com.lms.assignment_service.dtos.requests.CreateAssigmentSubmissionRequest;
+import com.lms.assignment_service.dtos.requests.CreateAssignmentSubmissionRequest;
 import com.lms.assignment_service.repositories.AssignmentRepository;
 import com.lms.assignment_service.repositories.AssignmentSubmissionRepository;
-import com.lms.assignment_service.validation.interfaces.IAssigmentSubmissionValidation;
+import com.lms.assignment_service.validation.interfaces.IAssignmentSubmissionValidation;
 import com.lms.shared.events.CheckResourceExistsEvent;
 import com.lms.shared.events.CheckUserExistsEvent;
 import com.lms.shared.events.ResourceExistsResponseEvent;
@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 
 @AllArgsConstructor
 @Component
-public class AssigmentSubmissionValidation implements IAssigmentSubmissionValidation {
+public class AssignmentSubmissionValidation implements IAssignmentSubmissionValidation {
     private final AssignmentRepository assignmentRepository;
     private final AssignmentSubmissionRepository assignmentSubmissionRepository;
     private final ReplyingKafkaTemplate<String, Object, UserExistsResponseEvent> userReplyingKafkaTemplate;
@@ -32,7 +32,7 @@ public class AssigmentSubmissionValidation implements IAssigmentSubmissionValida
 
 
     @Override
-    public boolean isValid(CreateAssigmentSubmissionRequest request) {
+    public boolean isValid(CreateAssignmentSubmissionRequest request) {
         try {
 
             if (request.getStudentId() == null) return false;

@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateAssigmentSubmissionRequest {
+public class CreateAssignmentSubmissionRequest {
     @NotBlank(message = "Student can not be null")
     private Long studentId;
     @NotBlank(message = "Assignment can not be null")

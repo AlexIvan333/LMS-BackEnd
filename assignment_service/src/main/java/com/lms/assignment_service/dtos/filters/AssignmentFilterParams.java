@@ -1,23 +1,16 @@
 package com.lms.assignment_service.dtos.filters;
 
-import com.lms.assignment_service.entities.Grade;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
-public class AssigmentSubmissionFilterParams {
-    @Schema
-    private Long submissionId;
-    @Schema
-    private Long studentId;
+public class AssignmentFilterParams {
     @Schema
     private Long assigmentId;
     @Schema
-    private Boolean completed;
+    private Long courseId;
     @Schema
-    private Grade grade;
+    private Long moduleId;
     @Schema
     private Integer page;
     @Schema

@@ -1,12 +1,12 @@
 package com.lms.assignment_service.controllers;
 
 
-import com.lms.assignment_service.dtos.filters.AssigmentSubmissionFilterParams;
-import com.lms.assignment_service.dtos.requests.CreateAssigmentSubmissionRequest;
+import com.lms.assignment_service.dtos.filters.AssignmentSubmissionFilterParams;
+import com.lms.assignment_service.dtos.requests.CreateAssignmentSubmissionRequest;
 import com.lms.assignment_service.dtos.requests.GradeAssignmentSubmissionRequest;
 import com.lms.assignment_service.dtos.responses.AssignmentSubmissionResponse;
 import com.lms.assignment_service.entities.Grade;
-import com.lms.assignment_service.services.AssigmentSubmissionService;
+import com.lms.assignment_service.services.AssignmentSubmissionService;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,18 +14,17 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/assignments/submissions")
-public class AssigmentSubmissionController {
-    private final AssigmentSubmissionService assigmentSubmissionService;
+public class AssignmentSubmissionController {
+    private final AssignmentSubmissionService assigmentSubmissionService;
 
     @PostMapping
     @RolesAllowed({"ADMIN", "STUDENT"})
-    public ResponseEntity<AssignmentSubmissionResponse> createAssignmentSubmission(@RequestBody CreateAssigmentSubmissionRequest request) {
+    public ResponseEntity<AssignmentSubmissionResponse> createAssignmentSubmission(@RequestBody CreateAssignmentSubmissionRequest request) {
 
         var result = assigmentSubmissionService.createAssignmentSubmission(request);
 
@@ -52,7 +51,7 @@ public class AssigmentSubmissionController {
                                                                                        @RequestParam(defaultValue = "10") Integer size
                                                                                        ){
 
-        AssigmentSubmissionFilterParams filterParams = new AssigmentSubmissionFilterParams();
+        AssignmentSubmissionFilterParams filterParams = new AssignmentSubmissionFilterParams();
         filterParams.setSubmissionId(submissionId);
         filterParams.setStudentId(studentId);
         filterParams.setAssigmentId(assigmentId);
