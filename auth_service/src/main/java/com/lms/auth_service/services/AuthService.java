@@ -78,14 +78,6 @@ public class AuthService {
                 .build();
     }
 
-    public boolean isAuthorized(String token, String requiredRole) {
-        try {
-            String email = jwtUtil.extractEmail(token);
-            return jwtUtil.validateToken(token, email, requiredRole);
-        } catch (Exception e) {
-            return false;
-        }
-    }
 
     public boolean validateToken(String token) {
         try {

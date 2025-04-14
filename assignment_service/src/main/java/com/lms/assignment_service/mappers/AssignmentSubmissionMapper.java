@@ -2,8 +2,6 @@ package com.lms.assignment_service.mappers;
 
 import com.lms.assignment_service.dtos.responses.AssignmentSubmissionResponse;
 import com.lms.assignment_service.entities.AssignmentSubmissionEntity;
-import com.lms.assignment_service.kafka.ResourceRequestDispatcher;
-import com.lms.shared.dtos.ResourceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

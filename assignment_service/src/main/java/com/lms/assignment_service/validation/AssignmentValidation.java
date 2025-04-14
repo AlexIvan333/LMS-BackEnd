@@ -1,8 +1,8 @@
 package com.lms.assignment_service.validation;
 
 
-import com.lms.assignment_service.dtos.requests.CreateAssigmentRequest;
-import com.lms.assignment_service.validation.interfaces.IAssigmentValidation;
+import com.lms.assignment_service.dtos.requests.CreateAssignmentRequest;
+import com.lms.assignment_service.validation.interfaces.IAssignmentValidation;
 import com.lms.shared.events.CheckResourceExistsEvent;
 import com.lms.shared.events.ResourceExistsResponseEvent;
 import lombok.AllArgsConstructor;
@@ -20,13 +20,13 @@ import java.util.concurrent.ExecutionException;
 
 @AllArgsConstructor
 @Component
-public class AssigmentValidation implements IAssigmentValidation {
+public class AssignmentValidation implements IAssignmentValidation {
 
     private final ReplyingKafkaTemplate<String, Object, ResourceExistsResponseEvent> resourceReplyingKafkaTemplate;
 
 
     @Override
-    public boolean isValid(CreateAssigmentRequest request) {
+    public boolean isValid(CreateAssignmentRequest request) {
         if (request.getModuleId() == null) return false;
 
         List<Long> resourceIds = request.getResourceIds();
