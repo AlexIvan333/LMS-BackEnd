@@ -3,7 +3,7 @@ name: Microservices CI/CD Pipeline
 on:
   push:
     branches:
-      - pipeline
+      - main
     paths:
       - 'auth_service/**'
       - 'course_service/**'
