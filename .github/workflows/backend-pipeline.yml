@@ -24,6 +24,13 @@ jobs:
           distribution: 'temurin'
 
       # AUTH SERVICE
+      - name: Test Auth Service
+        if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
+        run: |
+          cd auth_service
+          .\gradlew.bat test
+          cd ..
+
       - name: Build Auth Service
         if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
         run: |
