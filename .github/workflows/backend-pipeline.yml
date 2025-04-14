@@ -12,7 +12,7 @@ on:
       - 'api_gateway/**'
 
 jobs:
-  build-and-deploy:
+  build-test-and-deploy:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
@@ -42,6 +42,13 @@ jobs:
           docker compose -f auth_service/docker-compose.auth.yml up -d
 
       # COURSE SERVICE
+      - name: Test Course Service
+        if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
+        run: |
+          cd course_service
+          .\gradlew.bat test
+          cd ..
+
       - name: Build Course Service
         if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
         run: |
@@ -53,6 +60,13 @@ jobs:
           docker compose -f course_service/docker-compose.course.yml up -d
 
       # ASSIGNMENT SERVICE
+      - name: Test Assignment Service
+        if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
+        run: |
+          cd assignment_service
+          .\gradlew.bat test
+          cd ..
+
       - name: Build Assignment Service
         if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
         run: |
@@ -64,6 +78,13 @@ jobs:
           docker compose -f assignment_service/docker-compose.assignment.yml up -d
 
       # RESOURCE SERVICE
+      - name: Test Resource Service
+        if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
+        run: |
+          cd resource_service
+          .\gradlew.bat test
+           cd ..
+
       - name: Build Resource Service
         if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
         run: |
