@@ -12,7 +12,8 @@ on:
       - 'api_gateway/**'
 
 jobs:
-  build-and-deploy:
+  auth-service:
+    if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
@@ -23,16 +24,13 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      # AUTH SERVICE
       - name: Test Auth Service
-        if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
         run: |
           cd auth_service
           .\gradlew.bat test
           cd ..
 
-      - name: Build Auth Service
-        if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
+      - name: Build & Deploy Auth Service
         run: |
           cd auth_service
           .\gradlew.bat clean build -x test
@@ -41,16 +39,25 @@ jobs:
           docker compose -f auth_service/docker-compose.auth.yml build --no-cache
           docker compose -f auth_service/docker-compose.auth.yml up -d
 
-      # COURSE SERVICE
+  course-service:
+    if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
       - name: Test Course Service
-        if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
         run: |
           cd course_service
           .\gradlew.bat test
           cd ..
 
-      - name: Build Course Service
-        if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
+      - name: Build & Deploy Course Service
         run: |
           cd course_service
           .\gradlew.bat clean build -x test
@@ -59,16 +66,25 @@ jobs:
           docker compose -f course_service/docker-compose.course.yml build --no-cache
           docker compose -f course_service/docker-compose.course.yml up -d
 
-      # ASSIGNMENT SERVICE
+  assignment-service:
+    if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
       - name: Test Assignment Service
-        if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
         run: |
           cd assignment_service
           .\gradlew.bat test
           cd ..
 
-      - name: Build Assignment Service
-        if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
+      - name: Build & Deploy Assignment Service
         run: |
           cd assignment_service
           .\gradlew.bat clean build -x test
@@ -77,16 +93,25 @@ jobs:
           docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
           docker compose -f assignment_service/docker-compose.assignment.yml up -d
 
-      # RESOURCE SERVICE
+  resource-service:
+    if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
       - name: Test Resource Service
-        if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
         run: |
           cd resource_service
           .\gradlew.bat test
-           cd ..
+          cd ..
 
-      - name: Build Resource Service
-        if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
+      - name: Build & Deploy Resource Service
         run: |
           cd resource_service
           .\gradlew.bat clean build -x test
@@ -95,9 +120,25 @@ jobs:
           docker compose -f resource_service/docker-compose.resource.yml build --no-cache
           docker compose -f resource_service/docker-compose.resource.yml up -d
 
-      # API GATEWAY
-      - name: Build API Gateway
-        if: ${{ contains(github.event.head_commit.message, '[gateway]') || contains(github.event.head_commit.message, 'api_gateway/') }}
+  gateway:
+    if: ${{ contains(github.event.head_commit.message, '[gateway]') || contains(github.event.head_commit.message, 'api_gateway/') }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Test API Gateway
+        run: |
+          cd api_gateway
+          .\gradlew.bat test
+          cd ..
+
+      - name: Build & Deploy API Gateway
         run: |
           cd api_gateway
           .\gradlew.bat clean build -x test
@@ -106,5 +147,3 @@ jobs:
           docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
           docker compose -f api_gateway/docker-compose.gateway.yml up -d
 
-      - name: Show running containers
-        run: docker ps -a

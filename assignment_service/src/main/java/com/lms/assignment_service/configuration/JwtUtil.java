@@ -13,7 +13,6 @@ public class JwtUtil {
 
     private static final String SECRET_KEY = "Len/vFAFyqFMUYSp/9roemgQqyq2nnygvv3dO+IoTAc=";
     private static final SecretKey SECRET_KEY_SPEC = Keys.hmacShaKeyFor(java.util.Base64.getDecoder().decode(SECRET_KEY));// Use environment variables for production
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
 
     public boolean validateToken(String token, String email, String requiredRole) {
