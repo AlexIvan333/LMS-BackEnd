@@ -34,6 +34,9 @@ services:
       SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_GROUP_ID: resource-service
+      # Eureka config
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
     restart: unless-stopped
     depends_on:
       - mongodb_resource

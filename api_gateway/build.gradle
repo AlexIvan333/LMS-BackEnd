@@ -1,14 +1,14 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.2.4'
-	id 'io.spring.dependency-management' version '1.1.4'
+	id 'org.springframework.boot' version '3.4.4'
+	id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.lms'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+	sourceCompatibility = '21'
 }
 
 repositories {
@@ -16,7 +16,7 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "2023.0.0")
+	set('springCloudVersion', "2024.0.0")
 }
 
 dependencies {
