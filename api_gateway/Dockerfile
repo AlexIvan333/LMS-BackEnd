@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:17
+FROM openjdk:21-jdk-slim
 ARG BUILD_DATE
 ENV BUILD_DATE=$BUILD_DATE
 VOLUME /tmp
