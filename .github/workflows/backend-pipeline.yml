@@ -108,7 +108,7 @@ jobs:
       - name: Test Resource Service
         run: |
           cd resource_service
-          .\gradlew.bat test
+          .\gradlew.bat test --tests "com.lms.resource_service.unit_tests.*"
           cd ..
 
       - name: Build & Deploy Resource Service

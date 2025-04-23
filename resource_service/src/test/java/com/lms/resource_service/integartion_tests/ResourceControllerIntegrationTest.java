@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,22 +42,57 @@ public class ResourceControllerIntegrationTest {
     }
 
     private String obtainAdminTokenFromAuthService() {
-        String loginUrl = "http://host.docker.internal:8091/auth/login/admin";
-        String requestBody = """
-            {
-                "email": "admin@gmail.com",
-                "password": "password"
-            }
-        """;
+        RestTemplate restTemplate = new RestTemplate();
+
+        String email = "admin@gmail.com";
+        String password = "password";
+        String checkUrl = "http://host.docker.internal:8091/auth/login/admin";
+        String createAdminUrl = "http://host.docker.internal:8091/auth/admins";
+
+        // Attempt to login first (if admin exists, this will succeed)
+        String loginRequestBody = """
+        {
+            "email": "admin@gmail.com",
+            "password": "password"
+        }
+    """;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+        HttpEntity<String> loginRequest = new HttpEntity<>(loginRequestBody, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(loginUrl, request, String.class);
+        try {
+            ResponseEntity<String> loginResponse = restTemplate.postForEntity(checkUrl, loginRequest, String.class);
+            return loginResponse.getBody();  // Admin exists, return token
+        } catch (Exception ex) {
+            System.out.println("Admin does not exist yet, proceeding to create it.");
+        }
 
-        return response.getBody();
+        // Admin does not exist, create it
+        String createAdminRequestBody = """
+        {
+            "firstName": "Admin",
+            "lastName": "User",
+            "middleName": "Super",
+            "streetName": "Main Street",
+            "email": "admin@gmail.com",
+            "streetNumber": 1,
+            "country": "Netherlands",
+            "city": "Eindhoven",
+            "zipCode": "5600"
+        }
+    """;
+
+        HttpEntity<String> createAdminRequest = new HttpEntity<>(createAdminRequestBody, headers);
+
+        ResponseEntity<String> createResponse = restTemplate.postForEntity(createAdminUrl, createAdminRequest,String.class);
+        System.out.println("Admin created successfully: " + createResponse.getBody());
+
+        // Now login again after creation to get the token
+        ResponseEntity<String> loginResponse = restTemplate.postForEntity(checkUrl, loginRequest, String.class);
+        return loginResponse.getBody();
     }
+
 
     @Test
     @DisplayName("Should upload a resource successfully")
