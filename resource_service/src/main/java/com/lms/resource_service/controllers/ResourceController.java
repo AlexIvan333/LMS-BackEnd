@@ -29,8 +29,12 @@ public class ResourceController {
     @GetMapping("/download/{id}")
     @RolesAllowed({"ADMIN", "STUDENT", "INSTRUCTOR"})
     public ResponseEntity<byte[]> downloadResource(@PathVariable Long id) {
-        ResourceResponse resource = resourceService.getResourceById(id).data;
+        var result = resourceService.getResourceById(id);
 
+        if (!result.success || result.data == null) {  // ✅ Check if resource does not exist
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        ResourceResponse resource = result.data;
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(resource.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFileName() + "\"")
