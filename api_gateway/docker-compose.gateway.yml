@@ -13,6 +13,9 @@ services:
       COURSE_SERVICE_URL: http://host.docker.internal:8092
       ASSIGNMENT_SERVICE_URL: http://host.docker.internal:8093
       RESOURCE_SERVICE_URL: http://host.docker.internal:8094
+      # Eureka config
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
     restart: unless-stopped
     networks:
       - backend-network

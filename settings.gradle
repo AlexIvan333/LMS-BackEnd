@@ -4,6 +4,7 @@ include 'assignment_service'
 include 'auth_service'
 include 'course_service'
 include 'resource_service'
+include 'api_gateway'
 
 
 project(':shared').projectDir = file('../shared')

@@ -1,0 +1,14 @@
+services:
+  eureka-server:
+    build: .
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE:default
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    external: true
