@@ -41,7 +41,7 @@ public class ResourceControllerIntegrationTest {
     }
 
     private String obtainAdminTokenFromAuthService() {
-        String loginUrl = "http://localhost:8091/auth/login/admin";
+        String loginUrl = "http://host.docker.internal:8091/auth/login/admin";
         String requestBody = """
             {
                 "email": "admin@gmail.com",
