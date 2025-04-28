@@ -1,0 +1,106 @@
+{
+  "id": null,
+  "title": "LMS Backend Monitoring",
+  "timezone": "browser",
+  "schemaVersion": 30,
+  "version": 1,
+  "refresh": "5s",
+  "panels": [
+    {
+      "title": "Request Rate by Endpoint",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count[1m])) by (uri)",
+          "legendFormat": "{{uri}}",
+          "interval": ""
+        }
+      ],
+      "yaxes": [
+        { "format": "reqps", "label": "req/s", "logBase": 1, "min": 0, "show": true },
+        { "show": true }
+      ]
+    },
+    {
+      "title": "Latency (P95) by Endpoint",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[1m])) by (le, uri))",
+          "legendFormat": "{{uri}}",
+          "interval": ""
+        }
+      ],
+      "yaxes": [
+        { "format": "s", "label": "seconds", "logBase": 1, "min": 0, "show": true },
+        { "show": true }
+      ]
+    },
+    {
+      "title": "4xx Error Rate by Endpoint",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{status=~\"4..\"}[1m])) by (uri)",
+          "legendFormat": "{{uri}}",
+          "interval": ""
+        }
+      ],
+      "yaxes": [
+        { "format": "reqps", "label": "req/s", "logBase": 1, "min": 0, "show": true },
+        { "show": true }
+      ]
+    },
+    {
+      "title": "5xx Error Rate by Endpoint",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[1m])) by (uri)",
+          "legendFormat": "{{uri}}",
+          "interval": ""
+        }
+      ],
+      "yaxes": [
+        { "format": "reqps", "label": "req/s", "logBase": 1, "min": 0, "show": true },
+        { "show": true }
+      ]
+    },
+    {
+      "title": "CPU Usage",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "process_cpu_usage",
+          "legendFormat": "{{instance}}",
+          "interval": ""
+        }
+      ],
+      "yaxes": [
+        { "format": "percent", "label": "% CPU", "logBase": 1, "min": 0, "show": true },
+        { "show": true }
+      ]
+    },
+    {
+      "title": "Memory Usage (Resident Memory)",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes",
+          "legendFormat": "{{instance}}",
+          "interval": ""
+        }
+      ],
+      "yaxes": [
+        { "format": "bytes", "label": "Memory", "logBase": 1, "min": 0, "show": true },
+        { "show": true }
+      ]
+    }
+  ]
+}

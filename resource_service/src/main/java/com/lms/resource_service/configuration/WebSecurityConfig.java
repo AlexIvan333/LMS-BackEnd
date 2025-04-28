@@ -54,6 +54,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Swagger resources accessible to everyone
                         .requestMatchers(SWAGGER_UI_RESOURCES).permitAll()
+                        .requestMatchers("/actuator/prometheus").permitAll()
                         // Public endpoints (modify as needed)
                         .requestMatchers(HttpMethod.GET, "/resources/**").hasAnyAuthority("INSTRUCTOR", "ADMIN","STUDENT")
                         .requestMatchers(HttpMethod.POST, "/resources/**").hasAnyAuthority("INSTRUCTOR", "ADMIN", "STUDENT")
