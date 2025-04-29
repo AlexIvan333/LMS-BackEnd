@@ -31,9 +31,9 @@ services:
   k6:
     image: grafana/k6:latest
     container_name: monitoring_k6
-    command: ["run", "/k6/scripts/index.js"]           # Adjusted path
+    command: ["run", "/k6/scripts/index.js"]
     volumes:
-      - ./k6:/k6                                       # Mount the entire k6 folder!
+      - ./k6:/k6
     working_dir: /k6/scripts
     networks:
       - backend-network
