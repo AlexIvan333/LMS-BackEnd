@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: monitoring_prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - backend-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: monitoring_grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=Alex&030303
+      - GF_PROVISIONING_ENABLED=true
+    volumes:
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - backend-network
+
+  k6:
+    image: grafana/k6:latest
+    container_name: monitoring_k6
+    command: ["run", "/k6/scripts/index.js"]
+    volumes:
+      - ./k6:/k6
+    working_dir: /k6/scripts
+    networks:
+      - backend-network
+  loki:
+    image: grafana/loki:2.9.4
+    container_name: monitoring_loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - backend-network
+
+  promtail:
+    image: grafana/promtail:2.9.4
+    container_name: monitoring_promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail/promtail-config.yml:/etc/promtail/promtail-config.yml
+    command: -config.file=/etc/promtail/promtail-config.yml
+    depends_on:
+      - loki
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    external: true
