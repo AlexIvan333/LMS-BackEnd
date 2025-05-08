@@ -18,11 +18,11 @@ services:
 
 
   # Assignment Service
-  assignment_service:
+  lms_assignment:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: assignment_service
+    container_name: lms_assignment
     ports:
       - "8093:8083"
     environment:

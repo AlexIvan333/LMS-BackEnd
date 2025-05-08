@@ -17,11 +17,11 @@ services:
       - backend-network
 
   # Course Service
-  courses_service:
+  lms_course:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: courses_service
+    container_name: lms_course
     ports:
       - "8092:8082"
     environment:

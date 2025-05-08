@@ -33,11 +33,11 @@ services:
       - backend-network
 
   # Auth Service
-  auth_service:
+  lms_auth:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: auth_service
+    container_name: lms_auth
     ports:
       - "8091:8081"
     environment:

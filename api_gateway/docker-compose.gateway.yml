@@ -9,10 +9,10 @@ services:
       - "8090:8080"
     environment:
       SERVER_PORT: 8080
-      SPRING_CLOUD_GATEWAY_ROUTES_0_URI: http://auth_service:8091
-      SPRING_CLOUD_GATEWAY_ROUTES_1_URI: http://course_service:8092
-      SPRING_CLOUD_GATEWAY_ROUTES_2_URI: http://assignment_service:8093
-      SPRING_CLOUD_GATEWAY_ROUTES_3_URI: http://resource_service:8094
+      AUTH_SERVICE_URL: lms_auth:8091
+      COURSE_SERVICE_URL: lms_course:8092
+      ASSIGNMENT_SERVICE_URL: lms_assignment:8093
+      RESOURCE_SERVICE_URL: lms_resource:8094
       # Eureka config
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
