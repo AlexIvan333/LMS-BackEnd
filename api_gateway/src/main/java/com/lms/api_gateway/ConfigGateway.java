@@ -14,14 +14,14 @@ public class ConfigGateway {
     public RouteLocator routes(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("authservice", r -> r.path("/auth/**")
-                        .uri("http://authservice:8091"))
+                        .uri("http://auth_service:8091"))
                 .route("courseservice", r -> r.path("/courses/**")
-                        .uri("http://courseservice:8092"))
+                        .uri("http://course_service:8092"))
                 .route("assignmentservice", r -> r.path("/assignments/**")
-                        .uri("http://assignmentservice:8093"))
+                        .uri("http://assignment_service:8093"))
 
                 .route("resourceservice", r -> r.path("/resources/**")
-                        .uri("http://resourceservice:8094"))
+                        .uri("http://resource_service:8094"))
                 .build();
     }
 
