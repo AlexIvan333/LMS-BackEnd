@@ -14,18 +14,14 @@ public class ConfigGateway {
     public RouteLocator routes(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("authservice", r -> r.path("/auth/**")
-                        .uri("http://authservice:8081")) //for docker
-//                        .uri("http://localhost:8081")) // for local/intelliJ
-
+                        .uri("http://authservice:8091"))
                 .route("courseservice", r -> r.path("/courses/**")
-                        .uri("http://courseservice:8082"))
-//                        .uri("http://localhost:8082")) // for local/intelliJ
+                        .uri("http://courseservice:8092"))
                 .route("assignmentservice", r -> r.path("/assignments/**")
-                        .uri("http://assignmentservice:8083"))
-//                        .uri("http://localhost:8082")
+                        .uri("http://assignmentservice:8093"))
+
                 .route("resourceservice", r -> r.path("/resources/**")
-                        .uri("http://resourceservice:8084"))
-//                        .uri("http://localhost:8082"))
+                        .uri("http://resourceservice:8094"))
                 .build();
     }
 
