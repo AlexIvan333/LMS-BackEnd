@@ -17,11 +17,11 @@ services:
       - backend-network
 
   # Resource  Service
-  lms_resource:
+  resource_service:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: lms_resource
+    container_name: resource_service
     ports:
       - "8094:8084"
     environment:
