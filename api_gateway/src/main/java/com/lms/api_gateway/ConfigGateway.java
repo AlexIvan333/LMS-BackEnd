@@ -23,7 +23,7 @@ public class ConfigGateway {
                 .route("assignmentservice", r -> r.path("/assignments/**")
                         .uri("http://assignmentservice:8083"))
 //                        .uri("http://localhost:8082")
-                .route("resourceservice", r -> r.path("/resourceservice/**")
+                .route("resourceservice", r -> r.path("/resources/**")
                         .uri("http://resourceservice:8084"))
 //                        .uri("http://localhost:8082"))
                 .build();
