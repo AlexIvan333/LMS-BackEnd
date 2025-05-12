@@ -79,7 +79,7 @@ jobs:
       - name: Stop & Remove all Docker containers
         run: |
           try {
-             docker compose -f docker-compose.services.yml down --rmi all --volumes --remove-orphans
+             docker compose -f docker-compose.services.yml down -v
           } catch {
             Write-Host "Containers may not have been running -- continuing..."
           }

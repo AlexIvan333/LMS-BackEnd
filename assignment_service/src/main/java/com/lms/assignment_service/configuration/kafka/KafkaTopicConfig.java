@@ -10,7 +10,7 @@ public class KafkaTopicConfig {
     @Bean
     public NewTopic userValidationRequest() {
         return new NewTopic("user-validation-request", 1, (short) 1);
-    }
+    }//topic
 
     @Bean
     public NewTopic userValidationResponse() {
