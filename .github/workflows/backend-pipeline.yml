@@ -33,7 +33,13 @@ jobs:
 
       - name: Build & Deploy Eureka
         run: |
-          try { docker compose -f docker-compose.services.yml down --remove-orphans eureka-server } catch { Write-Host "Ignore docker down error" }
+          try {
+            docker stop eureka-server
+            docker rm eureka-server
+          } catch {
+            Write-Host "Eureka container did not exist or was already removed"
+          }
+          docker compose -f docker-compose.services.yml down --remove-orphans
           docker compose -f docker-compose.services.yml build eureka-server --no-cache
           docker compose -f docker-compose.services.yml up -d eureka-server
         shell: pwsh
