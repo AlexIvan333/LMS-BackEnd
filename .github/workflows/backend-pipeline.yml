@@ -45,7 +45,7 @@ jobs:
 
       - name: Build & Deploy Eureka
         run: |
-          docker compose -f docker-compose.services.yml down --remove-orphans eureka-server
+          try { docker compose -f docker-compose.services.yml down --remove-orphans eureka-server } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build eureka-server --no-cache
           docker compose -f docker-compose.services.yml up -d eureka-server
         shell: pwsh
@@ -88,7 +88,7 @@ jobs:
 
       - name: Build & Deploy Auth
         run: |
-          docker compose -f docker-compose.services.yml down --remove-orphans auth_service
+          try { docker compose -f docker-compose.services.yml down --remove-orphans auth_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build auth_service --no-cache
           docker compose -f docker-compose.services.yml up -d auth_service
         shell: pwsh
@@ -131,7 +131,7 @@ jobs:
 
       - name: Build & Deploy Course
         run: |
-          docker compose -f docker-compose.services.yml down --remove-orphans course_service
+          try { docker compose -f docker-compose.services.yml down --remove-orphans course_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build course_service --no-cache
           docker compose -f docker-compose.services.yml up -d course_service
         shell: pwsh
@@ -174,7 +174,7 @@ jobs:
 
       - name: Build & Deploy Assignment
         run: |
-          docker compose -f docker-compose.services.yml down --remove-orphans assignment_service
+          try { docker compose -f docker-compose.services.yml down --remove-orphans assignment_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build assignment_service --no-cache
           docker compose -f docker-compose.services.yml up -d assignment_service
         shell: pwsh
@@ -217,7 +217,7 @@ jobs:
 
       - name: Build & Deploy Resource
         run: |
-          docker compose -f docker-compose.services.yml down --remove-orphans resource_service
+          try { docker compose -f docker-compose.services.yml down --remove-orphans resource_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build resource_service --no-cache
           docker compose -f docker-compose.services.yml up -d resource_service
         shell: pwsh
@@ -266,7 +266,7 @@ jobs:
 
       - name: Build & Deploy API Gateway
         run: |
-          docker compose -f docker-compose.services.yml down --remove-orphans api_gateway
+          try { docker compose -f docker-compose.services.yml down --remove-orphans api_gateway } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build api_gateway --no-cache
           docker compose -f docker-compose.services.yml up -d api_gateway
         shell: pwsh
