@@ -20,7 +20,7 @@ public class ResourceHelperService {
     public List<ResourceEntity> populateResources(List<Long> resourceIds) {
         if (resourceIds != null && !resourceIds.isEmpty()) {
             return resourceRepository.findAllById(resourceIds);
-        }
+        }//todo:to delete
         return Collections.emptyList();
     }
 
