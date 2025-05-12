@@ -31,18 +31,6 @@ jobs:
           ./gradlew.bat clean build -x test
         shell: pwsh
 
-      - name: Upload JAR
-        uses: actions/upload-artifact@v3
-        with:
-          name: eureka-jar
-          path: eureka-server/build/libs/*.jar
-
-      - name: Download JAR for Docker build
-        uses: actions/download-artifact@v3
-        with:
-          name: eureka-jar
-          path: eureka-server/build/libs
-
       - name: Build & Deploy Eureka
         run: |
           try { docker compose -f docker-compose.services.yml down --remove-orphans eureka-server } catch { Write-Host "Ignore docker down error" }
@@ -73,18 +61,6 @@ jobs:
           cd auth_service
           ./gradlew.bat clean build -x test
         shell: pwsh
-
-      - name: Upload JAR
-        uses: actions/upload-artifact@v3
-        with:
-          name: auth-jar
-          path: auth_service/build/libs/*.jar
-
-      - name: Download JAR
-        uses: actions/download-artifact@v3
-        with:
-          name: auth-jar
-          path: auth_service/build/libs
 
       - name: Build & Deploy Auth
         run: |
@@ -117,18 +93,6 @@ jobs:
           ./gradlew.bat clean build -x test
         shell: pwsh
 
-      - name: Upload JAR
-        uses: actions/upload-artifact@v3
-        with:
-          name: course-jar
-          path: course_service/build/libs/*.jar
-
-      - name: Download JAR
-        uses: actions/download-artifact@v3
-        with:
-          name: course-jar
-          path: course_service/build/libs
-
       - name: Build & Deploy Course
         run: |
           try { docker compose -f docker-compose.services.yml down --remove-orphans course_service } catch { Write-Host "Ignore docker down error" }
@@ -160,18 +124,6 @@ jobs:
           ./gradlew.bat clean build -x test
         shell: pwsh
 
-      - name: Upload JAR
-        uses: actions/upload-artifact@v3
-        with:
-          name: assignment-jar
-          path: assignment_service/build/libs/*.jar
-
-      - name: Download JAR
-        uses: actions/download-artifact@v3
-        with:
-          name: assignment-jar
-          path: assignment_service/build/libs
-
       - name: Build & Deploy Assignment
         run: |
           try { docker compose -f docker-compose.services.yml down --remove-orphans assignment_service } catch { Write-Host "Ignore docker down error" }
@@ -202,18 +154,6 @@ jobs:
           cd resource_service
           ./gradlew.bat clean build -x test
         shell: pwsh
-
-      - name: Upload JAR
-        uses: actions/upload-artifact@v3
-        with:
-          name: resource-jar
-          path: resource_service/build/libs/*.jar
-
-      - name: Download JAR
-        uses: actions/download-artifact@v3
-        with:
-          name: resource-jar
-          path: resource_service/build/libs
 
       - name: Build & Deploy Resource
         run: |
@@ -251,18 +191,6 @@ jobs:
           cd api_gateway
           ./gradlew.bat clean build -x test
         shell: pwsh
-
-      - name: Upload JAR
-        uses: actions/upload-artifact@v3
-        with:
-          name: gateway-jar
-          path: api_gateway/build/libs/*.jar
-
-      - name: Download JAR
-        uses: actions/download-artifact@v3
-        with:
-          name: gateway-jar
-          path: api_gateway/build/libs
 
       - name: Build & Deploy API Gateway
         run: |
