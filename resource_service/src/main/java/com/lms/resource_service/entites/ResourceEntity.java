@@ -20,7 +20,7 @@ public class ResourceEntity {
     private long id;
     private String title; // File name
     private String fileType; // MIME type (e.g., "application/pdf", "video/mp4")
-    private String fileName; // Original file name
+    private String fileName;
     private long fileSize;
     private byte[] fileData;
 }
