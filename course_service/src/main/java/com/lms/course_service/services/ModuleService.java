@@ -48,12 +48,52 @@ public class ModuleService {
                     .build();
         }
 
+        List<Long> resourceIds = request.getResourceIds();
+        if (resourceIds != null && !resourceIds.isEmpty()) {
+            try {
+                String correlationId = UUID.randomUUID().toString();
+                CheckResourceExistsEvent event = new CheckResourceExistsEvent(resourceIds, correlationId);
+
+                ProducerRecord<String, Object> record = new ProducerRecord<>("resource-validation-request", event);
+                record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "resource-validation-response".getBytes()));
+                record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
+
+                RequestReplyFuture<String, Object, ResourceExistsResponseEvent> future =
+                        resourceReplyingKafkaTemplate.sendAndReceive(record);
+
+                ConsumerRecord<String, ResourceExistsResponseEvent> response = future.get();
+
+                if (response == null || response.value() == null ||
+                        response.value().validResourceIds().size() != resourceIds.size()) {
+                    return ServiceResult.<ModuleResponse>builder()
+                            .success(false)
+                            .httpStatus(HttpStatus.BAD_REQUEST)
+                            .messageError("Some resource IDs are invalid")
+                            .build();
+                }
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return ServiceResult.<ModuleResponse>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .messageError("Kafka interrupted: " + e.getMessage())
+                        .build();
+            } catch (ExecutionException e) {
+                return ServiceResult.<ModuleResponse>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .messageError("Kafka error: " + e.getMessage())
+                        .build();
+            }
+        }
+
         CourseEntity course = courseOptional.get();
 
         ModuleEntity moduleEntity = ModuleEntity.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .resourceIds(request.getResourceIds())
+                .resourceIds(resourceIds)
                 .course(course)
                 .build();
 
