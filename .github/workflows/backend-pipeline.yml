@@ -11,6 +11,7 @@ on:
       - 'resource_service/**'
       - 'api_gateway/**'
       - 'eureka-server/**'
+  workflow_dispatch:
 
 jobs:
   eureka-server:
