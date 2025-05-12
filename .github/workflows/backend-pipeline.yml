@@ -45,6 +45,8 @@ jobs:
             Pop-Location
           }
 
+      - name: Ensure Docker is using Desktop context
+        run: docker context use default
       - name: Stop only if containers are running
         run: |
           if (docker ps -q) {

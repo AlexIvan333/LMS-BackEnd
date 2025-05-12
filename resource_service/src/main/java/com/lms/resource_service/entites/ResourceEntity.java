@@ -21,6 +21,6 @@ public class ResourceEntity {
     private String title; // File name
     private String fileType; // MIME type (e.g., "application/pdf", "video/mp4")
     private String fileName; // Original file name
-    private long fileSize; // File size in bytes
-    private byte[] fileData; // Actual file data
+    private long fileSize;
+    private byte[] fileData;
 }
