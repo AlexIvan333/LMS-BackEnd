@@ -23,7 +23,7 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    private static final String BOOTSTRAP_SERVERS = "kafka:9092";
+    private static final String BOOTSTRAP_SERVERS = "kafka:9092";//servers
 
     @Bean
     public ProducerFactory<String, Object> producerFactory() {

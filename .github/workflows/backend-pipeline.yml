@@ -16,10 +16,8 @@ on:
 jobs:
   build-test-deploy:
     runs-on: self-hosted
-
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -27,7 +25,6 @@ jobs:
           distribution: 'temurin'
 
       - name: Build all services
-        shell: pwsh
         run: |
           Push-Location eureka-server
           ./gradlew.bat clean build -x test
@@ -54,7 +51,6 @@ jobs:
           Pop-Location
 
       - name: Test all services
-        shell: pwsh
         run: |
           Push-Location eureka-server
           ./gradlew.bat test
@@ -81,7 +77,6 @@ jobs:
           Pop-Location
 
       - name: Stop & Remove all Docker containers
-        shell: pwsh
         run: |
           try {
             docker compose -f docker-compose.services.yml down --remove-orphans
@@ -90,9 +85,7 @@ jobs:
           }
 
       - name: Docker Compose Build (all services)
-        shell: pwsh
         run: docker compose -f docker-compose.services.yml build --no-cache
 
       - name: Docker Compose Up (start all)
-        shell: pwsh
         run: docker compose -f docker-compose.services.yml up -d
