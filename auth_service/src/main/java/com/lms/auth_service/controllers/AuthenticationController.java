@@ -3,15 +3,18 @@ package com.lms.auth_service.controllers;
 import com.lms.auth_service.dtos.requests.LoginRequest;
 import com.lms.auth_service.dtos.requests.TwoFactorRequest;
 import com.lms.auth_service.dtos.responses.LoginResponse;
+import com.lms.auth_service.dtos.responses.UserInfoResponse;
 import com.lms.auth_service.exceptions.InvalidCredentialsException;
 import com.lms.auth_service.exceptions.TwoFactorAuthenticationException;
 import com.lms.auth_service.services.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,8 +22,6 @@ public class AuthenticationController {
 
     @Autowired
     private AuthService authService;
-
-
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
@@ -130,6 +131,29 @@ public class AuthenticationController {
         }
         return ResponseEntity.ok("Email send successfully.");
     }
+    @GetMapping("/me")
+    public ResponseEntity<UserInfoResponse> getLoggedInUser(HttpServletRequest request) {
+        String token = null;
+        // Extract token from cookies
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
+        if (token != null) {
+            try {
+                UserInfoResponse userInfo = authService.getUserInfoFromToken(token);
+                return ResponseEntity.ok(userInfo);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 
 }

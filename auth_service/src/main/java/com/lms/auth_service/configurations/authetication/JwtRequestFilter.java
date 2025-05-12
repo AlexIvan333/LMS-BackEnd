@@ -1,4 +1,4 @@
-package com.lms.auth_service.configurations.authetication;//package com.lms.api_gateway.configurations;
+package com.lms.auth_service.configurations.authetication;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -40,14 +40,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 String email = jwtUtil.extractEmail(token);
                 String role = jwtUtil.extractRole(token);
 
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    if (jwtUtil.validateToken(token, email, role)) {
+                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null && jwtUtil.validateToken(token, email, role)) {
                         UsernamePasswordAuthenticationToken authentication =
                                 new UsernamePasswordAuthenticationToken(email, null,
                                         Collections.singletonList(new SimpleGrantedAuthority(role)));
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
-                }
+
             } catch (Exception e) {
                 System.err.println("Token validation failed: " + e.getMessage());
             }

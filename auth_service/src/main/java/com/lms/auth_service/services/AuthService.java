@@ -6,6 +6,7 @@ import com.lms.auth_service.dtos.requests.LoginRequest;
 import com.lms.auth_service.dtos.requests.TwoFactorRequest;
 import com.lms.auth_service.dtos.responses.LoginResponse;
 import com.lms.auth_service.dtos.responses.ServiceResult;
+import com.lms.auth_service.dtos.responses.UserInfoResponse;
 import com.lms.auth_service.entities.relational.UserEntity;
 import com.lms.auth_service.exceptions.InvalidCredentialsException;
 import com.lms.auth_service.exceptions.TwoFactorAuthenticationException;
@@ -172,7 +173,16 @@ public class AuthService {
                 .build();
     }
 
+    public UserInfoResponse getUserInfoFromToken(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new InvalidCredentialsException("Missing or invalid token.");
+        }
 
+        String email = jwtUtil.extractEmail(token);
+        String role = jwtUtil.extractRole(token);
+
+        return new UserInfoResponse(email, role);
+    }
 
 
 

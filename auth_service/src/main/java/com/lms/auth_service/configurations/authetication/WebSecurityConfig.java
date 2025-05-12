@@ -71,6 +71,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/instructors/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/instructors/isvalidedbyadmin", "/auth/instructors/email").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/admins/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/me").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtRequestFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
