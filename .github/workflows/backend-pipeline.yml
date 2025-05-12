@@ -12,6 +12,25 @@ on:
       - 'api_gateway/**'
 
 jobs:
+  eureka-server:
+    if: ${{ contains(github.event.head_commit.message, '[gateway]') || contains(github.event.head_commit.message, 'api_gateway/') }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Build Eureka Server
+        run: |
+          cd eureka-server
+          ./gradlew.bat clean build -x test
+          cd ..
+          
+
   auth-service:
     if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
     runs-on: self-hosted
@@ -122,6 +141,7 @@ jobs:
 
   gateway:
     needs:
+      - eureke-server
       - auth-service
       - course-service
       - assignment-service
