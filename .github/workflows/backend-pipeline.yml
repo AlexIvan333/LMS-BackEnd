@@ -14,8 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  eureka-server:
-    if: ${{ contains(github.event.head_commit.message, '[gateway]') || contains(github.event.head_commit.message, 'eureka-server/') }}
+  build-test-deploy:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
@@ -26,176 +25,38 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      - name: Build Eureka Server JAR
+      # 🔨 Build each service
+      - name: Build all services
         run: |
-          cd eureka-server
-          ./gradlew.bat clean build -x test
+          cd eureka-server && ./gradlew.bat clean build -x test && cd ..
+          cd auth_service && ./gradlew.bat clean build -x test && cd ..
+          cd course_service && ./gradlew.bat clean build -x test && cd ..
+          cd assignment_service && ./gradlew.bat clean build -x test && cd ..
+          cd resource_service && ./gradlew.bat clean build -x test && cd ..
+          cd api_gateway && ./gradlew.bat clean build -x test && cd ..
 
-      - name: Build & Deploy Eureka
+      # ✅ Run tests
+      - name: Test all services
+        run: |
+          cd auth_service && ./gradlew.bat test && cd ..
+          cd course_service && ./gradlew.bat test && cd ..
+          cd assignment_service && ./gradlew.bat test && cd ..
+          cd resource_service && ./gradlew.bat test --tests "com.lms.resource_service.unit_tests.*" && cd ..
+          cd api_gateway && ./gradlew.bat test && cd ..
+
+      # 🧹 Stop & Remove all running containers
+      - name: Stop & Remove Containers
         run: |
           try {
-            docker stop eureka-server
-            docker rm eureka-server
+            docker compose -f docker-compose.services.yml down --remove-orphans
           } catch {
-            Write-Host "Eureka container did not exist or was already removed"
+            Write-Host "Containers may not have been running — continuing..."
           }
-          docker compose -f docker-compose.services.yml down --remove-orphans
-          docker compose -f docker-compose.services.yml build eureka-server --no-cache
-          docker compose -f docker-compose.services.yml up -d eureka-server
 
-  auth-service:
-    if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v3
+      # 🐳 Build all Docker services
+      - name: Docker Compose Build
+        run: docker compose -f docker-compose.services.yml build --no-cache
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: 21
-          distribution: 'temurin'
-
-      - name: Test Auth Service
-        run: |
-          cd auth_service
-          ./gradlew.bat test
-        
-
-      - name: Build Auth Service JAR
-        run: |
-          cd auth_service
-          ./gradlew.bat clean build -x test
-        
-
-      - name: Build & Deploy Auth
-        run: |
-          try { docker compose -f docker-compose.services.yml down --remove-orphans auth_service } catch { Write-Host "Ignore docker down error" }
-          docker compose -f docker-compose.services.yml build auth_service --no-cache
-          docker compose -f docker-compose.services.yml up -d auth_service
-
-  course-service:
-    if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: 21
-          distribution: 'temurin'
-
-      - name: Test Course Service
-        run: |
-          cd course_service
-          ./gradlew.bat test
-
-      - name: Build JAR
-        run: |
-          cd course_service
-          ./gradlew.bat clean build -x test
-
-      - name: Build & Deploy Course
-        run: |
-          try { docker compose -f docker-compose.services.yml down --remove-orphans course_service } catch { Write-Host "Ignore docker down error" }
-          docker compose -f docker-compose.services.yml build course_service --no-cache
-          docker compose -f docker-compose.services.yml up -d course_service
-
-  assignment-service:
-    if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: 21
-          distribution: 'temurin'
-
-      - name: Test Assignment Service
-        run: |
-          cd assignment_service
-          ./gradlew.bat test
-        
-
-      - name: Build JAR
-        run: |
-          cd assignment_service
-          ./gradlew.bat clean build -x test
-        
-
-      - name: Build & Deploy Assignment
-        run: |
-          try { docker compose -f docker-compose.services.yml down --remove-orphans assignment_service } catch { Write-Host "Ignore docker down error" }
-          docker compose -f docker-compose.services.yml build assignment_service --no-cache
-          docker compose -f docker-compose.services.yml up -d assignment_service
-        
-
-  resource-service:
-    if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: 21
-          distribution: 'temurin'
-
-      - name: Test Resource Service
-        run: |
-          cd resource_service
-          ./gradlew.bat test --tests "com.lms.resource_service.unit_tests.*"
-        
-
-      - name: Build JAR
-        run: |
-          cd resource_service
-          ./gradlew.bat clean build -x test
-        
-
-      - name: Build & Deploy Resource
-        run: |
-          try { docker compose -f docker-compose.services.yml down --remove-orphans resource_service } catch { Write-Host "Ignore docker down error" }
-          docker compose -f docker-compose.services.yml build resource_service --no-cache
-          docker compose -f docker-compose.services.yml up -d resource_service
-        
-
-  gateway:
-    needs:
-      - eureka-server
-      - auth-service
-      - course-service
-      - assignment-service
-      - resource-service
-    if: ${{ contains(github.event.head_commit.message, '[gateway]') || contains(github.event.head_commit.message, 'api_gateway/') }}
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: 21
-          distribution: 'temurin'
-
-      - name: Test API Gateway
-        run: |
-          cd api_gateway
-          ./gradlew.bat test
-        
-
-      - name: Build JAR
-        run: |
-          cd api_gateway
-          ./gradlew.bat clean build -x test
-        
-
-      - name: Build & Deploy API Gateway
-        run: |
-          try { docker compose -f docker-compose.services.yml down --remove-orphans api_gateway } catch { Write-Host "Ignore docker down error" }
-          docker compose -f docker-compose.services.yml build api_gateway --no-cache
-          docker compose -f docker-compose.services.yml up -d api_gateway
-        
+      # 🚀 Start all Docker containers
+      - name: Docker Compose Up
+        run: docker compose -f docker-compose.services.yml up -d
