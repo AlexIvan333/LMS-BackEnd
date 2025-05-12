@@ -1,7 +1,9 @@
 services:
   # Eureka Server
   eureka-server:
-    build: ./eureka-server
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
     container_name: eureka-server
     ports:
       - "8761:8761"
@@ -9,7 +11,9 @@ services:
       - backend-network
   # API Gateway
   api_gateway:
-    build: ./api_gateway
+    build:
+      context: ./api_gateway
+      dockerfile: Dockerfile
     container_name: api_gateway
     ports:
       - "8090:8080"
@@ -20,7 +24,8 @@ services:
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
   # Auth Service
-    # PostgreSQL for Auth Service
+
+  # PostgreSQL for Auth Service
   postgres_auth:
     image: postgres:15
     container_name: postgres_auth
@@ -36,7 +41,7 @@ services:
     networks:
       - backend-network
 
-    # MongoDB for Auth Service
+  # MongoDB for Auth Service
   mongodb_auth:
     image: mongo:6.0
     container_name: mongodb_auth
@@ -52,9 +57,11 @@ services:
     networks:
       - backend-network
 
-    # Auth Service
+  # Auth Service
   auth_service:
-    build: ./auth_service
+    build:
+      context: ./auth_service
+      dockerfile: Dockerfile
     container_name: auth_service
     ports:
       - "8091:8081"
@@ -96,7 +103,9 @@ services:
       - backend-network
   # Course Service
   course_service:
-    build: ./course_service
+    build:
+      context: ./course_service
+      dockerfile: Dockerfile
     container_name: course_service
     ports:
       - "8092:8082"
@@ -133,7 +142,9 @@ services:
       - backend-network
   # Assignment Service
   assignment_service:
-    build: ./assignment_service
+    build:
+      context: ./assignment_service
+      dockerfile: Dockerfile
     container_name: assignment_service
     ports:
       - "8093:8083"
@@ -152,6 +163,7 @@ services:
       - eureka-server
     networks:
       - backend-network
+
   # MongoDB for Resource Service
   mongodb_resource:
     image: mongo:6.0
@@ -167,9 +179,12 @@ services:
     restart: always
     networks:
       - backend-network
+
   # Resource Service
   resource_service:
-    build: ./resource_service
+    build:
+      context: ./resource_service
+      dockerfile: Dockerfile
     container_name: resource_service
     ports:
       - "8094:8084"
@@ -234,6 +249,7 @@ services:
     tty: true
     networks:
       - backend-network
+
   #Dashboards monitoring and k6 performance
   prometheus:
     image: prom/prometheus:latest

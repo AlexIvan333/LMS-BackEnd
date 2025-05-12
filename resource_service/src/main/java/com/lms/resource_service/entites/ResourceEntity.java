@@ -19,7 +19,7 @@ public class ResourceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String title; // File name
-    private String fileType; // MIME type (e.g., "application/pdf", "video/mp4")
+    private String fileType;
     private String fileName;
     private long fileSize;
     private byte[] fileData;

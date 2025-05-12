@@ -50,13 +50,13 @@ jobs:
       - name: Stop only if containers are running
         run: |
           if (docker ps -q) {
-            docker compose --project-name lms-backend down -v
+            docker compose --project-name back-end down -v
           } else {
             Write-Host "No running containers to stop"
           }
 
       - name: Docker Compose Build (all services)
-        run: docker compose build --no-cache
+        run: docker compose --project-name back-end build --no-cache
 
       - name: Docker Compose Up (start all)
-        run: docker compose up -d
+        run: docker compose --project-name back-end up -d
