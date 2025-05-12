@@ -141,7 +141,7 @@ jobs:
 
   gateway:
     needs:
-      - eureke-server
+      - eureka-server
       - auth-service
       - course-service
       - assignment-service
