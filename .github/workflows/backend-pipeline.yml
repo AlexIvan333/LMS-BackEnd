@@ -171,4 +171,3 @@ jobs:
           try { docker compose -f docker-compose.services.yml down --remove-orphans api_gateway } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build api_gateway --no-cache
           docker compose -f docker-compose.services.yml up -d api_gateway
-
