@@ -26,62 +26,28 @@ jobs:
 
       - name: Build all services
         run: |
-          Push-Location eureka-server
-          ./gradlew.bat clean build -x test
-          Pop-Location
+          $services = @("eureka-server", "auth_service", "course_service", "assignment_service", "resource_service", "api_gateway")
+          foreach ($service in $services) {
+            Push-Location $service
+            ./gradlew.bat clean build -x test
+            Pop-Location
+          }
 
-          Push-Location auth_service
-          ./gradlew.bat clean build -x test
-          Pop-Location
-
-          Push-Location course_service
-          ./gradlew.bat clean build -x test
-          Pop-Location
-
-          Push-Location assignment_service
-          ./gradlew.bat clean build -x test
-          Pop-Location
-
-          Push-Location resource_service
-          ./gradlew.bat clean build -x test
-          Pop-Location
-
-          Push-Location api_gateway
-          ./gradlew.bat clean build -x test
-          Pop-Location
-
-      - name: Test all services
+      - name: Run tests
         run: |
-          Push-Location eureka-server
-          ./gradlew.bat test
-          Pop-Location
+          $services = @("eureka-server", "auth_service", "course_service", "assignment_service", "resource_service", "api_gateway")
+          foreach ($service in $services) {
+            Push-Location $service
+            ./gradlew.bat test
+            Pop-Location
+          }
 
-          Push-Location auth_service
-          ./gradlew.bat test
-          Pop-Location
-
-          Push-Location course_service
-          ./gradlew.bat test
-          Pop-Location
-
-          Push-Location assignment_service
-          ./gradlew.bat test
-          Pop-Location
-
-          Push-Location resource_service
-          ./gradlew.bat test --tests "com.lms.resource_service.unit_tests.*"
-          Pop-Location
-
-          Push-Location api_gateway
-          ./gradlew.bat test
-          Pop-Location
-
-      - name: Stop & Remove all Docker containers
+      - name: Stop only if containers are running
         run: |
-          try {
-             docker compose -f docker-compose.services.yml down -v
-          } catch {
-            Write-Host "Containers may not have been running -- continuing..."
+          if (docker ps -q) {
+            docker compose -f docker-compose.services.yml down -v
+          } else {
+            Write-Host "No running containers to stop"
           }
 
       - name: Docker Compose Build (all services)

@@ -28,7 +28,7 @@ public class ResourceHelperService {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try (GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream)) {
             gzipOutputStream.write(data);
-        }
+        }//todo:to delete
         return byteArrayOutputStream.toByteArray();
     }
 }
