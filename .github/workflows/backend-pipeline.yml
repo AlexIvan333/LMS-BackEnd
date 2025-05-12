@@ -25,15 +25,30 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      - name: Build & Deploy Eureka Server
+      - name: Build Eureka Server JAR
         run: |
           cd eureka-server
           ./gradlew.bat clean build -x test
-          cd ..
-          try { docker compose -f docker-compose.services.yml down --remove-orphans eureka-server } catch { Write-Host "Ignore docker down error" }
+        shell: pwsh
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: eureka-jar
+          path: eureka-server/build/libs/*.jar
+
+      - name: Download JAR for Docker build
+        uses: actions/download-artifact@v3
+        with:
+          name: eureka-jar
+          path: eureka-server/build/libs
+
+      - name: Build & Deploy Eureka
+        run: |
+          docker compose -f docker-compose.services.yml down --remove-orphans eureka-server
           docker compose -f docker-compose.services.yml build eureka-server --no-cache
           docker compose -f docker-compose.services.yml up -d eureka-server
-          
+        shell: pwsh
 
   auth-service:
     if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
@@ -50,17 +65,33 @@ jobs:
       - name: Test Auth Service
         run: |
           cd auth_service
-          .\gradlew.bat test
-          cd ..
+          ./gradlew.bat test
+        shell: pwsh
 
-      - name: Build & Deploy Auth Service
+      - name: Build Auth Service JAR
         run: |
           cd auth_service
-          .\gradlew.bat clean build -x test
-          cd ..
-          try { docker compose -f docker-compose.services.yml down --remove-orphans auth_service } catch { Write-Host "Ignore docker down error" }
+          ./gradlew.bat clean build -x test
+        shell: pwsh
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: auth-jar
+          path: auth_service/build/libs/*.jar
+
+      - name: Download JAR
+        uses: actions/download-artifact@v3
+        with:
+          name: auth-jar
+          path: auth_service/build/libs
+
+      - name: Build & Deploy Auth
+        run: |
+          docker compose -f docker-compose.services.yml down --remove-orphans auth_service
           docker compose -f docker-compose.services.yml build auth_service --no-cache
           docker compose -f docker-compose.services.yml up -d auth_service
+        shell: pwsh
 
   course-service:
     if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
@@ -77,17 +108,33 @@ jobs:
       - name: Test Course Service
         run: |
           cd course_service
-          .\gradlew.bat test
-          cd ..
+          ./gradlew.bat test
+        shell: pwsh
 
-      - name: Build & Deploy Course Service
+      - name: Build JAR
         run: |
           cd course_service
-          .\gradlew.bat clean build -x test
-          cd ..
-          try { docker compose -f docker-compose.services.yml down --remove-orphans course_service } catch { Write-Host "Ignore docker down error" }
+          ./gradlew.bat clean build -x test
+        shell: pwsh
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: course-jar
+          path: course_service/build/libs/*.jar
+
+      - name: Download JAR
+        uses: actions/download-artifact@v3
+        with:
+          name: course-jar
+          path: course_service/build/libs
+
+      - name: Build & Deploy Course
+        run: |
+          docker compose -f docker-compose.services.yml down --remove-orphans course_service
           docker compose -f docker-compose.services.yml build course_service --no-cache
           docker compose -f docker-compose.services.yml up -d course_service
+        shell: pwsh
 
   assignment-service:
     if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
@@ -104,17 +151,33 @@ jobs:
       - name: Test Assignment Service
         run: |
           cd assignment_service
-          .\gradlew.bat test
-          cd ..
+          ./gradlew.bat test
+        shell: pwsh
 
-      - name: Build & Deploy Assignment Service
+      - name: Build JAR
         run: |
           cd assignment_service
-          .\gradlew.bat clean build -x test
-          cd ..
-          try { docker compose -f docker-compose.services.yml down --remove-orphans assignment_service } catch { Write-Host "Ignore docker down error" }
+          ./gradlew.bat clean build -x test
+        shell: pwsh
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: assignment-jar
+          path: assignment_service/build/libs/*.jar
+
+      - name: Download JAR
+        uses: actions/download-artifact@v3
+        with:
+          name: assignment-jar
+          path: assignment_service/build/libs
+
+      - name: Build & Deploy Assignment
+        run: |
+          docker compose -f docker-compose.services.yml down --remove-orphans assignment_service
           docker compose -f docker-compose.services.yml build assignment_service --no-cache
           docker compose -f docker-compose.services.yml up -d assignment_service
+        shell: pwsh
 
   resource-service:
     if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
@@ -131,17 +194,33 @@ jobs:
       - name: Test Resource Service
         run: |
           cd resource_service
-          .\gradlew.bat test --tests "com.lms.resource_service.unit_tests.*"
-          cd ..
+          ./gradlew.bat test --tests "com.lms.resource_service.unit_tests.*"
+        shell: pwsh
 
-      - name: Build & Deploy Resource Service
+      - name: Build JAR
         run: |
           cd resource_service
-          .\gradlew.bat clean build -x test
-          cd ..
-          try { docker compose -f docker-compose.services.yml down --remove-orphans resource_service } catch { Write-Host "Ignore docker down error" }
+          ./gradlew.bat clean build -x test
+        shell: pwsh
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: resource-jar
+          path: resource_service/build/libs/*.jar
+
+      - name: Download JAR
+        uses: actions/download-artifact@v3
+        with:
+          name: resource-jar
+          path: resource_service/build/libs
+
+      - name: Build & Deploy Resource
+        run: |
+          docker compose -f docker-compose.services.yml down --remove-orphans resource_service
           docker compose -f docker-compose.services.yml build resource_service --no-cache
           docker compose -f docker-compose.services.yml up -d resource_service
+        shell: pwsh
 
   gateway:
     needs:
@@ -164,14 +243,30 @@ jobs:
       - name: Test API Gateway
         run: |
           cd api_gateway
-          .\gradlew.bat test
-          cd ..
+          ./gradlew.bat test
+        shell: pwsh
+
+      - name: Build JAR
+        run: |
+          cd api_gateway
+          ./gradlew.bat clean build -x test
+        shell: pwsh
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: gateway-jar
+          path: api_gateway/build/libs/*.jar
+
+      - name: Download JAR
+        uses: actions/download-artifact@v3
+        with:
+          name: gateway-jar
+          path: api_gateway/build/libs
 
       - name: Build & Deploy API Gateway
         run: |
-          cd api_gateway
-          .\gradlew.bat clean build -x test
-          cd ..
-          try { docker compose -f docker-compose.services.yml down --remove-orphans api_gateway } catch { Write-Host "Ignore docker down error" }
+          docker compose -f docker-compose.services.yml down --remove-orphans api_gateway
           docker compose -f docker-compose.services.yml build api_gateway --no-cache
           docker compose -f docker-compose.services.yml up -d api_gateway
+        shell: pwsh
