@@ -33,6 +33,9 @@ jobs:
             Pop-Location
           }
 
+      - name: List containers before stopping
+        run: docker ps -a
+
       - name: Run tests
         run: |
           $services = @("eureka-server", "auth_service", "course_service", "assignment_service", "resource_service", "api_gateway")
@@ -45,13 +48,13 @@ jobs:
       - name: Stop only if containers are running
         run: |
           if (docker ps -q) {
-            docker compose -f docker-compose.services.yml down -v
+            docker compose down -v
           } else {
             Write-Host "No running containers to stop"
           }
 
       - name: Docker Compose Build (all services)
-        run: docker compose -f docker-compose.services.yml build --no-cache
+        run: docker compose build --no-cache
 
       - name: Docker Compose Up (start all)
-        run: docker compose -f docker-compose.services.yml up -d
+        run: docker compose up -d

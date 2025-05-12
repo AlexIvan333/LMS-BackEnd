@@ -262,15 +262,15 @@ services:
     networks:
       - backend-network
 
-  k6:
-    image: grafana/k6:latest
-    container_name: monitoring_k6
-    command: [ "run", "/k6/scripts/index.js" ]
-    volumes:
-      - ./k6:/k6
-    working_dir: /k6/scripts
-    networks:
-      - backend-network
+#  k6:
+#    image: grafana/k6:latest
+#    container_name: monitoring_k6
+#    command: [ "run", "/k6/scripts/index.js" ]
+#    volumes:
+#      - ./k6:/k6
+#    working_dir: /k6/scripts
+#    networks:
+#      - backend-network
   loki:
     image: grafana/loki:2.9.4
     container_name: monitoring_loki
