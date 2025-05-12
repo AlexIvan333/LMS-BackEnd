@@ -35,9 +35,9 @@ jobs:
           cd auth_service
           .\gradlew.bat clean build -x test
           cd ..
-          try { docker compose -f auth_service/docker-compose.auth.yml down -v } catch { Write-Host "Ignore docker down error" }
-          docker compose -f auth_service/docker-compose.auth.yml build --no-cache
-          docker compose -f auth_service/docker-compose.auth.yml up -d
+          docker compose -f docker-compose.services.yml down --remove-orphans --volumes auth_service || echo "Ignore down error"
+          docker compose -f docker-compose.services.yml build auth_service --no-cache
+          docker compose -f docker-compose.services.yml up -d auth_service
 
   course-service:
     if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
@@ -62,9 +62,9 @@ jobs:
           cd course_service
           .\gradlew.bat clean build -x test
           cd ..
-          try { docker compose -f course_service/docker-compose.course.yml down -v } catch { Write-Host "Ignore docker down error" }
-          docker compose -f course_service/docker-compose.course.yml build --no-cache
-          docker compose -f course_service/docker-compose.course.yml up -d
+          docker compose -f docker-compose.services.yml down --remove-orphans --volumes course_service || echo "Ignore down error"
+          docker compose -f docker-compose.services.yml build course_service --no-cache
+          docker compose -f docker-compose.services.yml up -d course_service
 
   assignment-service:
     if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
@@ -89,9 +89,9 @@ jobs:
           cd assignment_service
           .\gradlew.bat clean build -x test
           cd ..
-          try { docker compose -f assignment_service/docker-compose.assignment.yml down -v } catch { Write-Host "Ignore docker down error" }
-          docker compose -f assignment_service/docker-compose.assignment.yml build --no-cache
-          docker compose -f assignment_service/docker-compose.assignment.yml up -d
+          docker compose -f docker-compose.services.yml down --remove-orphans --volumes assignment_service || echo "Ignore down error"
+          docker compose -f docker-compose.services.yml build assignment_service --no-cache
+          docker compose -f docker-compose.services.yml up -d assignment_service
 
   resource-service:
     if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
@@ -116,9 +116,9 @@ jobs:
           cd resource_service
           .\gradlew.bat clean build -x test
           cd ..
-          try { docker compose -f resource_service/docker-compose.resource.yml down -v } catch { Write-Host "Ignore docker down error" }
-          docker compose -f resource_service/docker-compose.resource.yml build --no-cache
-          docker compose -f resource_service/docker-compose.resource.yml up -d
+          docker compose -f docker-compose.services.yml down --remove-orphans --volumes resource_service || echo "Ignore down error"
+          docker compose -f docker-compose.services.yml build resource_service --no-cache
+          docker compose -f docker-compose.services.yml up -d resource_service
 
   gateway:
     if: ${{ contains(github.event.head_commit.message, '[gateway]') || contains(github.event.head_commit.message, 'api_gateway/') }}
@@ -143,7 +143,7 @@ jobs:
           cd api_gateway
           .\gradlew.bat clean build -x test
           cd ..
-          try { docker compose -f api_gateway/docker-compose.gateway.yml down -v } catch { Write-Host "Ignore docker down error" }
-          docker compose -f api_gateway/docker-compose.gateway.yml build --no-cache
-          docker compose -f api_gateway/docker-compose.gateway.yml up -d
+          docker compose -f docker-compose.services.yml down --remove-orphans --volumes api_gateway || echo "Ignore down error"
+          docker compose -f docker-compose.services.yml build api_gateway --no-cache
+          docker compose -f docker-compose.services.yml up -d api_gateway
 
