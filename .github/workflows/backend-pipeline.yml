@@ -1,4 +1,4 @@
-name: Microservices CI/CD Pipeline
+name: LMS CI/CD Pipeline
 
 on:
   push:
