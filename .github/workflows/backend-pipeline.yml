@@ -16,6 +16,7 @@ on:
 jobs:
   build-test-deploy:
     runs-on: self-hosted
+
     steps:
       - uses: actions/checkout@v3
 
@@ -25,27 +26,62 @@ jobs:
           java-version: 21
           distribution: 'temurin'
 
-      # 🔨 Build each service
       - name: Build all services
+        shell: pwsh
         run: |
-          cd eureka-server && ./gradlew.bat clean build -x test && cd ..
-          cd auth_service && ./gradlew.bat clean build -x test && cd ..
-          cd course_service && ./gradlew.bat clean build -x test && cd ..
-          cd assignment_service && ./gradlew.bat clean build -x test && cd ..
-          cd resource_service && ./gradlew.bat clean build -x test && cd ..
-          cd api_gateway && ./gradlew.bat clean build -x test && cd ..
+          Push-Location eureka-server
+          ./gradlew.bat clean build -x test
+          Pop-Location
 
-      # ✅ Run tests
+          Push-Location auth_service
+          ./gradlew.bat clean build -x test
+          Pop-Location
+
+          Push-Location course_service
+          ./gradlew.bat clean build -x test
+          Pop-Location
+
+          Push-Location assignment_service
+          ./gradlew.bat clean build -x test
+          Pop-Location
+
+          Push-Location resource_service
+          ./gradlew.bat clean build -x test
+          Pop-Location
+
+          Push-Location api_gateway
+          ./gradlew.bat clean build -x test
+          Pop-Location
+
       - name: Test all services
+        shell: pwsh
         run: |
-          cd auth_service && ./gradlew.bat test && cd ..
-          cd course_service && ./gradlew.bat test && cd ..
-          cd assignment_service && ./gradlew.bat test && cd ..
-          cd resource_service && ./gradlew.bat test --tests "com.lms.resource_service.unit_tests.*" && cd ..
-          cd api_gateway && ./gradlew.bat test && cd ..
+          Push-Location eureka-server
+          ./gradlew.bat test
+          Pop-Location
 
-      # 🧹 Stop & Remove all running containers
-      - name: Stop & Remove Containers
+          Push-Location auth_service
+          ./gradlew.bat test
+          Pop-Location
+
+          Push-Location course_service
+          ./gradlew.bat test
+          Pop-Location
+
+          Push-Location assignment_service
+          ./gradlew.bat test
+          Pop-Location
+
+          Push-Location resource_service
+          ./gradlew.bat test --tests "com.lms.resource_service.unit_tests.*"
+          Pop-Location
+
+          Push-Location api_gateway
+          ./gradlew.bat test
+          Pop-Location
+
+      - name: Stop & Remove all Docker containers
+        shell: pwsh
         run: |
           try {
             docker compose -f docker-compose.services.yml down --remove-orphans
@@ -53,10 +89,10 @@ jobs:
             Write-Host "Containers may not have been running — continuing..."
           }
 
-      # 🐳 Build all Docker services
-      - name: Docker Compose Build
+      - name: Docker Compose Build (all services)
+        shell: pwsh
         run: docker compose -f docker-compose.services.yml build --no-cache
 
-      # 🚀 Start all Docker containers
-      - name: Docker Compose Up
+      - name: Docker Compose Up (start all)
+        shell: pwsh
         run: docker compose -f docker-compose.services.yml up -d

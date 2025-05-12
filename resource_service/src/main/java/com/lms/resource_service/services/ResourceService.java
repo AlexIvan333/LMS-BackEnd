@@ -27,11 +27,11 @@ public class ResourceService {
 
         ResourceEntity resourceEntity = ResourceEntity.builder()
                 .id(sequenceGeneratorService.generateSequence("resources_sequence"))
-                .title(file.getOriginalFilename()) // File title
-                .fileType(mimeType) // MIME type
-                .fileName(file.getOriginalFilename()) // Original file name
-                .fileSize(file.getSize()) // File size
-                .fileData(file.getBytes()) // File content
+                .title(file.getOriginalFilename())
+                .fileType(mimeType)
+                .fileName(file.getOriginalFilename())
+                .fileSize(file.getSize())
+                .fileData(file.getBytes())
                 .build();
 
         resourceRepository.save(resourceEntity);
