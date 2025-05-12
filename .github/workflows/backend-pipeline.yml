@@ -35,7 +35,7 @@ jobs:
           cd auth_service
           .\gradlew.bat clean build -x test
           cd ..
-          docker compose -f docker-compose.services.yml down --remove-orphans --volumes auth_service || echo "Ignore down error"
+          try { docker compose -f docker-compose.services.yml down --remove-orphans auth_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build auth_service --no-cache
           docker compose -f docker-compose.services.yml up -d auth_service
 
@@ -62,7 +62,7 @@ jobs:
           cd course_service
           .\gradlew.bat clean build -x test
           cd ..
-          docker compose -f docker-compose.services.yml down --remove-orphans --volumes course_service || echo "Ignore down error"
+          try { docker compose -f docker-compose.services.yml down --remove-orphans course_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build course_service --no-cache
           docker compose -f docker-compose.services.yml up -d course_service
 
@@ -89,7 +89,7 @@ jobs:
           cd assignment_service
           .\gradlew.bat clean build -x test
           cd ..
-          docker compose -f docker-compose.services.yml down --remove-orphans --volumes assignment_service || echo "Ignore down error"
+          try { docker compose -f docker-compose.services.yml down --remove-orphans assignment_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build assignment_service --no-cache
           docker compose -f docker-compose.services.yml up -d assignment_service
 
@@ -116,11 +116,16 @@ jobs:
           cd resource_service
           .\gradlew.bat clean build -x test
           cd ..
-          docker compose -f docker-compose.services.yml down --remove-orphans --volumes resource_service || echo "Ignore down error"
+          try { docker compose -f docker-compose.services.yml down --remove-orphans resource_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build resource_service --no-cache
           docker compose -f docker-compose.services.yml up -d resource_service
 
   gateway:
+    needs:
+      - auth-service
+      - course-service
+      - assignment-service
+      - resource-service
     if: ${{ contains(github.event.head_commit.message, '[gateway]') || contains(github.event.head_commit.message, 'api_gateway/') }}
     runs-on: self-hosted
     steps:
@@ -143,7 +148,7 @@ jobs:
           cd api_gateway
           .\gradlew.bat clean build -x test
           cd ..
-          docker compose -f docker-compose.services.yml down --remove-orphans --volumes api_gateway || echo "Ignore down error"
+          try { docker compose -f docker-compose.services.yml down --remove-orphans api_gateway } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build api_gateway --no-cache
           docker compose -f docker-compose.services.yml up -d api_gateway
 
