@@ -29,7 +29,7 @@ jobs:
         run: |
           cd eureka-server
           ./gradlew.bat clean build -x test
-        shell: pwsh
+        shell: powershell
 
       - name: Build & Deploy Eureka
         run: |
@@ -42,7 +42,7 @@ jobs:
           docker compose -f docker-compose.services.yml down --remove-orphans
           docker compose -f docker-compose.services.yml build eureka-server --no-cache
           docker compose -f docker-compose.services.yml up -d eureka-server
-        shell: pwsh
+        shell: powershell
 
   auth-service:
     if: ${{ contains(github.event.head_commit.message, '[auth]') || contains(github.event.head_commit.message, 'auth_service/') }}
@@ -60,20 +60,20 @@ jobs:
         run: |
           cd auth_service
           ./gradlew.bat test
-        shell: pwsh
+        shell: powershell
 
       - name: Build Auth Service JAR
         run: |
           cd auth_service
           ./gradlew.bat clean build -x test
-        shell: pwsh
+        shell: powershell
 
       - name: Build & Deploy Auth
         run: |
           try { docker compose -f docker-compose.services.yml down --remove-orphans auth_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build auth_service --no-cache
           docker compose -f docker-compose.services.yml up -d auth_service
-        shell: pwsh
+        shell: powershell
 
   course-service:
     if: ${{ contains(github.event.head_commit.message, '[course]') || contains(github.event.head_commit.message, 'course_service/') }}
@@ -91,20 +91,20 @@ jobs:
         run: |
           cd course_service
           ./gradlew.bat test
-        shell: pwsh
+        shell: powershell
 
       - name: Build JAR
         run: |
           cd course_service
           ./gradlew.bat clean build -x test
-        shell: pwsh
+        shell: powershell
 
       - name: Build & Deploy Course
         run: |
           try { docker compose -f docker-compose.services.yml down --remove-orphans course_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build course_service --no-cache
           docker compose -f docker-compose.services.yml up -d course_service
-        shell: pwsh
+        shell: powershell
 
   assignment-service:
     if: ${{ contains(github.event.head_commit.message, '[assignment]') || contains(github.event.head_commit.message, 'assignment_service/') }}
@@ -122,20 +122,20 @@ jobs:
         run: |
           cd assignment_service
           ./gradlew.bat test
-        shell: pwsh
+        shell: powershell
 
       - name: Build JAR
         run: |
           cd assignment_service
           ./gradlew.bat clean build -x test
-        shell: pwsh
+        shell: powershell
 
       - name: Build & Deploy Assignment
         run: |
           try { docker compose -f docker-compose.services.yml down --remove-orphans assignment_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build assignment_service --no-cache
           docker compose -f docker-compose.services.yml up -d assignment_service
-        shell: pwsh
+        shell: powershell
 
   resource-service:
     if: ${{ contains(github.event.head_commit.message, '[resource]') || contains(github.event.head_commit.message, 'resource_service/') }}
@@ -153,20 +153,20 @@ jobs:
         run: |
           cd resource_service
           ./gradlew.bat test --tests "com.lms.resource_service.unit_tests.*"
-        shell: pwsh
+        shell: powershell
 
       - name: Build JAR
         run: |
           cd resource_service
           ./gradlew.bat clean build -x test
-        shell: pwsh
+        shell: powershell
 
       - name: Build & Deploy Resource
         run: |
           try { docker compose -f docker-compose.services.yml down --remove-orphans resource_service } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build resource_service --no-cache
           docker compose -f docker-compose.services.yml up -d resource_service
-        shell: pwsh
+        shell: powershell
 
   gateway:
     needs:
@@ -190,17 +190,17 @@ jobs:
         run: |
           cd api_gateway
           ./gradlew.bat test
-        shell: pwsh
+        shell: powershell
 
       - name: Build JAR
         run: |
           cd api_gateway
           ./gradlew.bat clean build -x test
-        shell: pwsh
+        shell: powershell
 
       - name: Build & Deploy API Gateway
         run: |
           try { docker compose -f docker-compose.services.yml down --remove-orphans api_gateway } catch { Write-Host "Ignore docker down error" }
           docker compose -f docker-compose.services.yml build api_gateway --no-cache
           docker compose -f docker-compose.services.yml up -d api_gateway
-        shell: pwsh
+        shell: powershell
