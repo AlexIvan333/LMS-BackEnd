@@ -12,6 +12,7 @@ public class ModuleMapper {
             return null;
         }
 
+
         return ModuleResponse.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
