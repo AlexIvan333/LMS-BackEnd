@@ -21,7 +21,7 @@ public class JwtUtil {
             final String extractedRole = extractRole(token);
             return extractedEmail.equals(email) && extractedRole.equals(requiredRole) && !isTokenExpired(token);
         } catch (Exception e) {
-            return false;
+            return false;//exception
         }
     }
 

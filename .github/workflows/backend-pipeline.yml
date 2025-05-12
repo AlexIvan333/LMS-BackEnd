@@ -81,7 +81,7 @@ jobs:
           try {
             docker compose -f docker-compose.services.yml down --remove-orphans
           } catch {
-            Write-Host "Containers may not have been running — continuing..."
+            Write-Host "Containers may not have been running -- continuing..."
           }
 
       - name: Docker Compose Build (all services)
