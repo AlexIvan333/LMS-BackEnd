@@ -15,8 +15,10 @@ public interface InstructorRepository extends JpaRepository<InstructorEntity, Lo
 
     @Query("SELECT i FROM InstructorEntity i " +
             "WHERE (:instructorID IS NULL OR i.id = :instructorID) " +
-            "AND (:active IS NULL OR i.active = :active)")
+            "AND (:active IS NULL OR i.active = :active)" +
+            "AND (:email IS NULL OR i.email = :email) ")
     Page<InstructorEntity> findInstructorEntitiesByFilters(Long instructorID,
                                                            Boolean active,
+                                                           String email,
                                                            Pageable pageable);
 }

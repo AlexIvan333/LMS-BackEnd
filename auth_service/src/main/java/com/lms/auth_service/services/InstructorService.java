@@ -89,6 +89,7 @@ public class InstructorService {
             List<InstructorEntity> instructorEntities = instructorRepository.findInstructorEntitiesByFilters(
                     filterParams.getInstructorID(),
                     filterParams.getActive(),
+                    filterParams.getEmail(),
                     PageRequest.of(filterParams.getPage(), filterParams.getSize())).stream().toList();
 
             return instructorEntities.stream().map(InstructorMapper::toResponse).collect(Collectors.toList());

@@ -41,11 +41,13 @@ public class InstructorController {
     @RolesAllowed({"ADMIN", "STUDENT"})
     ResponseEntity<List<InstructorResponse>> getInstructors( @RequestParam(required = false)Long instructorID,
                                                                             @RequestParam(required = false) Boolean active,
+                                                                            @RequestParam(required = false) String email,
                                                                             @RequestParam(defaultValue = "0") Integer page,
                                                                             @RequestParam(defaultValue = "10") Integer size) {
         InstructorFilterParams filterParams = new InstructorFilterParams();
         filterParams.setInstructorID(instructorID);
         filterParams.setActive(active);
+        filterParams.setEmail(email);
         filterParams.setPage(page);
         filterParams.setSize(size);
 

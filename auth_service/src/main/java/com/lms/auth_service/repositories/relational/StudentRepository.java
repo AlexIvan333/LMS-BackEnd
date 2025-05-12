@@ -12,8 +12,10 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
 
     @Query("SELECT s FROM StudentEntity s " +
             "WHERE (:studentId IS NULL OR s.id = :studentId) " +
-            "AND (:active IS NULL OR s.active = :active) ")
+            "AND (:active IS NULL OR s.active = :active)" +
+            "AND (:email IS NULL OR s.email = :email) ")
     Page<StudentEntity> findStudentEntitiesByFilters(Long studentId,
                                                      Boolean active,
+                                                     String email,
                                                      Pageable pageable);
 }

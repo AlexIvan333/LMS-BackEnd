@@ -86,6 +86,7 @@ public class StudentService {
        List<StudentEntity> studentEntities = studentRepository.findStudentEntitiesByFilters(
                filterParams.getStudentId(),
                filterParams.getActive(),
+               filterParams.getEmail(),
                PageRequest.of(filterParams.getPage(), filterParams.getSize())).stream().toList();
 
        return studentEntities.stream().map(StudentMapper::toResponse).collect(Collectors.toList());

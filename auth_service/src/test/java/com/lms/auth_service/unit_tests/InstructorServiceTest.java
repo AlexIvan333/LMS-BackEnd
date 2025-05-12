@@ -4,9 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
@@ -190,7 +188,7 @@ class InstructorServiceTest {
         content.add(instructorEntity2);
         content.add(instructorEntity);
         when(instructorRepository.findInstructorEntitiesByFilters(Mockito.<Long>any(), Mockito.<Boolean>any(),
-                Mockito.any())).thenReturn(new PageImpl<>(content));
+                Mockito.any(),Mockito.any())).thenReturn(new PageImpl<>(content));
 
         InstructorFilterParams filterParams = new InstructorFilterParams();
         filterParams.setActive(true);
@@ -202,7 +200,7 @@ class InstructorServiceTest {
         List<InstructorResponse> actualInstructors = instructorService.getInstructors(filterParams);
 
         // Assert
-        verify(instructorRepository).findInstructorEntitiesByFilters(eq(1L), eq(true), isA(Pageable.class));
+        verify(instructorRepository).findInstructorEntitiesByFilters(eq(1L), eq(true),nullable(String.class), isA(Pageable.class));
         assertEquals(2, actualInstructors.size());
         InstructorResponse getResult = actualInstructors.get(1);
         assertEquals("21654", getResult.getZipCode());
@@ -266,7 +264,7 @@ class InstructorServiceTest {
         ArrayList<InstructorEntity> content = new ArrayList<>();
         content.add(instructorEntity);
         when(instructorRepository.findInstructorEntitiesByFilters(Mockito.<Long>any(), Mockito.<Boolean>any(),
-                Mockito.any())).thenReturn(new PageImpl<>(content));
+                Mockito.any(),Mockito.any())).thenReturn(new PageImpl<>(content));
 
         InstructorFilterParams filterParams = new InstructorFilterParams();
         filterParams.setActive(true);
@@ -278,7 +276,7 @@ class InstructorServiceTest {
         List<InstructorResponse> actualInstructors = instructorService.getInstructors(filterParams);
 
         // Assert
-        verify(instructorRepository).findInstructorEntitiesByFilters(eq(1L), eq(true), isA(Pageable.class));
+        verify(instructorRepository).findInstructorEntitiesByFilters(eq(1L), eq(true),nullable(String.class), isA(Pageable.class));
         assertEquals(1, actualInstructors.size());
         InstructorResponse getResult = actualInstructors.getFirst();
         assertEquals("21654", getResult.getZipCode());
@@ -353,7 +351,7 @@ class InstructorServiceTest {
         ArrayList<InstructorEntity> content = new ArrayList<>();
         content.add(instructorEntity);
         when(instructorRepository.findInstructorEntitiesByFilters(Mockito.<Long>any(), Mockito.<Boolean>any(),
-                Mockito.any())).thenReturn(new PageImpl<>(content));
+                Mockito.any(),Mockito.any())).thenReturn(new PageImpl<>(content));
 
         InstructorFilterParams filterParams = new InstructorFilterParams();
         filterParams.setActive(true);
@@ -394,7 +392,7 @@ class InstructorServiceTest {
         verify(instructorEntity).setTwoFactorCode(eq(3));
         verify(instructorEntity).setTwoFactorSecretKey(eq("EXAMPLEKEYwjalrXUtnFEMI/K7MDENG/bPxRfiCY"));
         verify(instructorEntity).setZipCode(eq("21654"));
-        verify(instructorRepository).findInstructorEntitiesByFilters(eq(1L), eq(true), isA(Pageable.class));
+        verify(instructorRepository).findInstructorEntitiesByFilters(eq(1L), eq(true),nullable(String.class), isA(Pageable.class));
         assertEquals(1, actualInstructors.size());
         InstructorResponse getResult = actualInstructors.getFirst();
         assertEquals("21654", getResult.getZipCode());
@@ -419,7 +417,7 @@ class InstructorServiceTest {
     void testGetInstructors_thenReturnEmpty() {
         // Arrange
         when(instructorRepository.findInstructorEntitiesByFilters(Mockito.<Long>any(), Mockito.<Boolean>any(),
-                Mockito.any())).thenReturn(new PageImpl<>(new ArrayList<>()));
+                Mockito.any(),Mockito.any())).thenReturn(new PageImpl<>(new ArrayList<>()));
 
         InstructorFilterParams filterParams = new InstructorFilterParams();
         filterParams.setActive(true);
@@ -431,7 +429,7 @@ class InstructorServiceTest {
         List<InstructorResponse> actualInstructors = instructorService.getInstructors(filterParams);
 
         // Assert
-        verify(instructorRepository).findInstructorEntitiesByFilters(eq(1L), eq(true), isA(Pageable.class));
+        verify(instructorRepository).findInstructorEntitiesByFilters(eq(1L), eq(true),nullable(String.class), isA(Pageable.class));
         assertTrue(actualInstructors.isEmpty());
     }
 

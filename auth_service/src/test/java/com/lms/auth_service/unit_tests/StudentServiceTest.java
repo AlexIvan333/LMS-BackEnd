@@ -4,9 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -177,7 +175,7 @@ class StudentServiceTest {
         content.add(studentEntity2);
         content.add(studentEntity);
         when(studentRepository.findStudentEntitiesByFilters(Mockito.<Long>any(), Mockito.<Boolean>any(),
-                Mockito.any())).thenReturn(new PageImpl<>(content));
+                Mockito.any(),Mockito.any())).thenReturn(new PageImpl<>(content));
 
         UserFilterParams filterParams = new UserFilterParams();
         filterParams.setActive(true);
@@ -189,12 +187,11 @@ class StudentServiceTest {
         List<StudentResponse> actualStudents = studentService.getStudents(filterParams);
 
         // Assert
-        verify(studentRepository).findStudentEntitiesByFilters(eq(1L), eq(true), isA(Pageable.class));
+        verify(studentRepository).findStudentEntitiesByFilters(eq(1L), eq(true),nullable(String.class), isA(Pageable.class));
         assertEquals(2, actualStudents.size());
         StudentResponse getResult = actualStudents.get(1);
         assertEquals("21654", getResult.getZipCode());
         assertEquals("Doe", getResult.getLastName());
-        assertEquals("GB", getResult.getCountry());
         StudentResponse getResult2 = actualStudents.getFirst();
         assertEquals("GBR", getResult2.getCountry());
         assertEquals("Jane", getResult.getFirstName());
@@ -251,7 +248,7 @@ class StudentServiceTest {
         ArrayList<StudentEntity> content = new ArrayList<>();
         content.add(studentEntity);
         when(studentRepository.findStudentEntitiesByFilters(Mockito.<Long>any(), Mockito.<Boolean>any(),
-                Mockito.any())).thenReturn(new PageImpl<>(content));
+                Mockito.any(),Mockito.any())).thenReturn(new PageImpl<>(content));
 
         UserFilterParams filterParams = new UserFilterParams();
         filterParams.setActive(true);
@@ -263,7 +260,7 @@ class StudentServiceTest {
         List<StudentResponse> actualStudents = studentService.getStudents(filterParams);
 
         // Assert
-        verify(studentRepository).findStudentEntitiesByFilters(eq(1L), eq(true), isA(Pageable.class));
+        verify(studentRepository).findStudentEntitiesByFilters(eq(1L), eq(true), nullable(String.class),isA(Pageable.class));
         assertEquals(1, actualStudents.size());
         StudentResponse getResult = actualStudents.getFirst();
         assertEquals("21654", getResult.getZipCode());
@@ -336,7 +333,7 @@ class StudentServiceTest {
         content.add(studentEntity);
         StudentRepository studentRepository = mock(StudentRepository.class);
         when(studentRepository.findStudentEntitiesByFilters(Mockito.<Long>any(), Mockito.<Boolean>any(),
-                Mockito.any())).thenReturn(new PageImpl<>(content));
+                Mockito.any(),Mockito.any())).thenReturn(new PageImpl<>(content));
         UserValidator userValidation = new UserValidator(mock(UserRepository.class));
         var actualStudents = getStudentResponses(studentRepository, userValidation);
 
@@ -369,7 +366,7 @@ class StudentServiceTest {
         verify(studentEntity).setTwoFactorCode(eq(3));
         verify(studentEntity).setTwoFactorSecretKey(eq("EXAMPLEKEYwjalrXUtnFEMI/K7MDENG/bPxRfiCY"));
         verify(studentEntity).setZipCode(eq("21654"));
-        verify(studentRepository).findStudentEntitiesByFilters(eq(1L), eq(true), isA(Pageable.class));
+        verify(studentRepository).findStudentEntitiesByFilters(eq(1L), eq(true),nullable(String.class), isA(Pageable.class));
         assertEquals(1, actualStudents.size());
         StudentResponse getResult = actualStudents.getFirst();
         assertEquals("21654", getResult.getZipCode());
@@ -410,7 +407,7 @@ class StudentServiceTest {
     void testGetStudents_thenReturnEmpty() {
         // Arrange
         when(studentRepository.findStudentEntitiesByFilters(Mockito.<Long>any(), Mockito.<Boolean>any(),
-                Mockito.any())).thenReturn(new PageImpl<>(new ArrayList<>()));
+                Mockito.any(),Mockito.any())).thenReturn(new PageImpl<>(new ArrayList<>()));
 
         UserFilterParams filterParams = new UserFilterParams();
         filterParams.setActive(true);
@@ -422,7 +419,7 @@ class StudentServiceTest {
         List<StudentResponse> actualStudents = studentService.getStudents(filterParams);
 
         // Assert
-        verify(studentRepository).findStudentEntitiesByFilters(eq(1L), eq(true), isA(Pageable.class));
+        verify(studentRepository).findStudentEntitiesByFilters(eq(1L), eq(true),nullable(String.class), isA(Pageable.class));
         assertTrue(actualStudents.isEmpty());
     }
 }

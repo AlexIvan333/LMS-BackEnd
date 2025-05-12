@@ -11,6 +11,8 @@ public class UserFilterParams {
     @Schema
     private Boolean active;
     @Schema
+    private String email;
+    @Schema
     private Integer page;
     @Schema
     private Integer size;

@@ -10,6 +10,8 @@ public class InstructorFilterParams {
     @Schema
     private Boolean active;
     @Schema
+    private String email;
+    @Schema
     private Integer page;
     @Schema
     private Integer size;
