@@ -43,7 +43,7 @@ public class StudentController {
 
 
     @GetMapping
-    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR","STUDENT"})
     public ResponseEntity<List<StudentResponse>> getStudents(@RequestParam(required = false) Long studentId,
                                                              @RequestParam(required = false) Boolean active,
                                                              @RequestParam(required = false) String email,
