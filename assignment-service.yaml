@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: assignment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: assignment-service
+  template:
+    metadata:
+      labels:
+        app: assignment-service
+    spec:
+      containers:
+        - name: assignment-service
+          image: assignment_service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8083
+          env:
+            - name: SERVER_PORT
+              value: "8083"
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka.lms.svc.cluster.local:9092
+            - name: KAFKA_GROUP_ID
+              value: assignment-service
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://eureka-server:8761/eureka
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: assignment-service
+spec:
+  selector:
+    app: assignment-service
+  ports:
+    - port: 8083
+      targetPort: 8083

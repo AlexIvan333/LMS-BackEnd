@@ -23,39 +23,6 @@ services:
       - backend-network
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
-  # Auth Service
-
-  # PostgreSQL for Auth Service
-  postgres_auth:
-    image: postgres:15
-    container_name: postgres_auth
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: lms_auth
-    ports:
-      - "5434:5432"
-    volumes:
-      - postgres_auth_data:/var/lib/postgresql/data
-    restart: always
-    networks:
-      - backend-network
-
-  # MongoDB for Auth Service
-  mongodb_auth:
-    image: mongo:6.0
-    container_name: mongodb_auth
-    environment:
-      MONGO_INITDB_DATABASE: lms_auth
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-    ports:
-      - "27019:27017"
-    volumes:
-      - mongo_auth_data:/data/db
-    restart: always
-    networks:
-      - backend-network
 
   # Auth Service
   auth_service:
@@ -67,38 +34,13 @@ services:
       - "8091:8081"
     environment:
       SERVER_PORT: 8081
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_auth:5432/lms_auth
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_DATA_MONGODB_HOST: mongodb_auth
-      SPRING_DATA_MONGODB_PORT: 27017
-      SPRING_DATA_MONGODB_DATABASE: lms_auth
-      SPRING_DATA_MONGODB_USERNAME: admin
-      SPRING_DATA_MONGODB_PASSWORD: password
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_GROUP_ID: auth-service
     restart: unless-stopped
     depends_on:
-      - postgres_auth
-      - mongodb_auth
       - eureka-server
-    networks:
-      - backend-network
-  # PostgreSQL for Course Service
-  postgres_courses:
-    image: postgres:15
-    container_name: postgres_courses
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: lms_course
-    ports:
-      - "5435:5432"
-    volumes:
-      - postgres_courses_data:/var/lib/postgresql/data
-    restart: always
     networks:
       - backend-network
   # Course Service
@@ -111,35 +53,16 @@ services:
       - "8092:8082"
     environment:
       SERVER_PORT: 8082
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_courses:5432/lms_course
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: password
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_GROUP_ID: course-service
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
     restart: unless-stopped
     depends_on:
-      - postgres_courses
       - eureka-server
     networks:
       - backend-network
 
-  # PostgreSQL for Assignment Service
-  postgres_assignment:
-    image: postgres:15
-    container_name: postgres_assignment
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: lms_assignment
-    ports:
-      - "5436:5432"
-    volumes:
-      - postgres_assignment_data:/var/lib/postgresql/data
-    restart: always
-    networks:
-      - backend-network
   # Assignment Service
   assignment_service:
     build:
@@ -150,33 +73,13 @@ services:
       - "8093:8083"
     environment:
       SERVER_PORT: 8083
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_assignment:5432/lms_assignment
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: password
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_GROUP_ID: assignment-service
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
     restart: unless-stopped
     depends_on:
-      - postgres_assignment
       - eureka-server
-    networks:
-      - backend-network
-
-  # MongoDB for Resource Service
-  mongodb_resource:
-    image: mongo:6.0
-    container_name: mongodb_resource
-    environment:
-      MONGO_INITDB_DATABASE: lms_resource
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-    ports:
-      - "27020:27017"
-    volumes:
-      - mongo_resource_data:/data/db
-    restart: always
     networks:
       - backend-network
 
@@ -190,19 +93,12 @@ services:
       - "8094:8084"
     environment:
       SERVER_PORT: 8084
-      SPRING_DATA_MONGODB_HOST: mongodb_resource
-      SPRING_DATA_MONGODB_PORT: 27017
-      SPRING_DATA_MONGODB_DATABASE: lms_resource
-      SPRING_DATA_MONGODB_USERNAME: admin
-      SPRING_DATA_MONGODB_PASSWORD: password
-      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_GROUP_ID: resource-service
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
     restart: unless-stopped
     depends_on:
-      - mongodb_resource
       - eureka-server
     networks:
       - backend-network

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-service
+  template:
+    metadata:
+      labels:
+        app: resource-service
+    spec:
+      containers:
+        - name: resource-service
+          image: resource_service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SERVER_PORT
+              value: "8084"
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka.lms.svc.cluster.local:9092
+            - name: KAFKA_GROUP_ID
+              value: resource-service
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://eureka-server:8761/eureka
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-service
+spec:
+  selector:
+    app: resource-service
+  ports:
+    - port: 8084
+      targetPort: 8084
