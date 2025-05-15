@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,7 @@ public class InstructorService {
                 .city(request.getCity())
                 .zipCode(request.getZipCode())
                 .validatedByAdmin(false)
+                .courseTitles(Collections.emptyList())
                 .build();
 
         String secretKey = google2FAService.generateSecretKey();
