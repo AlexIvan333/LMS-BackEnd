@@ -17,5 +17,6 @@ public class CourseResponse {
     private String description;
     private List<ModuleResponse> modules;
     private Long instructorID;
+    private String instructorName;
     private int maxStudents;
 }

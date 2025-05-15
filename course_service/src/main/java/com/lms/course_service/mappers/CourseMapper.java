@@ -17,6 +17,7 @@ public class CourseMapper {
                 .instructorID(entity.getInstructorId())
                 .maxStudents(entity.getMaxStudents())
                 .modules(entity.getModules().stream().map(ModuleMapper::toResponse).collect(Collectors.toList()))
+                .instructorName(entity.getInstructorName())
                 .build();
 
     }

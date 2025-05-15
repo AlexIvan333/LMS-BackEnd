@@ -1,5 +1,6 @@
 package com.lms.course_service.configuration.kafka;
 
+import com.lms.shared.events.InstructorDetailsResponseEvent;
 import com.lms.shared.events.ResourceExistsResponseEvent;
 import com.lms.shared.events.UserExistsResponseEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -95,6 +96,34 @@ public class KafkaConfig {
     @Bean
     public ReplyingKafkaTemplate<String, Object, ResourceExistsResponseEvent> resourceReplyingKafkaTemplate() {
         return new ReplyingKafkaTemplate<>(producerFactory(), resourceRepliesContainer());
+    }
+
+    @Bean
+    public ConsumerFactory<String, InstructorDetailsResponseEvent> instructorDetailsConsumerFactory() {
+        JsonDeserializer<InstructorDetailsResponseEvent> deserializer = new JsonDeserializer<>(InstructorDetailsResponseEvent.class);
+        return new DefaultKafkaConsumerFactory<>(
+                commonConsumerProps(), new StringDeserializer(), deserializer
+        );
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, InstructorDetailsResponseEvent> instructorDetailsListenerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, InstructorDetailsResponseEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(instructorDetailsConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentMessageListenerContainer<String, InstructorDetailsResponseEvent> instructorRepliesContainer() {
+        var container = instructorDetailsListenerFactory().createContainer("get-instructor-details-response");
+        container.getContainerProperties().setGroupId("course-service-instructor-replies");
+        return container;
+    }
+
+    @Bean
+    public ReplyingKafkaTemplate<String, Object, InstructorDetailsResponseEvent> instructorNameReplyingKafkaTemplate() {
+        return new ReplyingKafkaTemplate<>(producerFactory(), instructorRepliesContainer());
     }
 
     private Map<String, Object> commonConsumerProps() {

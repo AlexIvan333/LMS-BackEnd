@@ -10,14 +10,14 @@ import com.lms.course_service.mappers.CourseMapper;
 import com.lms.course_service.entities.CourseEntity;
 import com.lms.course_service.repositories.CourseRepository;
 import com.lms.course_service.repositories.CourseStudentRepository;
-import com.lms.shared.events.CheckUserExistsEvent;
-import com.lms.shared.events.UserExistsResponseEvent;
+import com.lms.shared.events.*;
 import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -36,18 +36,20 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final CourseStudentRepository courseStudentRepository;
     private final ReplyingKafkaTemplate<String, Object, UserExistsResponseEvent> userReplyingKafkaTemplate;
+    private final ReplyingKafkaTemplate<String, Object, InstructorDetailsResponseEvent> instructorNameReplyingKafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public ServiceResult<CourseResponse> createCourse(CreateCourseRequest request) {
         String correlationId = UUID.randomUUID().toString();
         CheckUserExistsEvent event = new CheckUserExistsEvent(request.getInstructorID(), "INSTRUCTOR", correlationId);
 
         try {
-            ProducerRecord<String, Object> record = new ProducerRecord<>("user-validation-request", event);
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "user-validation-response".getBytes()));
-            record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
+            ProducerRecord<String, Object> userRecord = new ProducerRecord<>("user-validation-request", event);
+            userRecord.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "user-validation-response".getBytes()));
+            userRecord.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
 
             RequestReplyFuture<String, Object, UserExistsResponseEvent> future =
-                    userReplyingKafkaTemplate.sendAndReceive(record);
+                    userReplyingKafkaTemplate.sendAndReceive(userRecord);
 
             ConsumerRecord<String, UserExistsResponseEvent> response = future.get();
 
@@ -68,15 +70,30 @@ public class CourseService {
                         .build();
             }
 
+            String correlationId2 = UUID.randomUUID().toString();
+            GetInstructorDetailsEvent nameRequest = new GetInstructorDetailsEvent(request.getInstructorID(), correlationId2);
+            ProducerRecord<String, Object> nameRecord = new ProducerRecord<>("get-instructor-details-request", nameRequest);
+            nameRecord.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "get-instructor-details-response".getBytes()));
+            nameRecord.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId2.getBytes()));
+            RequestReplyFuture<String, Object, InstructorDetailsResponseEvent> nameFuture =
+                    instructorNameReplyingKafkaTemplate.sendAndReceive(nameRecord);
+
+            ConsumerRecord<String, InstructorDetailsResponseEvent> nameResponse = nameFuture.get();
+            String instructorName = nameResponse.value().fullName();
+
             CourseEntity courseEntity = CourseEntity.builder()
                     .title(request.getTitle())
                     .description(request.getDescription())
                     .modules(Collections.emptyList())
                     .instructorId(request.getInstructorID())
                     .maxStudents(request.getMaxStudents())
+                    .instructorName(instructorName)
                     .build();
 
             courseRepository.save(courseEntity);
+
+            CourseCreatedEvent courseCreatedEvent = new CourseCreatedEvent(courseEntity.getInstructorId(), courseEntity.getTitle());
+            kafkaTemplate.send("instructor-course-created", courseCreatedEvent);
 
             return ServiceResult.<CourseResponse>builder()
                     .data(CourseMapper.toResponse(courseEntity))

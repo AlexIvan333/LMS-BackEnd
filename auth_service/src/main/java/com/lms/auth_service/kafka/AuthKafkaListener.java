@@ -1,10 +1,11 @@
 package com.lms.auth_service.kafka;
 
 import com.lms.auth_service.entities.enums.Role;
+import com.lms.auth_service.entities.relational.InstructorEntity;
 import com.lms.auth_service.entities.relational.UserEntity;
+import com.lms.auth_service.repositories.relational.InstructorRepository;
 import com.lms.auth_service.repositories.relational.UserRepository;
-import com.lms.shared.events.CheckUserExistsEvent;
-import com.lms.shared.events.UserExistsResponseEvent;
+import com.lms.shared.events.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class AuthKafkaListener {
 
     private final UserRepository userRepository;
+    private final InstructorRepository instructorRepository;
 
     @KafkaListener(topics = "user-validation-request", groupId = "auth-service")
     @SendTo("user-validation-response")
@@ -40,6 +42,23 @@ public class AuthKafkaListener {
                 active,
                 event.correlationId()
         );
+    }
+    @KafkaListener(topics = "get-instructor-details-request", groupId = "auth-service")
+    @SendTo("get-instructor-details-response")
+    public InstructorDetailsResponseEvent onInstructorDetails(GetInstructorDetailsEvent event){
+        InstructorEntity instructor = instructorRepository.findById(event.instructorId())
+                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+
+        String fullName = instructor.getFirstName() + " " + instructor.getLastName();
+
+        return new InstructorDetailsResponseEvent(fullName, event.correlationId());
+    }
+
+    @KafkaListener(topics = "instructor-course-created", groupId = "auth-service")
+    public void onCourseCreated(CourseCreatedEvent event) {
+        InstructorEntity instructor = instructorRepository.findById(event.instructorId()).orElseThrow();
+        instructor.getCourseTitles().add(event.courseTitle());
+        instructorRepository.save(instructor);
     }
 
 }
