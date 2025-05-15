@@ -56,7 +56,9 @@ public class AuthKafkaListener {
 
     @KafkaListener(topics = "instructor-course-created", groupId = "auth-service")
     public void onCourseCreated(CourseCreatedEvent event) {
-        InstructorEntity instructor = instructorRepository.findById(event.instructorId()).orElseThrow();
+        InstructorEntity instructor = instructorRepository.findByIdWithCourseTitles(event.instructorId())
+                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+
         instructor.getCourseTitles().add(event.courseTitle());
         instructorRepository.save(instructor);
     }
