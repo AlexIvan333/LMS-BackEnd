@@ -57,7 +57,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/actuator/prometheus").permitAll()
                         // Public endpoints (modify as needed)
                         .requestMatchers(HttpMethod.GET, "/resources/**").hasAnyAuthority("INSTRUCTOR", "ADMIN","STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/resources/all").hasAnyAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/resources/**").hasAnyAuthority("INSTRUCTOR", "ADMIN", "STUDENT")
+                        .requestMatchers(HttpMethod.DELETE, "/resources/**").hasAnyAuthority("INSTRUCTOR", "ADMIN", "STUDENT")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtRequestFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);

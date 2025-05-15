@@ -59,6 +59,15 @@ public class CourseService {
                         .build();
             }
 
+            if(!response.value().active())
+            {
+                return ServiceResult.<CourseResponse>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.BAD_REQUEST)
+                        .messageError("Instructor is not active")
+                        .build();
+            }
+
             CourseEntity courseEntity = CourseEntity.builder()
                     .title(request.getTitle())
                     .description(request.getDescription())
@@ -131,6 +140,15 @@ public class CourseService {
                         .success(false)
                         .httpStatus(HttpStatus.BAD_REQUEST)
                         .messageError("Student ID is invalid or validation failed")
+                        .build();
+            }
+
+            if(!response.value().active())
+            {
+                return ServiceResult.<Boolean>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.BAD_REQUEST)
+                        .messageError("Student is not active")
                         .build();
             }
 
