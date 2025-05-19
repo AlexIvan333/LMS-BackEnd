@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-cli
+  namespace: lms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-cli
+  template:
+    metadata:
+      labels:
+        app: kafka-cli
+    spec:
+      containers:
+        - name: kafka-cli
+          image: confluentinc/cp-kafka:7.5.0
+          command: [ "/bin/sh" ]
+          tty: true
+          stdin: true
