@@ -170,6 +170,17 @@ public class CourseService {
             }
 
             CourseEntity course = courseOptional.get();
+
+            boolean alreadyRegistered = courseStudentRepository.existsCourseStudentEntitiesByCourseIdAndStudentId(
+                    course.getId(), request.getStudent_id());
+
+            if (alreadyRegistered) {
+                return ServiceResult.<Boolean>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.CONFLICT)
+                        .messageError("Student is already registered to this course")
+                        .build();
+            }
             CourseStudentEntity courseStudentEntity = CourseStudentEntity.builder()
                     .courseId(course.getId())
                     .studentId(request.getStudent_id())
@@ -191,5 +202,16 @@ public class CourseService {
                     .messageError("Kafka request failed: " + e.getMessage())
                     .build();
         }
+    }
+    public List<CourseResponse> getCoursesByStudentId(Long studentId) {
+        List<CourseEntity> courseEntities = courseStudentRepository
+                .findAllByStudentId(studentId)
+                .stream()
+                .map(cs -> courseRepository.findCourseEntitiesById(cs.getCourseId()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+        return courseEntities.stream().map(CourseMapper::toResponse).toList();
     }
 }

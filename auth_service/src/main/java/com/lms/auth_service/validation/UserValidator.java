@@ -26,7 +26,12 @@ public class UserValidator implements IUserValidator {
     public boolean IsInstructor(Long id) {
         if (userRepository.findById(id).get().getRole() == Role.INSTRUCTOR) {
             return true;
-        };
+        }
         return false;
+    }
+    @Override
+    public boolean IsActive(String email)
+    {
+        return userRepository.findByEmail(email).get().getActive();
     }
 }

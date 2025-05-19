@@ -7,6 +7,7 @@ import com.lms.auth_service.dtos.requests.TwoFactorRequest;
 import com.lms.auth_service.dtos.responses.LoginResponse;
 import com.lms.auth_service.dtos.responses.ServiceResult;
 import com.lms.auth_service.dtos.responses.UserInfoResponse;
+import com.lms.auth_service.entities.enums.Role;
 import com.lms.auth_service.entities.relational.UserEntity;
 import com.lms.auth_service.exceptions.InvalidCredentialsException;
 import com.lms.auth_service.exceptions.TwoFactorAuthenticationException;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.lms.auth_service.validation.intrefaces.IPasswordValidator;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Service
@@ -41,6 +43,9 @@ public class AuthService {
             throw new InvalidCredentialsException("Invalid email or password.");
         }
 
+        if(!userValidation.IsActive(loginRequest.getEmail())) {
+            throw new InvalidCredentialsException("This account is not active!");
+        }
         return "Two-factor authentication required.";
     }
 
@@ -182,6 +187,38 @@ public class AuthService {
         String role = jwtUtil.extractRole(token);
 
         return new UserInfoResponse(email, role);
+    }
+
+    public boolean deactivateAccount(String token) {
+        String email = jwtUtil.extractEmail(token);
+        Optional<UserEntity> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            UserEntity user = userOptional.get();
+            user.setActive(false);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    public byte[] exportUserDataAsCSV(String token) {
+        String email = jwtUtil.extractEmail(token);
+        Optional<UserEntity> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
+            throw new InvalidCredentialsException("User not found.");
+        }
+
+        UserEntity user = userOptional.get();
+
+        StringBuilder csvBuilder = new StringBuilder();
+        csvBuilder.append("ID,Email,Role,Active\n");
+        csvBuilder.append(user.getId()).append(",")
+                .append(user.getEmail()).append(",")
+                .append(user.getRole()).append(",")
+                .append(user.getActive()).append("\n");
+
+        return csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
     }
 
 
