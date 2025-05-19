@@ -75,4 +75,10 @@ public class CourseController {
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(result.data);
     }
+    @GetMapping("/by-student")
+    @RolesAllowed({"ADMIN", "STUDENT"})
+    public ResponseEntity<List<CourseResponse>> getCoursesByStudentId(@RequestParam Long studentId) {
+        return ResponseEntity.ok(courseService.getCoursesByStudentId(studentId));
+    }
+
 }

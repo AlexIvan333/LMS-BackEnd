@@ -31,6 +31,9 @@ public class CourseEntity {
     @Column(nullable = false)
     private Long instructorId;
 
+    @Column(nullable = false)
+    private String instructorName;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ModuleEntity> modules;
 

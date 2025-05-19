@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -68,6 +69,33 @@ public class ResourceService {
         return resourceRepository.findAllById(ids).stream()
                 .map(ResourceEntity::getId)
                 .toList();
+    }
+
+    public List<ResourceResponse> getAllResources()
+    {
+        List<ResourceEntity> resources = resourceRepository.findAll();
+
+        return resources.stream().map(ResourceMapper::toResponse).collect(Collectors.toList());
+    }
+
+    public ServiceResult<Void>deleteResource(Long id)
+    {
+        if (!resourceRepository.existsResourceEntityById(id))
+        {
+            return ServiceResult.<Void>builder()
+                    .success(false)
+                    .httpStatus(HttpStatus.NOT_FOUND)
+                    .messageError("The resource was not found")
+                    .build();
+        }
+
+        ResourceEntity entity = resourceRepository.findResourceById(id);
+        resourceRepository.delete(entity);
+
+        return ServiceResult.<Void>builder()
+                .success(true)
+                .httpStatus(HttpStatus.OK)
+                .build();
     }
 
 

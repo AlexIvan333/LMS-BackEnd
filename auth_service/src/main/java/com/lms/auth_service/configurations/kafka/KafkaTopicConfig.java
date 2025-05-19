@@ -36,4 +36,19 @@ public class KafkaTopicConfig {
     public NewTopic resourceDetailsResponseTopic() {
         return new NewTopic("resource-details-response", 1, (short) 1);
     }
+
+    @Bean
+    public NewTopic getInstructorDetailsRequest() {
+        return new NewTopic("get-instructor-details-request", 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic getInstructorDetailsResponse() {
+        return new NewTopic("get-instructor-details-response", 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic instructorCourseCreated() {
+        return new NewTopic("instructor-course-created", 1, (short) 1);
+    }
 }

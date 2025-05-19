@@ -64,6 +64,27 @@ public class ResourceController {
         return ResponseEntity.ok(existingIds);
     }
 
+    @GetMapping("/all")
+    @RolesAllowed({"ADMIN"})
+    public ResponseEntity<List<ResourceResponse>> getAllResources() {
+        List<ResourceResponse> resourceResponseList = resourceService.getAllResources();
+        return ResponseEntity.ok(resourceResponseList);
+    }
 
+    @DeleteMapping("/{id}")
+    @RolesAllowed({"ADMIN", "STUDENT", "INSTRUCTOR"})
+    public ResponseEntity<Void>deleteResource(@PathVariable Long id) {
+
+        var result = resourceService.deleteResource(id);
+        if (!result.success)
+        {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                    result.getHttpStatus(),result.getMessageError()
+            );
+            problemDetail.setTitle("Error deleting the resource");
+            return ResponseEntity.of(problemDetail).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(result.data);
+    }
 
 }

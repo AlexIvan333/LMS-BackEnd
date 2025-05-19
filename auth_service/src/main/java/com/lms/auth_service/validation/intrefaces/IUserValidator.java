@@ -4,4 +4,5 @@ public interface IUserValidator {
     boolean HasValidEmail(String email);
     boolean IsIdValid (Long id);
     boolean IsInstructor(Long id);
+    boolean IsActive(String email);
 }

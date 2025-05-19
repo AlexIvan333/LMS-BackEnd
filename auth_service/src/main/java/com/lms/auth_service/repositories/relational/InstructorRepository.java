@@ -6,10 +6,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 
 public interface InstructorRepository extends JpaRepository<InstructorEntity, Long> {
 
     InstructorEntity getInstructorEntityById(Long id);
+
+    @Query("SELECT i FROM InstructorEntity i LEFT JOIN FETCH i.courseTitles WHERE i.id = :id")
+    Optional<InstructorEntity> findByIdWithCourseTitles(Long id);
 
     Long getInstructorEntityByEmail(String email);
 

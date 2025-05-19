@@ -7,12 +7,11 @@ import com.lms.auth_service.dtos.responses.UserInfoResponse;
 import com.lms.auth_service.exceptions.InvalidCredentialsException;
 import com.lms.auth_service.exceptions.TwoFactorAuthenticationException;
 import com.lms.auth_service.services.AuthService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -154,6 +153,33 @@ public class AuthenticationController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @DeleteMapping("/delete_account")
+    public ResponseEntity<?> deleteAccount(@CookieValue(name = "token", required = false) String token) {
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is missing.");
+        }
+
+        boolean success = authService.deactivateAccount(token);
+        if (success) {
+            return ResponseEntity.ok("Account has been deactivated.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+    }
+
+    @GetMapping("/export_data")
+    public ResponseEntity<byte[]> exportUserData(@CookieValue(name = "token", required = false) String token) {
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        byte[] csvData = authService.exportUserDataAsCSV(token);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"user_data.csv\"")
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(csvData);
     }
 
 }

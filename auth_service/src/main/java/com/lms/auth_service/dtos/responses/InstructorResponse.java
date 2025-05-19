@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 @Data
 @Builder
@@ -24,4 +26,5 @@ public class InstructorResponse {
     private String country;
     private String city;
     private String zipCode;
+    List<String> courseTitles;
 }

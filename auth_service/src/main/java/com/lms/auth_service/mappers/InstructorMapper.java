@@ -22,6 +22,7 @@ public class InstructorMapper {
                 .country(entity.getCountry())
                 .city(entity.getCity())
                 .zipCode(entity.getZipCode())
+                .courseTitles(entity.getCourseTitles())
                 .build();
     }
 }
