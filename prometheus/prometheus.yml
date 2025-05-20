@@ -5,19 +5,19 @@ scrape_configs:
   - job_name: 'auth_service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8091']
+      - targets: ['auth_service:8091']
 
   - job_name: 'courses_service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8092']
+      - targets: ['course_service:8092']
 
   - job_name: 'assignment_service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8093']
+      - targets: ['assignment_service:8093']
 
   - job_name: 'resource_service'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['host.docker.internal:8094']
+      - targets: ['resource_service:8094']

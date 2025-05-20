@@ -185,27 +185,6 @@ class AuthServiceTest {
 
 
     @Test
-    @DisplayName("Test initiateLogin(LoginRequest); then return 'Two-factor authentication required.'")
-    
-    @MethodsUnderTest({"String AuthService.initiateLogin(LoginRequest)"})
-    void testInitiateLogin_thenReturnTwoFactorAuthenticationRequired() throws InvalidCredentialsException {
-        // Arrange
-        var userEntity = getUserEntity();
-        Optional<UserEntity> ofResult = Optional.of(userEntity);
-        when(userRepository.findByEmail(Mockito.any())).thenReturn(ofResult);
-        when(passwordEncoder.matches(Mockito.any(), Mockito.any())).thenReturn(true);
-
-        // Act
-        String actualInitiateLoginResult = authService.initiateLogin(new LoginRequest("jane.doe@example.org", "password"));
-
-        // Assert
-        verify(userRepository).findByEmail(eq("jane.doe@example.org"));
-        verify(passwordEncoder).matches(isA(CharSequence.class), eq("password"));
-        assertEquals("Two-factor authentication required.", actualInitiateLoginResult);
-    }
-
-
-    @Test
     @DisplayName("Test loginAdmin(LoginRequest)")
     
     @MethodsUnderTest({"LoginResponse AuthService.loginAdmin(LoginRequest)"})

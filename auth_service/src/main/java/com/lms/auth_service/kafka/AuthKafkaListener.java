@@ -6,6 +6,7 @@ import com.lms.auth_service.entities.relational.UserEntity;
 import com.lms.auth_service.repositories.relational.InstructorRepository;
 import com.lms.auth_service.repositories.relational.UserRepository;
 import com.lms.shared.events.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -28,12 +29,13 @@ public class AuthKafkaListener {
         System.out.println("[AUTH SERVICE] Received user-validation-request for ID: " + event.userId());
         boolean exists = false;
         boolean active = false;
-        try {
-            Role role = Role.valueOf(event.role().toUpperCase());
-            exists = userRepository.existsByIdAndRole(event.userId(), role);
-            active = userRepository.findById(event.userId()).get().getActive();
-        } catch (IllegalArgumentException ex) {
-            System.out.println("Invalid role provided: " + event.role());
+
+        Role role = Role.valueOf(event.role().toUpperCase());
+        Optional<UserEntity> userOpt = userRepository.findById(event.userId());
+
+        if (userOpt.isPresent() && userOpt.get().getRole() == role) {
+            exists = true;
+            active = userOpt.get().getActive();
         }
         
         return new UserExistsResponseEvent(
@@ -55,6 +57,7 @@ public class AuthKafkaListener {
     }
 
     @KafkaListener(topics = "instructor-course-created", groupId = "auth-service")
+    @Transactional
     public void onCourseCreated(CourseCreatedEvent event) {
         InstructorEntity instructor = instructorRepository.findByIdWithCourseTitles(event.instructorId())
                 .orElseThrow(() -> new RuntimeException("Instructor not found"));
