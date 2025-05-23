@@ -62,6 +62,8 @@ public class WebSecurityConfig {
                         // Swagger resources accessible to everyone
                         .requestMatchers(SWAGGER_UI_RESOURCES).permitAll()
                         .requestMatchers("/actuator/prometheus").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/info", "/actuator").permitAll()
+                        .requestMatchers("/actuator/traces").permitAll()
                         // Public endpoints
                         .requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login/admin").permitAll()

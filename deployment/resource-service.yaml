@@ -1,42 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: assignment-service
+  name: resource-service
+  namespace: lms
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: assignment-service
+      app: resource-service
   template:
     metadata:
       labels:
-        app: assignment-service
+        app: resource-service
     spec:
       containers:
-        - name: assignment-service
-          image: assignment_service:latest
+        - name: resource-service
+          image: resource_service:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 8083
+            - containerPort: 8084
           env:
             - name: SERVER_PORT
-              value: "8083"
+              value: "8084"
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: kafka.lms.svc.cluster.local:9092
             - name: KAFKA_GROUP_ID
-              value: assignment-service
+              value: resource-service
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
               value: http://eureka-server:8761/eureka
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
+            - name: ZIPKIN_URL
+              value: http://zipkin.monitoring.svc.cluster.local:9411
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: assignment-service
+  name: resource-service
+  namespace: lms
 spec:
   selector:
-    app: assignment-service
+    app: resource-service
   ports:
-    - port: 8083
-      targetPort: 8083
+    - name: http
+      protocol: TCP
+      port: 8084
+      targetPort: 8084
+  type: ClusterIP
