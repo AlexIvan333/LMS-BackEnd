@@ -14,7 +14,7 @@ import {postResourceTest} from "./resource/post-resource-test.js";
 import {getResourceByIdTest} from "./resource/get-resource-by-id-test.js";
 
 export const options = {
-    vus: 5,
+    vus: 50,
     duration: '30s',
 };
 

@@ -7,9 +7,9 @@ export function postAssignmentSubmissionTest() {
     const token = getAdminToken();
 
     const createAssignmentSubmissionPayload = JSON.stringify({
-        "studentId": 17,
+        "studentId": 13,
         "assigmentId": 1,
-        "resourceIds": [1,2,4,6]
+        "resourceIds": [2,4,6]
     });
     const params = {
         headers: {

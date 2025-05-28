@@ -10,9 +10,9 @@ export function postAssignmentTest() {
         "title": "string",
         "description": "string",
         "deadline": "2025-04-29T18:19:39.863Z",
-        "courseId": 1,
-        "moduleId": 1,
-        "resourceIds": [7,5,4,3]
+        "courseId": 9,
+        "moduleId": 9,
+        "resourceIds": [2,4,6]
     });
     const params = {
         headers: {
