@@ -58,7 +58,17 @@ jobs:
         env:
           DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DO_API_TOKEN }}
 
-      - name: Deploy All YAMLs to Kubernetes
+      - name: Delete Old Kubernetes Resources (Clean Slate)
+        run: |
+          resources=("auth-service" "course-service" "assignment-service" "resource-service" "api-gateway" "eureka-server" "zookeeper" "kafka" "kafka-cli" "prometheus" "grafana" "zipkin")
+
+          for resource in "${resources[@]}"; do
+            kubectl delete deployment $resource -n lms --ignore-not-found
+            kubectl delete svc $resource -n lms --ignore-not-found
+            kubectl delete rs -n lms --selector=app=$resource --ignore-not-found
+          done
+
+      - name: Deploy Updated YAMLs to Kubernetes
         run: |
           kubectl apply -f deployment/zookeeper.yaml
           kubectl apply -f deployment/kafka.yaml

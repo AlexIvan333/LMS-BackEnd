@@ -26,6 +26,16 @@ spec:
               value: http://eureka-server.lms.svc.cluster.local:8761/eureka
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
+            - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDORIGINS
+              value: http://localhost:3001
+            - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDMETHODS
+              value: GET,POST,PUT,DELETE,OPTIONS
+            - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDHEADERS
+              value: "*"
+            - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWCREDENTIALS
+              value: "true"
+            - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_EXPOSEDHEADERS
+              value: Set-Cookie
 ---
 apiVersion: v1
 kind: Service
