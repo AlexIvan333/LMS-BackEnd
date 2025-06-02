@@ -1,75 +1,75 @@
-name: LMS CI/CD Pipeline
+name: LMS CI/CD - DOCR + DigitalOcean Kubernetes
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'auth_service/**'
-      - 'course_service/**'
-      - 'assignment_service/**'
-      - 'resource_service/**'
-      - 'api_gateway/**'
-      - 'eureka-server/**'
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  build-test-deploy:
+  build-and-deploy:
     runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Set up Java
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Java 21
         uses: actions/setup-java@v3
         with:
+          distribution: temurin
           java-version: 21
-          distribution: 'temurin'
 
-      - name: Build all services
+      - name: Build and Test All Custom Services
         run: |
           $services = @("eureka-server", "auth_service", "course_service", "assignment_service", "resource_service", "api_gateway")
           foreach ($service in $services) {
             Push-Location $service
             ./gradlew.bat clean build -x test
-            Pop-Location
-          }
-
-      - name: Run tests
-        run: |
-          $services = @("eureka-server", "auth_service", "course_service", "assignment_service", "resource_service", "api_gateway")
-          foreach ($service in $services) {
-            Push-Location $service
             ./gradlew.bat test
             Pop-Location
           }
 
-      - name: Ensure Docker is using Desktop context
-        run: docker context use default
+      - name: Docker Compose Build All
+        run: docker compose --project-name back-end build
 
-      - name: Docker Compose Build (all services)
-        run: docker compose --project-name back-end build --no-cache
+      - name: Authenticate to DOCR
+        run: doctl registry login
+        env:
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DO_API_TOKEN }}
 
-      - name: Log in to Docker Hub (Windows-safe)
+      - name: Tag and Push Images to DOCR
         run: |
-          $username = "${{ secrets.DOCKER_HUB_USERNAME }}"
-          $password = "${{ secrets.DOCKER_HUB_PASSWORD }}"
-          docker login -u $username -p $password
+          docker tag back-end-api_gateway registry.digitalocean.com/lms-registry333/api-gateway:latest
+          docker tag back-end-auth_service registry.digitalocean.com/lms-registry333/auth-service:latest
+          docker tag back-end-course_service registry.digitalocean.com/lms-registry333/course-service:latest
+          docker tag back-end-assignment_service registry.digitalocean.com/lms-registry333/assignment-service:latest
+          docker tag back-end-resource_service registry.digitalocean.com/lms-registry333/resource-service:latest
+          docker tag back-end-eureka-server registry.digitalocean.com/lms-registry333/eureka-server:latest
 
-      - name: Tag and Push Docker Images to Docker Hub
+          docker push registry.digitalocean.com/lms-registry333/api-gateway:latest
+          docker push registry.digitalocean.com/lms-registry333/auth-service:latest
+          docker push registry.digitalocean.com/lms-registry333/course-service:latest
+          docker push registry.digitalocean.com/lms-registry333/assignment-service:latest
+          docker push registry.digitalocean.com/lms-registry333/resource-service:latest
+          docker push registry.digitalocean.com/lms-registry333/eureka-server:latest
+
+      - name: Configure Kubernetes Context for DigitalOcean
+        run: doctl kubernetes cluster kubeconfig save lms-cluster
+        env:
+          DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DO_API_TOKEN }}
+
+      - name: Deploy All YAMLs to Kubernetes
         run: |
-          docker tag back-end-api_gateway alexivan813/backend:api-gateway
-          docker tag back-end-auth_service alexivan813/backend:auth-service
-          docker tag back-end-course_service alexivan813/backend:course-service
-          docker tag back-end-assignment_service alexivan813/backend:assignment-service
-          docker tag back-end-resource_service alexivan813/backend:resource-service
-          docker tag back-end-eureka-server alexivan813/backend:eureka-server
-
-          docker push alexivan813/backend:api-gateway
-          docker push alexivan813/backend:auth-service
-          docker push alexivan813/backend:course-service
-          docker push alexivan813/backend:assignment-service
-          docker push alexivan813/backend:resource-service
-          docker push alexivan813/backend:eureka-server
-
-      - name: Docker Compose Up (start all)
-        run: docker compose --project-name back-end up -d
+          kubectl apply -f deployment/zookeeper.yaml
+          kubectl apply -f deployment/kafka.yaml
+          kubectl apply -f deployment/kafka-cli.yaml
+          kubectl apply -f deployment/eureka-server.yaml
+          kubectl apply -f deployment/auth-service.yaml
+          kubectl apply -f deployment/course-service.yaml
+          kubectl apply -f deployment/assignment-service.yaml
+          kubectl apply -f deployment/resource-service.yaml
+          kubectl apply -f deployment/api-gateway.yaml
+          kubectl apply -f deployment/prometheus.yaml
+          kubectl apply -f deployment/grafana.yaml
+          kubectl apply -f deployment/grafana-datasource-config.yaml
+          kubectl apply -f deployment/zipkin.yaml
