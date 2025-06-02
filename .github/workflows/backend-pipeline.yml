@@ -6,9 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: self-hosted
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -32,6 +31,10 @@ jobs:
       - name: Docker Compose Build All
         run: docker compose --project-name back-end build
 
+  push-images:
+    runs-on: self-hosted
+    needs: build
+    steps:
       - name: Authenticate to DOCR
         run: doctl registry login
         env:
@@ -39,36 +42,48 @@ jobs:
 
       - name: Tag and Push Images to DOCR
         run: |
-          docker tag back-end-api_gateway registry.digitalocean.com/lms-registry333/api-gateway:latest
-          docker tag back-end-auth_service registry.digitalocean.com/lms-registry333/auth-service:latest
-          docker tag back-end-course_service registry.digitalocean.com/lms-registry333/course-service:latest
-          docker tag back-end-assignment_service registry.digitalocean.com/lms-registry333/assignment-service:latest
-          docker tag back-end-resource_service registry.digitalocean.com/lms-registry333/resource-service:latest
-          docker tag back-end-eureka-server registry.digitalocean.com/lms-registry333/eureka-server:latest
+          $tags = @{
+            "back-end-api_gateway" = "api-gateway"
+            "back-end-auth_service" = "auth-service"
+            "back-end-course_service" = "course-service"
+            "back-end-assignment_service" = "assignment-service"
+            "back-end-resource_service" = "resource-service"
+            "back-end-eureka-server" = "eureka-server"
+          }
 
-          docker push registry.digitalocean.com/lms-registry333/api-gateway:latest
-          docker push registry.digitalocean.com/lms-registry333/auth-service:latest
-          docker push registry.digitalocean.com/lms-registry333/course-service:latest
-          docker push registry.digitalocean.com/lms-registry333/assignment-service:latest
-          docker push registry.digitalocean.com/lms-registry333/resource-service:latest
-          docker push registry.digitalocean.com/lms-registry333/eureka-server:latest
+          foreach ($local in $tags.Keys) {
+            $remote = $tags[$local]
+            docker tag $local registry.digitalocean.com/lms-registry333/$remote:latest
+            docker push registry.digitalocean.com/lms-registry333/$remote:latest
+          }
 
+  cleanup-k8s:
+    runs-on: self-hosted
+    needs: push-images
+    steps:
       - name: Configure Kubernetes Context for DigitalOcean
         run: doctl kubernetes cluster kubeconfig save lms-cluster
         env:
           DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DO_API_TOKEN }}
 
-      - name: Delete Old Kubernetes Resources (Clean Slate)
+      - name: Delete Old Deployments and Services
         run: |
-          resources=("auth-service" "course-service" "assignment-service" "resource-service" "api-gateway" "eureka-server" "zookeeper" "kafka" "kafka-cli" "prometheus" "grafana" "zipkin")
+          $resources = @("eureka-server", "auth-service", "course-service", "assignment-service", "resource-service", "api-gateway")
 
-          for resource in "${resources[@]}"; do
-            kubectl delete deployment $resource -n lms --ignore-not-found
-            kubectl delete svc $resource -n lms --ignore-not-found
-            kubectl delete rs -n lms --selector=app=$resource --ignore-not-found
-          done
+          foreach ($res in $resources) {
+            kubectl delete deployment $res -n lms --ignore-not-found
+            kubectl delete service $res -n lms --ignore-not-found
+            $replicaSets = kubectl get rs -n lms --no-headers | ForEach-Object { ($_ -split '\s+')[0,1,2,3,4] } | Where-Object { $_[0] -like "$res*" }
+            foreach ($rs in $replicaSets) {
+              kubectl delete rs $rs[0] -n lms --ignore-not-found
+            }
+          }
 
-      - name: Deploy Updated YAMLs to Kubernetes
+  deploy:
+    runs-on: self-hosted
+    needs: cleanup-k8s
+    steps:
+      - name: Apply All Updated YAMLs to Kubernetes
         run: |
           kubectl apply -f deployment/zookeeper.yaml
           kubectl apply -f deployment/kafka.yaml
