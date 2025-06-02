@@ -50,7 +50,7 @@ jobs:
         run: docker compose --project-name back-end build --no-cache
 
       - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ DOCKER_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
       - name: Tag and Push Docker Images to Docker Hub
         run: |
