@@ -35,7 +35,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         if (token != null) {
             try {
                 String email = jwtUtil.extractEmail(token);
