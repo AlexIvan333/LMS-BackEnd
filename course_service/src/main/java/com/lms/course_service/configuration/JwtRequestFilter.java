@@ -1,4 +1,4 @@
-package com.lms.course_service.configuration;//package com.lms.api_gateway.configurations;
+package com.lms.course_service.configuration;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,6 +26,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         Cookie[] cookies = request.getCookies();
         String token = null;
+
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("token".equals(cookie.getName())) {

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: api_gateway:latest
+          image: registry.digitalocean.com/lms-registry333/api_gateway:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8080

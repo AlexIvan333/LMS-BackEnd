@@ -18,6 +18,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -33,9 +34,6 @@ jobs:
             Pop-Location
           }
 
-      - name: List containers before stopping
-        run: docker ps -a
-
       - name: Run tests
         run: |
           $services = @("eureka-server", "auth_service", "course_service", "assignment_service", "resource_service", "api_gateway")
@@ -47,16 +45,28 @@ jobs:
 
       - name: Ensure Docker is using Desktop context
         run: docker context use default
-      - name: Stop only if containers are running
-        run: |
-          if (docker ps -q) {
-            docker compose --project-name back-end down -v
-          } else {
-            Write-Host "No running containers to stop"
-          }
 
       - name: Docker Compose Build (all services)
         run: docker compose --project-name back-end build --no-cache
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ DOCKER_USERNAME }}" --password-stdin
+
+      - name: Tag and Push Docker Images to Docker Hub
+        run: |
+          docker tag back-end-api_gateway alexivan813/backend:api-gateway
+          docker tag back-end-auth_service alexivan813/backend:auth-service
+          docker tag back-end-course_service alexivan813/backend:course-service
+          docker tag back-end-assignment_service alexivan813/backend:assignment-service
+          docker tag back-end-resource_service alexivan813/backend:resource-service
+          docker tag back-end-eureka-server alexivan813/backend:eureka-server
+
+          docker push alexivan813/backend:api-gateway
+          docker push alexivan813/backend:auth-service
+          docker push alexivan813/backend:course-service
+          docker push alexivan813/backend:assignment-service
+          docker push alexivan813/backend:resource-service
+          docker push alexivan813/backend:eureka-server
 
       - name: Docker Compose Up (start all)
         run: docker compose --project-name back-end up -d

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: resource-service
-          image: resource_service:latest
+          image: registry.digitalocean.com/lms-registry333/resource_service:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8084

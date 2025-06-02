@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: assignment-service
-          image: assignment_service:latest
+          image: registry.digitalocean.com/lms-registry333/assignment_service:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8083
