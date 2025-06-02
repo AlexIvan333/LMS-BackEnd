@@ -15,7 +15,7 @@ spec:
       containers:
         - name: eureka-server
           image: registry.digitalocean.com/lms-registry333/eureka-server:latest
-          imagePullPolicy: Never   # 🔥 this is the key
+          imagePullPolicy: Always
           ports:
             - containerPort: 8761
 ---

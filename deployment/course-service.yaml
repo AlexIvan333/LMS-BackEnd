@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: course-service
-          image: registry.digitalocean.com/lms-registry333/course_service:latest
-          imagePullPolicy: Never
+          image: registry.digitalocean.com/lms-registry333/course-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8082
           env:

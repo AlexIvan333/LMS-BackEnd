@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: registry.digitalocean.com/lms-registry333/auth_service:latest
-          imagePullPolicy: Never
+          image: registry.digitalocean.com/lms-registry333/auth-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
           env:
