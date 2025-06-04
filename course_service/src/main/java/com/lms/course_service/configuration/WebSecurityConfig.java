@@ -35,7 +35,7 @@ public class WebSecurityConfig {
         this.jwtUtil = jwtUtil;
     }
 
-    @Value("${app.allowed.origins:http://localhost:3001}")
+    @Value("${app.allowed.origins:http://localhost:3001,https://localhost:3001}")
     private String allowedOrigins;
 
     @Bean

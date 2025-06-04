@@ -27,7 +27,7 @@ spec:
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
             - name: APP_ALLOWED_ORIGINS
-              value: http://localhost:3001
+              value: http://localhost:3001,https://localhost:3001
             - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDMETHODS
               value: GET,POST,PUT,DELETE,OPTIONS
             - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDHEADERS
