@@ -26,7 +26,7 @@ spec:
               value: http://eureka-server.lms.svc.cluster.local:8761/eureka
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
-            - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDORIGINS
+            - name: APP_ALLOWED_ORIGINS
               value: http://localhost:3001
             - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDMETHODS
               value: GET,POST,PUT,DELETE,OPTIONS

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 
 @RestController
 @RequestMapping("/auth")
@@ -20,13 +21,22 @@ public class AuthenticationController {
     @Autowired
     private AuthService authService;
 
+    @Value("${app.cookie.secure:true}")
+    private boolean cookieSecure;
+
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             String loginResult = authService.initiateLogin(loginRequest);
             if ("Two-factor authentication required.".equals(loginResult)) {
                 return ResponseEntity.status(202).body(loginResult); // 202 Accepted
             }
+            Cookie cookie = new Cookie("token", loginResult);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(cookieSecure);
+            cookie.setPath("/");
+            cookie.setMaxAge(1800);
+            response.addCookie(cookie);
             return ResponseEntity.ok(loginResult);
         } catch (InvalidCredentialsException e) {
             return ResponseEntity.status(401).body(e.getMessage());
@@ -40,7 +50,7 @@ public class AuthenticationController {
             String token= authService.loginAdmin(loginRequest).getToken();
             Cookie cookie = new Cookie("token", token);
             cookie.setHttpOnly(true);
-            cookie.setSecure(true);
+            cookie.setSecure(cookieSecure);
             cookie.setPath("/");
             cookie.setMaxAge(1800);
             response.addCookie(cookie);
@@ -59,7 +69,7 @@ public class AuthenticationController {
             String token = loginResponse.getToken();
             Cookie cookie = new Cookie("token", token);
             cookie.setHttpOnly(true);
-            cookie.setSecure(true);
+            cookie.setSecure(cookieSecure);
             cookie.setPath("/");
             cookie.setMaxAge(1800);
             response.addCookie(cookie);
@@ -73,7 +83,7 @@ public class AuthenticationController {
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(cookieSecure);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);

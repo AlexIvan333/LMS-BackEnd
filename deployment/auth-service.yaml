@@ -32,6 +32,10 @@ spec:
               value: auth-service
             - name: ZIPKIN_URL
               value: http://zipkin.monitoring.svc.cluster.local:9411
+            - name: APP_ALLOWED_ORIGINS
+              value: http://localhost:3001
+            - name: APP_COOKIE_SECURE
+              value: "true"
 ---
 apiVersion: v1
 kind: Service
