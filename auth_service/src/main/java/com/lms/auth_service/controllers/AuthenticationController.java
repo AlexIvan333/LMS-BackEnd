@@ -34,7 +34,7 @@ public class AuthenticationController {
             ResponseCookie cookie = ResponseCookie.from("token", loginResult)
                     .httpOnly(true)
                     .secure(cookieSecure)
-                    .sameSite("None")
+                    .sameSite("same_site")
                     .path("/")
                     .maxAge(1800)
                     .build();
@@ -54,7 +54,7 @@ public class AuthenticationController {
             ResponseCookie cookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
                     .secure(cookieSecure)
-                    .sameSite("None")
+                    .sameSite("same_site")
                     .path("/")
                     .maxAge(1800)
                     .build();
@@ -76,7 +76,7 @@ public class AuthenticationController {
             ResponseCookie cookie = ResponseCookie.from("token", token)
                     .httpOnly(true)
                     .secure(cookieSecure)
-                    .sameSite("None")
+                    .sameSite("same_site")
                     .path("/")
                     .maxAge(1800)
                     .build();
