@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Date;
 
 public interface AssignmentSubmissionRepository extends JpaRepository<AssignmentSubmissionEntity, Long> {
 
@@ -30,4 +29,9 @@ public interface AssignmentSubmissionRepository extends JpaRepository<Assignment
     );
 
     AssignmentSubmissionEntity findAssignmentSubmissionEntityById(Long id);
+
+    @org.springframework.transaction.annotation.Transactional
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM AssignmentSubmissionEntity s WHERE s.student_id = :studentId")
+    void deleteAllByStudentId(@Param("studentId") Long studentId);
 }

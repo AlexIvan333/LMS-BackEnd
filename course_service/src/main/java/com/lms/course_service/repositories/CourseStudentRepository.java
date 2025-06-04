@@ -9,4 +9,6 @@ public interface CourseStudentRepository extends JpaRepository<CourseStudentEnti
     boolean existsCourseStudentEntitiesByCourseIdAndStudentId(Long courseId, Long studentId);
 
     List<CourseStudentEntity> findAllByStudentId(Long studentId);
+
+    void deleteAllByStudentId(Long studentId);
 }

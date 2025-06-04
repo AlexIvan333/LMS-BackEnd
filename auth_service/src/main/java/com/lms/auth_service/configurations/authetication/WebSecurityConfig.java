@@ -74,8 +74,9 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/auth/instructors/isvalidedbyadmin", "/auth/instructors/email").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/admins/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/me").permitAll()
-                        .requestMatchers(HttpMethod.GET,"auth/export_data/").hasAnyAuthority("ADMIN","STUDENT","INSTRUCTOR")
-                        .requestMatchers(HttpMethod.GET,"auth/delete_account/").hasAnyAuthority("ADMIN","STUDENT","INSTRUCTOR")
+                        .requestMatchers(HttpMethod.GET,"/auth/export_data/").hasAnyAuthority("ADMIN","STUDENT","INSTRUCTOR")
+                        .requestMatchers(HttpMethod.GET,"/auth/delete_account/").hasAnyAuthority("ADMIN","STUDENT","INSTRUCTOR")
+                        .requestMatchers(HttpMethod.DELETE, "/auth/right_to_be_forgotten").hasAnyAuthority("ADMIN","STUDENT","INSTRUCTOR")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtRequestFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);

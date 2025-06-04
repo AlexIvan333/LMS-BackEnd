@@ -51,4 +51,7 @@ public class KafkaTopicConfig {
     public NewTopic instructorCourseCreated() {
         return new NewTopic("instructor-course-created", 1, (short) 1);
     }
+
+    @Bean
+    public NewTopic userDeletedTopic() { return new NewTopic("user-deleted", 1, (short) 1); }
 }

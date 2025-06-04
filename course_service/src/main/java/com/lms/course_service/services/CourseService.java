@@ -22,6 +22,7 @@ import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +40,7 @@ public class CourseService {
     private final ReplyingKafkaTemplate<String, Object, InstructorDetailsResponseEvent> instructorNameReplyingKafkaTemplate;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
+    @Transactional
     public ServiceResult<CourseResponse> createCourse(CreateCourseRequest request) {
         String correlationId = UUID.randomUUID().toString();
         CheckUserExistsEvent event = new CheckUserExistsEvent(request.getInstructorID(), "INSTRUCTOR", correlationId);
@@ -92,8 +94,17 @@ public class CourseService {
 
             courseRepository.save(courseEntity);
 
-            CourseCreatedEvent courseCreatedEvent = new CourseCreatedEvent(courseEntity.getInstructorId(), courseEntity.getTitle());
-            kafkaTemplate.send("instructor-course-created", courseCreatedEvent);
+            try {
+                CourseCreatedEvent courseCreatedEvent = new CourseCreatedEvent(courseEntity.getInstructorId(), courseEntity.getTitle());
+                kafkaTemplate.send("instructor-course-created", courseCreatedEvent).get();
+            } catch (Exception e) {
+                courseRepository.deleteById(courseEntity.getId());
+                return ServiceResult.<CourseResponse>builder()
+                        .success(false)
+                        .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .messageError("Course creation rolled back: " + e.getMessage())
+                        .build();
+            }
 
             return ServiceResult.<CourseResponse>builder()
                     .data(CourseMapper.toResponse(courseEntity))
@@ -144,12 +155,12 @@ public class CourseService {
             String correlationId = UUID.randomUUID().toString();
             CheckUserExistsEvent event = new CheckUserExistsEvent(request.getStudent_id(), "STUDENT", correlationId);
 
-            ProducerRecord<String, Object> record = new ProducerRecord<>("user-validation-request", event);
-            record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "user-validation-response".getBytes()));
-            record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
+            ProducerRecord<String, Object> userValidationRecord = new ProducerRecord<>("user-validation-request", event);
+            userValidationRecord.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, "user-validation-response".getBytes()));
+            userValidationRecord.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes()));
 
             RequestReplyFuture<String, Object, UserExistsResponseEvent> future =
-                    userReplyingKafkaTemplate.sendAndReceive(record);
+                    userReplyingKafkaTemplate.sendAndReceive(userValidationRecord);
             ConsumerRecord<String, UserExistsResponseEvent> response = future.get();
 
             if (response == null || response.value() == null || !response.value().exists()) {

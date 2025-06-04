@@ -18,14 +18,10 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic resourceValidationRequestTopic() {
-        return new NewTopic("resource-validation-request", 1, (short) 1);
-    }
+    public NewTopic resourceValidationRequestTopic() { return new NewTopic("resource-validation-request", 1, (short) 1); }
 
     @Bean
-    public NewTopic resourceValidationResponseTopic() {
-        return new NewTopic("resource-validation-response", 1, (short) 1);
-    }
+    public NewTopic resourceValidationResponseTopic() { return new NewTopic("resource-validation-response", 1, (short) 1); }
 
     @Bean
     public NewTopic resourceDetailsRequestTopic() {
@@ -38,17 +34,14 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic getInstructorDetailsRequest() {
-        return new NewTopic("get-instructor-details-request", 1, (short) 1);
-    }
+    public NewTopic getInstructorDetailsRequest() { return new NewTopic("get-instructor-details-request", 1, (short) 1); }
 
     @Bean
-    public NewTopic getInstructorDetailsResponse() {
-        return new NewTopic("get-instructor-details-response", 1, (short) 1);
-    }
+    public NewTopic getInstructorDetailsResponse() { return new NewTopic("get-instructor-details-response", 1, (short) 1); }
 
     @Bean
-    public NewTopic instructorCourseCreated() {
-        return new NewTopic("instructor-course-created", 1, (short) 1);
-    }
+    public NewTopic instructorCourseCreated() { return new NewTopic("instructor-course-created", 1, (short) 1); }
+
+    @Bean
+    public NewTopic userDeletedTopic() { return new NewTopic("user-deleted", 1, (short) 1); }
 }

@@ -36,4 +36,6 @@ public class KafkaTopicConfig {
     public NewTopic resourceDetailsResponse() {
         return new NewTopic("resource-details-response", 1, (short) 1);
     }
+    @Bean
+    public NewTopic userDeletedTopic() { return new NewTopic("user-deleted", 1, (short) 1);}
 }

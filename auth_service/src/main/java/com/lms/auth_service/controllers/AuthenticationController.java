@@ -1,5 +1,4 @@
 package com.lms.auth_service.controllers;
-
 import com.lms.auth_service.dtos.requests.LoginRequest;
 import com.lms.auth_service.dtos.requests.TwoFactorRequest;
 import com.lms.auth_service.dtos.responses.LoginResponse;
@@ -7,7 +6,6 @@ import com.lms.auth_service.dtos.responses.UserInfoResponse;
 import com.lms.auth_service.exceptions.InvalidCredentialsException;
 import com.lms.auth_service.exceptions.TwoFactorAuthenticationException;
 import com.lms.auth_service.services.AuthService;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +126,7 @@ public class AuthenticationController {
             problemDetail.setTitle("Error sending the email with verification code");
             return ResponseEntity.status(result.getHttpStatus()).body(problemDetail);
         }
-        return ResponseEntity.ok("Email send successfully.");
+        return ResponseEntity.ok("Email sent successfully.");
     }
     @GetMapping("/me")
     public ResponseEntity<UserInfoResponse> getLoggedInUser(HttpServletRequest request) {
@@ -181,5 +179,20 @@ public class AuthenticationController {
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(csvData);
     }
+
+    @DeleteMapping("/right_to_be_forgotten")
+    public ResponseEntity<?> rightToBeForgotten(@CookieValue(name = "token", required = false) String token) {
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is missing.");
+        }
+
+        boolean success = authService.deleteUserData(token);
+        if (success) {
+            return ResponseEntity.ok("User data deleted.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+    }
+
 
 }

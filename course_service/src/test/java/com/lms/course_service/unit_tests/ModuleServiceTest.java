@@ -66,8 +66,8 @@ class ModuleServiceTest {
 
 
     @Test
-    @DisplayName("Test createModule(CreateModuleRequest); then return Data CourseId is 'null'")
-    void testCreateModule_thenReturnDataCourseIdIsNull() {
+    @DisplayName("Test createModule(CreateModuleRequest); then return Data CourseId is '1'")
+    void testCreateModule_thenReturnDataCourseIdIsOne() {
         // Arrange
         CourseEntity course = new CourseEntity();
         course.setDescription("The characteristics of someone or something");
@@ -102,7 +102,7 @@ class ModuleServiceTest {
         verify(courseRepository).findCourseEntitiesById(isNull());
         verify(moduleRepository).save(isA(ModuleEntity.class));
         ModuleResponse data = actualCreateModuleResult.getData();
-        assertNull(data.getCourseId());
+        assertEquals(1L, data.getCourseId());
         assertNull(data.getId());
         assertNull(data.getDescription());
         assertNull(data.getTitle());
@@ -190,7 +190,7 @@ class ModuleServiceTest {
         assertEquals("Dr", getResult2.getTitle());
         assertEquals("Mr", getResult.getTitle());
         assertEquals("The characteristics of someone or something", getResult2.getDescription());
-        assertNull(getResult2.getCourseId());
+        assertEquals(1L, getResult2.getCourseId());
         assertEquals(1L, getResult2.getId().longValue());
         assertEquals(2L, getResult.getId().longValue());
         assertTrue(getResult2.getResources().isEmpty());

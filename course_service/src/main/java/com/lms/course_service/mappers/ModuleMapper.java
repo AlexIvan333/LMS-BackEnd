@@ -3,8 +3,6 @@ package com.lms.course_service.mappers;
 import com.lms.course_service.dtos.responses.ModuleResponse;
 import com.lms.course_service.entities.ModuleEntity;
 
-import java.util.Collections;
-import java.util.stream.Collectors;
 
 public class ModuleMapper {
     public static ModuleResponse toResponse(ModuleEntity entity) {
@@ -17,6 +15,7 @@ public class ModuleMapper {
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
+                .courseId(entity.getCourse() != null ? entity.getCourse().getId() : null)
                 .resources(entity.getResourceIds())
                 .build();
     }

@@ -1,20 +1,20 @@
 package com.lms.auth_service.services;
 
-
 import com.lms.auth_service.configurations.authetication.JwtUtil;
 import com.lms.auth_service.dtos.requests.LoginRequest;
 import com.lms.auth_service.dtos.requests.TwoFactorRequest;
 import com.lms.auth_service.dtos.responses.LoginResponse;
 import com.lms.auth_service.dtos.responses.ServiceResult;
 import com.lms.auth_service.dtos.responses.UserInfoResponse;
-import com.lms.auth_service.entities.enums.Role;
 import com.lms.auth_service.entities.relational.UserEntity;
 import com.lms.auth_service.exceptions.InvalidCredentialsException;
 import com.lms.auth_service.exceptions.TwoFactorAuthenticationException;
 import com.lms.auth_service.repositories.relational.UserRepository;
 import com.lms.auth_service.validation.intrefaces.IUserValidator;
+import com.lms.shared.events.UserDeletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.lms.auth_service.validation.intrefaces.IPasswordValidator;
@@ -33,6 +33,7 @@ public class AuthService {
     private final IPasswordValidator passwordValidator;
     private final Google2FAService google2FAService;
     private final EmailService emailService;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
 
     public String initiateLogin(LoginRequest loginRequest) throws InvalidCredentialsException {
@@ -124,7 +125,7 @@ public class AuthService {
         return ServiceResult.<Boolean>builder()
                 .success(true)
                 .data(true)
-                .messageError("Email send successfully.")
+                .messageError("Email sent successfully.")
                 .httpStatus(HttpStatus.OK)
                 .build();
     }
@@ -221,6 +222,18 @@ public class AuthService {
         return csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
     }
 
-
+    public boolean deleteUserData(String token) {
+        String email = jwtUtil.extractEmail(token);
+        Optional<UserEntity> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            UserEntity user = userOptional.get();
+            userRepository.delete(user);
+            try {
+                kafkaTemplate.send("user-deleted", new UserDeletedEvent(user.getId()));
+            } catch (Exception ignored) {}
+            return true;
+        }
+        return false;
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.lms.resource_service.configuration;//package com.lms.api_gateway.configurations;
+package com.lms.resource_service.configuration;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

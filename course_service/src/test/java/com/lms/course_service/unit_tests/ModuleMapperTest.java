@@ -42,7 +42,7 @@ class ModuleMapperTest {
         // Assert
         assertEquals("Dr", actualToResponseResult.getTitle());
         assertEquals("The characteristics of someone or something", actualToResponseResult.getDescription());
-        assertNull(actualToResponseResult.getCourseId());
+        assertEquals(1L, actualToResponseResult.getCourseId());
         assertEquals(1L, actualToResponseResult.getId().longValue());
         assertTrue(actualToResponseResult.getResources().isEmpty());
     }

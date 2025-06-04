@@ -23,5 +23,7 @@ public interface CourseRepository extends JpaRepository<CourseEntity, Long> {
                                                    Pageable pageable);
 
     Optional<CourseEntity> findCourseEntitiesById(Long id);
+    void deleteAllByInstructorId(Long instructorId);
 
+    java.util.List<CourseEntity> findAllByInstructorId(Long instructorId);
 }

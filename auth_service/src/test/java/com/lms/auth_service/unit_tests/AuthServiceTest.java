@@ -45,6 +45,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -82,6 +83,9 @@ class AuthServiceTest {
 
     @MockitoBean
     private UserRepository userRepository;
+
+    @MockitoBean
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
 
     @Test
@@ -139,8 +143,9 @@ class AuthServiceTest {
         UserValidator userValidation = new UserValidator(mock(UserRepository.class));
         IPasswordValidator passwordValidator = mock(IPasswordValidator.class);
         Google2FAService google2FAService = new Google2FAService();
+        KafkaTemplate<String, Object> kafkaTemplate = mock(KafkaTemplate.class);
         AuthService authService = new AuthService(userRepository, passwordEncoder, jwtUtil, userValidation,
-                passwordValidator, google2FAService, new EmailService(new JavaMailSenderImpl()));
+                passwordValidator, google2FAService, new EmailService(new JavaMailSenderImpl()),kafkaTemplate);
 
         // Act and Assert
         assertThrows(InvalidCredentialsException.class,
@@ -294,8 +299,9 @@ class AuthServiceTest {
         UserValidator userValidation = new UserValidator(mock(UserRepository.class));
         IPasswordValidator passwordValidator = mock(IPasswordValidator.class);
         Google2FAService google2FAService = new Google2FAService();
+        KafkaTemplate<String, Object> kafkaTemplate = mock(KafkaTemplate.class);
         AuthService authService = new AuthService(userRepository, passwordEncoder, jwtUtil, userValidation,
-                passwordValidator, google2FAService, new EmailService(new JavaMailSenderImpl()));
+                passwordValidator, google2FAService, new EmailService(new JavaMailSenderImpl()),kafkaTemplate);
 
         // Act and Assert
         assertThrows(InvalidCredentialsException.class,
@@ -501,8 +507,9 @@ class AuthServiceTest {
         UserValidator userValidation = new UserValidator(mock(UserRepository.class));
         IPasswordValidator passwordValidator = mock(IPasswordValidator.class);
         Google2FAService google2FAService = new Google2FAService();
+        KafkaTemplate<String, Object> kafkaTemplate = mock(KafkaTemplate.class);
         AuthService authService = new AuthService(userRepository, passwordEncoder, jwtUtil, userValidation,
-                passwordValidator, google2FAService, new EmailService(new JavaMailSenderImpl()));
+                passwordValidator, google2FAService, new EmailService(new JavaMailSenderImpl()),kafkaTemplate);
 
         // Act and Assert
         assertThrows(TwoFactorAuthenticationException.class,
@@ -647,8 +654,9 @@ class AuthServiceTest {
         JwtUtil jwtUtil = new JwtUtil();
         UserValidator userValidation = new UserValidator(mock(UserRepository.class));
         IPasswordValidator passwordValidator = mock(IPasswordValidator.class);
+        KafkaTemplate<String, Object> kafkaTemplate = mock(KafkaTemplate.class);
         AuthService authService = new AuthService(userRepository, passwordEncoder, jwtUtil, userValidation,
-                passwordValidator, google2FAService, new EmailService(new JavaMailSenderImpl()));
+                passwordValidator, google2FAService, new EmailService(new JavaMailSenderImpl()),kafkaTemplate);
 
         // Act
         LoginResponse actualVerifyTwoFactorCodeResult = authService
@@ -826,10 +834,11 @@ class AuthServiceTest {
         UserValidator userValidation = new UserValidator(mock(UserRepository.class));
         IPasswordValidator passwordValidator = mock(IPasswordValidator.class);
         Google2FAService google2FAService = new Google2FAService();
-
+        KafkaTemplate<String, Object> kafkaTemplate = mock(KafkaTemplate.class);
         // Act and Assert
+
         assertFalse((new AuthService(userRepository, passwordEncoder, jwtUtil, userValidation, passwordValidator,
-                google2FAService, new EmailService(new JavaMailSenderImpl()))).validateToken("ABC123"));
+                google2FAService, new EmailService(new JavaMailSenderImpl()),kafkaTemplate)).validateToken("ABC123"));
     }
 
 
@@ -855,7 +864,7 @@ class AuthServiceTest {
         verify(userRepository).findByEmail(eq("jane.doe@example.org"));
         verify(emailService).sendVerificationCodeEmail(eq("jane.doe@example.org"));
         verify(userRepository).save(isA(UserEntity.class));
-        assertEquals("Email send successfully.", actualSendPasswordResetEmailVerificationResult.getMessageError());
+        assertEquals("Email sent successfully.", actualSendPasswordResetEmailVerificationResult.getMessageError());
         assertEquals(HttpStatus.OK, actualSendPasswordResetEmailVerificationResult.getHttpStatus());
         assertTrue(actualSendPasswordResetEmailVerificationResult.getData());
         assertTrue(actualSendPasswordResetEmailVerificationResult.isSuccess());
@@ -922,10 +931,11 @@ class AuthServiceTest {
         JwtUtil jwtUtil = new JwtUtil();
         UserValidator userValidation = new UserValidator(mock(UserRepository.class));
         IPasswordValidator passwordValidator = mock(IPasswordValidator.class);
+        KafkaTemplate<String, Object> kafkaTemplate = mock(KafkaTemplate.class);
 
         // Act
         ServiceResult<Boolean> actualSendPasswordResetEmailVerificationResult = (new AuthService(userRepository,
-                passwordEncoder, jwtUtil, userValidation, passwordValidator, new Google2FAService(), emailService))
+                passwordEncoder, jwtUtil, userValidation, passwordValidator, new Google2FAService(), emailService,kafkaTemplate))
                 .sendPasswordResetEmailVerification("jane.doe@example.org");
 
         // Assert
@@ -933,7 +943,7 @@ class AuthServiceTest {
         verify(userRepository).save(isA(UserEntity.class));
         verify(mailSender).send(isA(MimeMessage.class));
         verify(mailSender).createMimeMessage();
-        assertEquals("Email send successfully.", actualSendPasswordResetEmailVerificationResult.getMessageError());
+        assertEquals("Email sent successfully.", actualSendPasswordResetEmailVerificationResult.getMessageError());
         assertEquals(HttpStatus.OK, actualSendPasswordResetEmailVerificationResult.getHttpStatus());
         assertTrue(actualSendPasswordResetEmailVerificationResult.getData());
         assertTrue(actualSendPasswordResetEmailVerificationResult.isSuccess());
@@ -1152,5 +1162,29 @@ class AuthServiceTest {
         verify(userRepository).findByEmail(eq("jane.doe@example.org"));
         verify(iPasswordValidator).isValid(eq("password"));
         verify(iUserValidator).HasValidEmail(eq("jane.doe@example.org"));
+    }
+
+    @Test
+    @DisplayName("deleteUserData returns true when user exists")
+    void testDeleteUserData_success() {
+        UserEntity user = getUserEntity();
+        when(jwtUtil.extractEmail(Mockito.any())).thenReturn(user.getEmail());
+        when(userRepository.findByEmail(Mockito.any())).thenReturn(Optional.of(user));
+
+        boolean result = authService.deleteUserData("token");
+
+        assertTrue(result);
+        verify(userRepository).delete(user);
+    }
+
+    @Test
+    @DisplayName("deleteUserData returns false when user not found")
+    void testDeleteUserData_userNotFound() {
+        when(jwtUtil.extractEmail(Mockito.any())).thenReturn("a@b.com");
+        when(userRepository.findByEmail(Mockito.any())).thenReturn(Optional.empty());
+
+        boolean result = authService.deleteUserData("token");
+
+        assertFalse(result);
     }
 }
