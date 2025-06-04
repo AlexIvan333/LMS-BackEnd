@@ -35,7 +35,7 @@ spec:
             - name: APP_ALLOWED_ORIGINS
               value: http://localhost:3001
             - name: APP_COOKIE_SECURE
-              value: "true"
+              value: "false"
 ---
 apiVersion: v1
 kind: Service
