@@ -31,12 +31,15 @@ public class AuthenticationController {
             if ("Two-factor authentication required.".equals(loginResult)) {
                 return ResponseEntity.status(202).body(loginResult); // 202 Accepted
             }
-            Cookie cookie = new Cookie("token", loginResult);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(cookieSecure);
-            cookie.setPath("/");
-            cookie.setMaxAge(1800);
-            response.addCookie(cookie);
+            ResponseCookie cookie = ResponseCookie.from("token", loginResult)
+                    .httpOnly(true)
+                    .secure(cookieSecure)
+                    .sameSite("None")
+                    .path("/")
+                    .maxAge(1800)
+                    .build();
+
+            response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             return ResponseEntity.ok(loginResult);
         } catch (InvalidCredentialsException e) {
             return ResponseEntity.status(401).body(e.getMessage());
@@ -48,12 +51,15 @@ public class AuthenticationController {
         try
         {
             String token= authService.loginAdmin(loginRequest).getToken();
-            Cookie cookie = new Cookie("token", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(cookieSecure);
-            cookie.setPath("/");
-            cookie.setMaxAge(1800);
-            response.addCookie(cookie);
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)
+                    .secure(cookieSecure)
+                    .sameSite("None")
+                    .path("/")
+                    .maxAge(1800)
+                    .build();
+
+            response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             return ResponseEntity.ok(token);
         }
         catch(InvalidCredentialsException e)
@@ -67,12 +73,15 @@ public class AuthenticationController {
         try {
             LoginResponse loginResponse = authService.verifyTwoFactorCode(request);
             String token = loginResponse.getToken();
-            Cookie cookie = new Cookie("token", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(cookieSecure);
-            cookie.setPath("/");
-            cookie.setMaxAge(1800);
-            response.addCookie(cookie);
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)
+                    .secure(cookieSecure)
+                    .sameSite("None")
+                    .path("/")
+                    .maxAge(1800)
+                    .build();
+
+            response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
             return ResponseEntity.ok(loginResponse);
         } catch (TwoFactorAuthenticationException e) {
             return ResponseEntity.status(401).body(LoginResponse.builder().message(e.getMessage()).build());
@@ -81,12 +90,15 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("token", null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(cookieSecure);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie.from("token", null)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .sameSite("None")
+                .path("/")
+                .maxAge(1800)
+                .build();
+
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return ResponseEntity.ok().build();
     }
