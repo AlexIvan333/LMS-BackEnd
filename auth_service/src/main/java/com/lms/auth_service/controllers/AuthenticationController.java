@@ -29,7 +29,7 @@ public class AuthenticationController {
         try {
             String loginResult = authService.initiateLogin(loginRequest);
             if ("Two-factor authentication required.".equals(loginResult)) {
-                return ResponseEntity.status(202).body(loginResult); // 202 Accepted
+                return ResponseEntity.status(202).body(loginResult);
             }
             ResponseCookie cookie = ResponseCookie.from("token", loginResult)
                     .httpOnly(true)
