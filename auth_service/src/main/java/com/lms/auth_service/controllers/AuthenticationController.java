@@ -35,6 +35,7 @@ public class AuthenticationController {
                     .httpOnly(true)
                     .secure(cookieSecure)
                     .sameSite("None")
+                    .domain(".lmsapi.software")
                     .path("/")
                     .maxAge(1800)
                     .build();
@@ -55,6 +56,7 @@ public class AuthenticationController {
                     .httpOnly(true)
                     .secure(cookieSecure)
                     .sameSite("None")
+                    .domain(".lmsapi.software")
                     .path("/")
                     .maxAge(1800)
                     .build();
@@ -77,6 +79,7 @@ public class AuthenticationController {
                     .httpOnly(true)
                     .secure(cookieSecure)
                     .sameSite("None")
+                    .domain(".lmsapi.software")
                     .path("/")
                     .maxAge(1800)
                     .build();
