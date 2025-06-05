@@ -39,7 +39,7 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Value("${app.allowed.origins:http://localhost:3001,https://localhost:3001,http://lmsapi.software}")
+    @Value("${app.allowed.origins:http://localhost:3001,https://localhost:3001,https://lmsapi.software}")
     private String allowedOrigins;
 
     @Bean

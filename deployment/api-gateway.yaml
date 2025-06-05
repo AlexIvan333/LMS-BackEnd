@@ -27,7 +27,7 @@ spec:
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
               value: "true"
             - name: APP_ALLOWED_ORIGINS
-              value: http://localhost:3001,https://localhost:3001,http://lmsapi.software
+              value: https://lmsapi.software
             - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDMETHODS
               value: GET,POST,PUT,DELETE,OPTIONS
             - name: SPRING_CLOUD_GATEWAY_GLOBALCORS_CORSCONFIGURATIONS_[/**]_ALLOWEDHEADERS
@@ -56,12 +56,14 @@ metadata:
   name: api-gateway
   namespace: lms
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3001,http://lmsapi.software"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://lmsapi.software"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type, X-Requested-With"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
     nginx.ingress.kubernetes.io/cors-expose-headers: "Set-Cookie"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   ingressClassName: nginx
   rules:
@@ -75,3 +77,7 @@ spec:
                 name: api-gateway
                 port:
                   number: 80
+  tls:
+    - hosts:
+        - api.lmsapi.software
+      secretName: api-lmsapi-software-tls
